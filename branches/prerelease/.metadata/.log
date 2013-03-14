@@ -1,0 +1,22 @@
+!SESSION 2013-03-14 13:20:27.535 -----------------------------------------------
+eclipse.buildId=M20120914-1800
+java.version=1.7.0_15
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=pt_BR
+Framework arguments:  -product org.eclipse.epp.package.rcp.product -product org.eclipse.epp.package.rcp.product
+Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.package.rcp.product -data /home/thiago/Ufal/typeChef/FeatureAnalyzerPlugin/branches -product org.eclipse.epp.package.rcp.product
+
+!ENTRY org.eclipse.scout.sdk 1 0 2013-03-14 13:20:32.377
+!MESSAGE org.eclipse.osgi.framework.internal.core.BundleContextImpl$1.run(BundleContextImpl.java:711)
+	Starting SCOUT SDK Plugin.
+!SESSION 2013-03-14 13:28:45.625 -----------------------------------------------
+eclipse.buildId=M20120914-1800
+java.version=1.7.0_15
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86, WS=gtk, NL=pt_BR
+Framework arguments:  -product org.eclipse.epp.package.rcp.product -product org.eclipse.epp.package.rcp.product
+Command-line arguments:  -os linux -ws gtk -arch x86 -product org.eclipse.epp.package.rcp.product -data /home/thiago/Ufal/Projeto-de-pesquisa/FeatureAnalyzerPlugin/branches/prerelease -product org.eclipse.epp.package.rcp.product
+
+!ENTRY org.eclipse.scout.sdk 1 0 2013-03-14 13:28:52.980
+!MESSAGE org.eclipse.osgi.framework.internal.core.BundleContextImpl$1.run(BundleContextImpl.java:711)
+	Starting SCOUT SDK Plugin.

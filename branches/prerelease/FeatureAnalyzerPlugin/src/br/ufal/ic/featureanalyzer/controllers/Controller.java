@@ -1,0 +1,49 @@
+package br.ufal.ic.featureanalyzer.controllers;
+
+import java.util.List;
+
+import org.eclipse.ui.IWorkbenchWindow;
+
+import br.ufal.ic.featureanalyzer.activator.Activator;
+import br.ufal.ic.featureanalyzer.models.Model;
+import br.ufal.ic.featureanalyzer.models.SuperC;
+import br.ufal.ic.featureanalyzer.models.TypeChef;
+
+public class Controller {
+	private ProjectExplorerController pkgExplorerController;
+	private Model model;
+
+	public Controller() {
+		pkgExplorerController = new ProjectExplorerController();
+	}
+
+	public void setWindow(IWorkbenchWindow window) {
+		pkgExplorerController.setWindow(window);
+	}
+
+	private void createdModel() throws Exception {
+		// General processing options
+		String typeChecking = Activator.getDefault().getPreferenceStore()
+				.getString("TypeChecking");
+		if (typeChecking.equals("typechef") && !(model instanceof TypeChef)) {
+			model = new TypeChef();
+		} else if (typeChecking.equals("superc") && !(model instanceof SuperC)) {
+			model = new SuperC();
+		}
+	}
+
+	public void run() throws Exception {
+		this.createdModel();
+		pkgExplorerController.setList(model.getFiles());
+		pkgExplorerController.run();
+		model.run();
+	}
+
+	public List<String> getFiles() {
+		return model.getFiles();
+	}
+
+	public Object[] getLogs() {
+		return model.getLogs();
+	}
+}

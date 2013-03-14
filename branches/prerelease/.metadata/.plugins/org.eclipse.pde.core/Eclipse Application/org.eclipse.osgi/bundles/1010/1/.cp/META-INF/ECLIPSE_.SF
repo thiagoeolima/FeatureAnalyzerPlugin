@@ -1,0 +1,30 @@
+Signature-Version: 1.0
+SHA1-Digest-Manifest: HVJ4oxmzeuYU1R3/4CecXn5m5Ko=
+Created-By: 1.6.0 (IBM Corporation)
+SHA1-Digest-Manifest-Main-Attributes: l0mFDy0vUVYeCkmX/hWlVQK2y/8=
+
+Name: org/eclipse/scout/sdk/help/internal/action/CreateNewScoutProject
+ Handler.class
+SHA1-Digest: /FJGA0kQhX0x0Q9wSIOk/9XAC6k=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: QdryQvJlVywlE0MGLuwYCkmkyWk=
+
+Name: org/eclipse/scout/sdk/help/internal/ScoutSdkHelpActivator.class
+SHA1-Digest: N0Phdx+H9VflLaIOJuL8nEphwxA=
+
+Name: intro/css/style.css
+SHA1-Digest: hn3pMOr0TWQVeSari9YcT6+EXXY=
+
+Name: intro/graphics/scout.png
+SHA1-Digest: YxUeWqHE9cs3BDKB9fH+2oP4spA=
+
+Name: about.html
+SHA1-Digest: RCrLInRdqQddTeRnYH9585FBySU=
+
+Name: plugin.xml
+SHA1-Digest: 9m980+shs1glvHjQN+Y0h/VS9UU=
+
+Name: intro/overviewExtensionContent.xml
+SHA1-Digest: UzpTfJT8NoWxpx2fMV+YhE6dwKk=
+

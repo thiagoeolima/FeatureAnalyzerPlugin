@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map>
+	<bundle bundleID="767" class="br.ufal.ic.featureanalyzer.activator.Activator" localization="OSGI-INF/l10n/bundle" name="FeatureAnalyzerPlugin" project="FeatureAnalyzerPlugin" provider="Ufal">
+		<library name="lib/TypeChef-0.3.3.jar"/>
+		<library name="."/>
+		<library name="lib/jdom-2.0.4.jar"/>
+	</bundle>
+</map>
