@@ -9,7 +9,7 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
-	public static final String ID = "br.ufal.ic.typechefplugin.preferences.PreferencePage";
+	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".preferences.PreferencePage";
 
 	public PreferencePage() {
 		super(GRID);
