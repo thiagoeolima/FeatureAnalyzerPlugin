@@ -3,14 +3,17 @@ package br.ufal.ic.featureanalyzer.views;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
+import de.ovgu.featureide.fm.ui.editors.featuremodel.GUIDefaults;
+
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
 
-public class PluginView extends ViewPart {
+public class AnalyzerView extends ViewPart{
 
-	public static final String ID = "br.ufal.ic.featureanalyzer.views.PluginView";
+	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".views.AnalyzerView";
 	private PluginViewController controller;
 
-	public PluginView() {
+	public AnalyzerView() {
 		controller = new PluginViewController(this);
 	}
 

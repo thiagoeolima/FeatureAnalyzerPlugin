@@ -5,7 +5,7 @@ import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
-import br.ufal.ic.featureanalyzer.activator.Activator;
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
@@ -30,7 +30,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
 	@Override
 	public void init(IWorkbench workbench) {
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setPreferenceStore(FeatureAnalyzer.getDefault().getPreferenceStore());
 		// setDescription(" ");
 	}
 

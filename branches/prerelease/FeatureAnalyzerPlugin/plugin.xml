@@ -23,16 +23,13 @@
 
    <extension
          point="org.eclipse.ui.views">
-      <category
-            name="FeatureAnalyzer"
-            id="FeatureAnalyzerPlugin">
-      </category>
       <view
-            name="Feature Analyzer"
+            category="FeatureIDE"
+            class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
             icon="icons/featured.png"
-            category="FeatureAnalyzerPlugin"
-            class="br.ufal.ic.featureanalyzer.views.PluginView"
-            id="br.ufal.ic.featureanalyzer.views.PluginView">
+            id="br.ufal.ic.activator.featureanalyzer.views.AnalyzerView"
+            name="Feature Analyzer"
+            restorable="true">
       </view>
    </extension>
    <extension

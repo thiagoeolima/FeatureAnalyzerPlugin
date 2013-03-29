@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.util.List;
 
-import br.ufal.ic.featureanalyzer.activator.Activator;
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
 
@@ -26,7 +26,7 @@ public class TypeChef implements Model {
 
 	private void start() {
 		// General processing options
-		String typeChefPreference = Activator.getDefault().getPreferenceStore()
+		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
 
 		String[] parameters = { "--errorXML", outputFilePath,
