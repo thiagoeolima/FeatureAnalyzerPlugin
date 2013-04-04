@@ -81,4 +81,14 @@
          </toolbar>
       </menuContribution>
    </extension>
+   <extension
+         point="de.ovgu.featureide.core.composers">
+      <composer
+            class="br.ufal.ic.featureanalyzer.activator.CPPComposer"
+            description="C Composer to FeatureIDE"
+            id="br.ufal.ic.featureanalyzer.cppcomposer"
+            name="C Composer."
+            nature="FeatureIDE_Core.cNature">
+      </composer>
+   </extension>
 </plugin>
