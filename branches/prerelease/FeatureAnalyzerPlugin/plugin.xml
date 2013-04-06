@@ -91,4 +91,12 @@
             nature="FeatureIDE_Core.cNature">
       </composer>
    </extension>
+   <extension
+         point="de.ovgu.featureide.fm.core.FMComposer">
+      <fmComposer
+            class="br.ufal.ic.featureanalyzer.activator.CPPModelBuilder"
+            id="br.ufal.ic.featureanalyzer.fmcppcomposer"
+            name="CPP FM Composer">
+      </fmComposer>
+   </extension>
 </plugin>
