@@ -1,29 +1,29 @@
 package br.ufal.ic.featureanalyzer.activator;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.internal.util.BundleUtility;
 
-import de.ovgu.featureide.core.IFeatureProject;
-
 @SuppressWarnings("restriction")
 public class CPPWrapper {
-	private final static String EXE_WINDOWS 	= "cpp-WIN.exe";
-	
+	private final static String EXE_WINDOWS = "cpp-WIN.exe";
+
 	final String featureCppExecutableName;
-	
 
 	public CPPWrapper() {
 		String featureCppExecutable;
 		featureCppExecutable = EXE_WINDOWS;
-		
-		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(), "lib/" + featureCppExecutable);
+
+		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(),
+				"lib/" + featureCppExecutable);
 		try {
 			url = FileLocator.toFileURL(url);
 		} catch (IOException e) {
@@ -32,38 +32,87 @@ public class CPPWrapper {
 		Path path = new Path(url.getFile());
 		String pathName = path.toOSString();
 		if (!path.isAbsolute()) {
-			FeatureAnalyzer.getDefault().logWarning(pathName + " is not an absolute path. " +
-					"cpp can not be found.");
+			FeatureAnalyzer.getDefault().logWarning(
+					pathName + " is not an absolute path. "
+							+ "cpp can not be found.");
 		}
 		if (!path.isValidPath(pathName)) {
-			FeatureAnalyzer.getDefault().logWarning(pathName + " is no valid path. " +
-					"cpp can not be found.");
+			FeatureAnalyzer.getDefault().logWarning(
+					pathName + " is no valid path. " + "cpp can not be found.");
 		}
 		featureCppExecutableName = pathName;
-		System.out.println("PATHHHH " + pathName);
-		
-		// The cpp needs to be executable 
+
+		// The cpp needs to be executable
 		new File(featureCppExecutableName).setExecutable(true);
-		
+
 	}
-	
-	public void preProcess(LinkedList<String> packageArgs){
-		//convert into an Array
-		String[] argArray = new String[packageArgs.size()+1];
-		argArray[0] = featureCppExecutableName;
-		for (int i = 1;i <= packageArgs.size();i++) {
-			argArray[i] = packageArgs.get(i-1);
+
+	public void preProcess(LinkedList<String> packageArgs) {
+		//packageArgs.addFirst(featureCppExecutableName);
+		String path = "C:\\MinGW\\bin\\cpp.exe";
+		File file = new File(path);
+		file.setExecutable(true);
+		packageArgs.addFirst(path);
+		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
+
+		System.out.print("Preprocess");
+		for (String s : packageArgs) {
+			System.out.print(" " + s);
 		}
-		
-		//run cpp
+		System.out.println();
+
+		BufferedReader input = null;
+		BufferedReader error = null;
 		try {
-			Process process = new ProcessBuilder(argArray).start();
-			System.out.println("Rodou algo aqui");
+			Process process = processBuilder.start();
+
+			input = new BufferedReader(new InputStreamReader(
+					process.getInputStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			error = new BufferedReader(new InputStreamReader(
+					process.getErrorStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			boolean x = true;
+			while (x) {
+				try {
+					String line;
+					while ((line = error.readLine()) != null)
+						System.out.println(line);
+						FeatureAnalyzer.getDefault().logWarning(line);
+					try {
+						process.waitFor();
+					} catch (InterruptedException e) {
+						System.out.println(e.toString());
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+					int exitValue = process.exitValue();
+					if (exitValue != 0) {
+						throw new IOException(
+								"The process doesn't finish normally (exit="
+										+ exitValue + ")!");
+					}
+					x = false;
+				} catch (IllegalThreadStateException e) {
+					FeatureAnalyzer.getDefault().logError(e);
+				}
+			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			FeatureAnalyzer.getDefault().logError(e);
+		} finally {
+			try {
+				if (input != null)
+					input.close();
+			} catch (IOException e) {
+				FeatureAnalyzer.getDefault().logError(e);
+			} finally {
+				if (error != null)
+					try {
+						error.close();
+					} catch (IOException e) {
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+			}
 		}
 	}
-	
-	
-	
+
 }
