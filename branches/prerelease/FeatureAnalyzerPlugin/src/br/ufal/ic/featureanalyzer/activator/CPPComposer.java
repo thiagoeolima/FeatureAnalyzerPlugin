@@ -140,7 +140,6 @@ public class CPPComposer extends PPComposerExtensionClass{
 	private void preprocessSourceFiles(IFolder buildFolder) throws CoreException {
 		LinkedList<String> args = new LinkedList<String>();
 		for (String feature : activatedFeatures) {
-			//argsTemp += "-D" + feature;
 			args.add("-D" + feature);
 		}
 		System.out.println("BuildFolder " + buildFolder.getFullPath());
