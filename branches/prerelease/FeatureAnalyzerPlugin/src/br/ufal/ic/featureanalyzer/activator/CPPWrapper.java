@@ -55,7 +55,7 @@ public class CPPWrapper {
 		packageArgs.addFirst(path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 
-		System.out.print("Preprocess");
+		System.out.println("Preprocess");
 		for (String s : packageArgs) {
 			System.out.print(" " + s);
 		}
@@ -65,25 +65,28 @@ public class CPPWrapper {
 		BufferedReader error = null;
 		try {
 			Process process = processBuilder.start();
-
-			input = new BufferedReader(new InputStreamReader(
-					process.getInputStream(), Charset.availableCharsets().get(
-							"UTF-8")));
-			error = new BufferedReader(new InputStreamReader(
-					process.getErrorStream(), Charset.availableCharsets().get(
-							"UTF-8")));
+			 input = new BufferedReader(new InputStreamReader(
+					process.getInputStream(), Charset.availableCharsets().get("UTF-8")));
+			 error = new BufferedReader(new InputStreamReader(
+					process.getErrorStream(), Charset.availableCharsets().get("UTF-8")));
 			boolean x = true;
 			while (x) {
 				try {
 					String line;
-					while ((line = error.readLine()) != null)
-						System.out.println(line);
+					while ((line = error.readLine()) != null){
 						FeatureAnalyzer.getDefault().logWarning(line);
+						System.out.println("Aki dentoer " + line);
+					}
+					
 					try {
 						process.waitFor();
 					} catch (InterruptedException e) {
-						System.out.println(e.toString());
+						System.out.println(e.getMessage());
 						FeatureAnalyzer.getDefault().logError(e);
+					}
+					while ((line = error.readLine()) != null){
+						FeatureAnalyzer.getDefault().logWarning(line);
+						System.out.println("Aki dentoer " + line);
 					}
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
@@ -93,10 +96,12 @@ public class CPPWrapper {
 					}
 					x = false;
 				} catch (IllegalThreadStateException e) {
+					System.out.println(e.getMessage());
 					FeatureAnalyzer.getDefault().logError(e);
 				}
 			}
 		} catch (IOException e) {
+			System.out.println(e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {

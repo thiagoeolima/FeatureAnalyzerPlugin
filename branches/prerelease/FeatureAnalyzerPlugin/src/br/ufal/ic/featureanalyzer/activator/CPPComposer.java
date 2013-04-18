@@ -142,7 +142,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 		for (String feature : activatedFeatures) {
 			args.add("-D" + feature);
 		}
-		System.out.println("BuildFolder " + buildFolder.getFullPath());
+		//System.out.println("BuildFolder " + buildFolder.getFullPath());
 		runCpp(args, featureProject.getSourceFolder(), buildFolder);
 		
 	}
@@ -167,8 +167,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 		boolean added = false;
 		try {
 			createBuildFolder(buildFolder);
-			System.out.println("Build folder " + buildFolder.getFullPath() );
-			System.out.println("sourceFolder " + sourceFolder.getFullPath() );
+			//System.out.println("Build folder " + buildFolder.getFullPath() );
+			//System.out.println("sourceFolder " + sourceFolder.getFullPath() );
 			for (final IResource res : sourceFolder.members()) {
 				if (res instanceof IFolder) {
 					runCpp(featureArgs, (IFolder)res, buildFolder.getFolder(res.getName()));
@@ -179,7 +179,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 					packageArgs.add(fullFilePath);
 				    packageArgs.add("-o");
 				    packageArgs.add(buildFolder.getRawLocation().toOSString() + "\\" + res.getName());
-					System.out.println(packageArgs.getLast());
+					//System.out.println(packageArgs.getLast());
 				}
 			}
 		} catch (CoreException e) {
