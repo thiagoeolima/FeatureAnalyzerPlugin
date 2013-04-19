@@ -143,7 +143,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 		for (String feature : activatedFeatures) {
 			args.add("-D" + feature);
 		}
-		runCpp(args, featureProject.getSourceFolder(), buildFolder);
+		runBuild(args, featureProject.getSourceFolder(), buildFolder);
 		
 	}
 	
@@ -157,35 +157,42 @@ public class CPPComposer extends PPComposerExtensionClass{
 	 * @param buildFolder
 	 */
 	@SuppressWarnings("unchecked")
-	private void runCpp(LinkedList<String> featureArgs, IFolder sourceFolder,
+	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
 		
 		CPPWrapper cpp = new CPPWrapper();
+		String fullFilePath;
 		if(buildFolder.getName().equals("src")){
 			buildFolder = featureProject.getProject().getFolder("/build");
 		}
 		LinkedList<String> packageArgs;
+		LinkedList<String> compilerArgs = (LinkedList<String>) featureArgs.clone();
 		try {
 			createBuildFolder(buildFolder);
 			for (final IResource res : sourceFolder.members()) {
 				if (res instanceof IFolder) {
-					runCpp(featureArgs, (IFolder)res, buildFolder.getFolder(res.getName()));
+					runBuild(featureArgs, (IFolder)res, buildFolder.getFolder(res.getName()));
 				} else 
 				if (res instanceof IFile){
+					fullFilePath = res.getRawLocation().toOSString();
 					if(!res.getFileExtension().equals("c") && !res.getFileExtension().equals("h") ){
 						continue;
+					} else if(res.getFileExtension().equals("c")){
+						compilerArgs.add(fullFilePath);
 					}
 					packageArgs = (LinkedList<String>) featureArgs.clone();
-					String fullFilePath = res.getRawLocation().toOSString();
 					packageArgs.add(fullFilePath);
 				    packageArgs.add("-o");
 				    packageArgs.add(buildFolder.getRawLocation().toOSString() + "\\" + res.getName());
 				    
 					//CommandLine syntax:
 					//	-DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1 
-					cpp.preProcess(packageArgs);
+					cpp.runPreProcessor(packageArgs);
 				}
 			}
+			compilerArgs.add("-o");
+			compilerArgs.add(buildFolder.getRawLocation().toOSString()+ "\\" + buildFolder.getName());
+			cpp.runCompiler(compilerArgs);
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
 		}

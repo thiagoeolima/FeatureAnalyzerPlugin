@@ -14,42 +14,22 @@ import org.eclipse.ui.internal.util.BundleUtility;
 
 @SuppressWarnings("restriction")
 public class CPPWrapper {
-	private final static String EXE_WINDOWS = "cpp-WIN.exe";
+	private final static String GCC_PATH = "gcc";
+	private final static String CPP_PATH = "cpp";
 
-	final String featureCppExecutableName;
-
-	public CPPWrapper() {
-		String featureCppExecutable;
-		featureCppExecutable = EXE_WINDOWS;
-
-		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(),
-				"lib/" + featureCppExecutable);
-		try {
-			url = FileLocator.toFileURL(url);
-		} catch (IOException e) {
-			FeatureAnalyzer.getDefault().logError(e);
+	public void runCompiler(LinkedList<String> packageArgs){
+		for(String s : packageArgs){
+			System.out.print(" " + s);
 		}
-		Path path = new Path(url.getFile());
-		String pathName = path.toOSString();
-		if (!path.isAbsolute()) {
-			FeatureAnalyzer.getDefault().logWarning(
-					pathName + " is not an absolute path. "
-							+ "cpp can not be found.");
-		}
-		if (!path.isValidPath(pathName)) {
-			FeatureAnalyzer.getDefault().logWarning(
-					pathName + " is no valid path. " + "cpp can not be found.");
-		}
-		featureCppExecutableName = pathName;
-
-		// The cpp needs to be executable
-		new File(featureCppExecutableName).setExecutable(true);
-
+		runProcess(packageArgs, GCC_PATH);
+	}
+	
+	public void runPreProcessor(LinkedList<String> packageArgs) {
+		runProcess(packageArgs, CPP_PATH);
 	}
 
-	public void preProcess(LinkedList<String> packageArgs) {
-		//packageArgs.addFirst(featureCppExecutableName);
-		String path = "C:\\MinGW\\bin\\cpp.exe";
+	private void runProcess(LinkedList<String> packageArgs, String path) {
+		
 		packageArgs.addFirst(path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 		
@@ -66,6 +46,7 @@ public class CPPWrapper {
 				try {
 					String line;
 					while ((line = error.readLine()) != null){
+						System.out.println(line);
 						FeatureAnalyzer.getDefault().logWarning(line);
 					}
 					
