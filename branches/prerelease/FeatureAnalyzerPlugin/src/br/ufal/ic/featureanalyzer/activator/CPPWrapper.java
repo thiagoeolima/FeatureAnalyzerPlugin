@@ -50,17 +50,9 @@ public class CPPWrapper {
 	public void preProcess(LinkedList<String> packageArgs) {
 		//packageArgs.addFirst(featureCppExecutableName);
 		String path = "C:\\MinGW\\bin\\cpp.exe";
-		File file = new File(path);
-		file.setExecutable(true);
 		packageArgs.addFirst(path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
-
-		System.out.println("Preprocess");
-		for (String s : packageArgs) {
-			System.out.print(" " + s);
-		}
-		System.out.println();
-
+		
 		BufferedReader input = null;
 		BufferedReader error = null;
 		try {
@@ -75,18 +67,12 @@ public class CPPWrapper {
 					String line;
 					while ((line = error.readLine()) != null){
 						FeatureAnalyzer.getDefault().logWarning(line);
-						System.out.println("Aki dentoer " + line);
 					}
 					
 					try {
 						process.waitFor();
 					} catch (InterruptedException e) {
-						System.out.println(e.getMessage());
 						FeatureAnalyzer.getDefault().logError(e);
-					}
-					while ((line = error.readLine()) != null){
-						FeatureAnalyzer.getDefault().logWarning(line);
-						System.out.println("Aki dentoer " + line);
 					}
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
@@ -96,12 +82,10 @@ public class CPPWrapper {
 					}
 					x = false;
 				} catch (IllegalThreadStateException e) {
-					System.out.println(e.getMessage());
 					FeatureAnalyzer.getDefault().logError(e);
 				}
 			}
 		} catch (IOException e) {
-			System.out.println(e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {

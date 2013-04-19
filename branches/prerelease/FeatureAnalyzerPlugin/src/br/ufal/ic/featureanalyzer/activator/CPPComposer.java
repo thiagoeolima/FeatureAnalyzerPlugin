@@ -99,6 +99,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 		try {
 			preprocessSourceFiles(featureProject.getBuildFolder());
 		} catch (CoreException e) {
+			System.out.println(e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		}
 		
@@ -128,6 +129,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 	
 
+
 	/**
 	 * preprocess all files in folder
 	 * 
@@ -142,7 +144,6 @@ public class CPPComposer extends PPComposerExtensionClass{
 		for (String feature : activatedFeatures) {
 			args.add("-D" + feature);
 		}
-		//System.out.println("BuildFolder " + buildFolder.getFullPath());
 		runCpp(args, featureProject.getSourceFolder(), buildFolder);
 		
 	}
@@ -160,39 +161,36 @@ public class CPPComposer extends PPComposerExtensionClass{
 	private void runCpp(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
 		
+		CPPWrapper cpp = new CPPWrapper();
 		if(buildFolder.getName().equals("src")){
 			buildFolder = featureProject.getProject().getFolder("/build");
 		}
-		LinkedList<String> packageArgs = (LinkedList<String>) featureArgs.clone();
-		boolean added = false;
+		LinkedList<String> packageArgs;
 		try {
 			createBuildFolder(buildFolder);
-			//System.out.println("Build folder " + buildFolder.getFullPath() );
-			//System.out.println("sourceFolder " + sourceFolder.getFullPath() );
 			for (final IResource res : sourceFolder.members()) {
 				if (res instanceof IFolder) {
 					runCpp(featureArgs, (IFolder)res, buildFolder.getFolder(res.getName()));
 				} else 
 				if (res instanceof IFile){
-					added = true;
+					if(!res.getFileExtension().equals("c") && !res.getFileExtension().equals("h") ){
+						continue;
+					}
+					packageArgs = (LinkedList<String>) featureArgs.clone();
 					String fullFilePath = res.getRawLocation().toOSString();
 					packageArgs.add(fullFilePath);
 				    packageArgs.add("-o");
 				    packageArgs.add(buildFolder.getRawLocation().toOSString() + "\\" + res.getName());
-					//System.out.println(packageArgs.getLast());
+				    
+					//CommandLine syntax:
+					//	-DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1 
+					cpp.preProcess(packageArgs);
 				}
 			}
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
 		}
-		if (!added) {
-			return;
-		}
 				
-		//CommandLine syntax:
-		//	-DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1 
-		CPPWrapper cpp = new CPPWrapper();
-		cpp.preProcess(packageArgs);
 	}
 
 
@@ -213,7 +211,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 	//TODO ver isso aqui
 	private static ArrayList<String[]> createTempltes() {
 		 ArrayList<String[]> list = new  ArrayList<String[]>();
-		 list.add(JAVA_TEMPLATE);
+		 list.add(new String[]{"C", "c", "\r\n" + "/** Crie algum programa - TEST **/" + " {\r\n\r\n};"});
 		 return list;
 	}
 
@@ -298,7 +296,6 @@ public class CPPComposer extends PPComposerExtensionClass{
 	
 	@Override
 	public void buildConfiguration(IFolder folder, Configuration configuration, String congurationName) {
-		System.out.println("BuildCOnf " + folder.getFullPath());
 		super.buildConfiguration(folder, configuration, congurationName);
 		if (activatedFeatures == null) {
 			activatedFeatures = new ArrayList<String>();
