@@ -99,7 +99,6 @@ public class CPPComposer extends PPComposerExtensionClass{
 		try {
 			preprocessSourceFiles(featureProject.getBuildFolder());
 		} catch (CoreException e) {
-			System.out.println(e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		}
 		
@@ -151,8 +150,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 	
 
 	/**
-	 * Calls munge for each package separate
-	 * Creates all package folders at the build path
+	 * Calls cpp for each file separate
+	 * Creates all folders at the build path
 	 * @param featureArgs
 	 * @param sourceFolder
 	 * @param buildFolder
@@ -208,10 +207,9 @@ public class CPPComposer extends PPComposerExtensionClass{
 	
 	private static final ArrayList<String[]> TEMPLATES = createTempltes();
 	
-	//TODO ver isso aqui
 	private static ArrayList<String[]> createTempltes() {
 		 ArrayList<String[]> list = new  ArrayList<String[]>();
-		 list.add(new String[]{"C", "c", "\r\n" + "/** Crie algum programa - TEST **/" + " {\r\n\r\n};"});
+		 list.add(new String[]{"C", "c", "\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n};"});
 		 return list;
 	}
 
@@ -290,6 +288,11 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 	
 	@Override
+	public boolean clean() {
+		return false;
+	}
+	
+	@Override
 	public void buildFSTModel() {
 		cppModelBuilder.buildModel();
 	}
@@ -314,7 +317,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 	@Override
 	public boolean showContextFieldsAndMethods() {
-		return false;
+		return true;
 	}
 
 	@Override
