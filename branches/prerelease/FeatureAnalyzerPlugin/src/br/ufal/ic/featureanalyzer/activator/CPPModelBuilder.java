@@ -14,18 +14,18 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.PPModelBuilder;
 public class CPPModelBuilder extends PPModelBuilder {
 
 	public static final String OPERATORS = "[\\s!=<>\",;&\\^\\|\\(\\)]";
-	public static final String REGEX = "(\\s*#.*" + OPERATORS + ")(%s)("
+	public static final String REGEX = "(\\s*#.\\s*" + OPERATORS + ")(%s)("
 			+ OPERATORS + ")";
-	
+
 	public static final String COMMANDS = "if|ifdef|ifndef|elif|else|define|undef|endif";
 	private static final String ENDIF = "\\s*#endif";
-	
+
 	Pattern patternCommands = Pattern.compile("\\s*#("+COMMANDS+")");
 
 	public CPPModelBuilder(IFeatureProject featureProject) {
 		super(featureProject);
 	}
-	
+
 	/**
 	 * returns true if the regular expression regex can be matched by a substring of text
 	 */
@@ -34,20 +34,20 @@ public class CPPModelBuilder extends PPModelBuilder {
 		Matcher matcher = pattern.matcher(text);
 		return matcher.find();
 	}
-	
+
 	@Override
 	public LinkedList<FSTDirective> buildModelDirectivesForFile(Vector<String> lines) {
 		//for preprocessor outline
 		Stack<FSTDirective> directivesStack = new Stack<FSTDirective>();
 		LinkedList<FSTDirective> directivesList = new LinkedList<FSTDirective>();
-		
+
 		for (int i = 0; i < lines.size(); i++) {
 			String line = lines.get(i);
-			
+
 			// if line is preprocessor directive
 			if (containsRegex(line,"\\s*#")) {
 				FSTDirective directive = new FSTDirective();
-				
+
 				FSTDirectiveCommand command = null;
 				boolean endif = false;
 				if(containsRegex(line,"\\s*#if ")){//1
@@ -69,10 +69,10 @@ public class CPPModelBuilder extends PPModelBuilder {
 				}else{
 					continue;
 				}
-				
+
 				if (command != null)
 					directive.setCommand(command);				
-				
+
 				if (command == FSTDirectiveCommand.ELIF || command == FSTDirectiveCommand.ELIFDEF ||
 						command == FSTDirectiveCommand.ELIFNDEF || command == FSTDirectiveCommand.ELSE ||
 						endif) {
@@ -80,7 +80,7 @@ public class CPPModelBuilder extends PPModelBuilder {
 						if (i + 1 < lines.size()) {
 							directivesStack.pop().setEndLine(i + 1, 0);
 						} else if (endif) {
-							
+
 							Pattern p  =  Pattern.compile(ENDIF);
 							Matcher m = p.matcher(line);
 							int index = 0;
@@ -89,24 +89,24 @@ public class CPPModelBuilder extends PPModelBuilder {
 						}
 					}
 				}
-				
+
 				Matcher m = patternCommands.matcher(line);
 				line = m.replaceAll("").trim();
-				
+
 				directive.setExpression(line);
 				directive.setStartLine(i, 0);
-				
+
 				if (command == null)
 					continue;
-				
+
 				if(!directivesStack.isEmpty()){
 					FSTDirective top = directivesStack.peek();
 					top.addChild(directive);
 				} else {
 					directivesList.add(directive);
 				}				
-				
-				if (command != FSTDirectiveCommand.DEFINE && command != FSTDirectiveCommand.UNDEFINE && command != FSTDirectiveCommand.CONDITION)
+
+				if (command != FSTDirectiveCommand.DEFINE && command != FSTDirectiveCommand.UNDEFINE)
 					directivesStack.push(directive);
 			}
 		}
@@ -124,7 +124,7 @@ public class CPPModelBuilder extends PPModelBuilder {
 	 * <li>set flag DOTALL</li>
 	 * <li>match any characters</li>
 	 * <li>match any whitespace characters</li>
-	 * <li>match "//# if/... [operators]feature[operators]"</li>
+	 * <li>match "# if/... [operators]feature[operators]"</li>
 	 * <li>match any further characters</li>
 	 * </ul>
 	 */

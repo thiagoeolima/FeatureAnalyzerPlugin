@@ -9,8 +9,16 @@ import java.nio.charset.Charset;
 import java.util.LinkedList;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.internal.util.BundleUtility;
+import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public class CPPWrapper {
@@ -23,16 +31,20 @@ public class CPPWrapper {
 		}
 		runProcess(packageArgs, GCC_PATH);
 	}
-	
+
 	public void runPreProcessor(LinkedList<String> packageArgs) {
+		packageArgs.addFirst("-C"); //do not discard comments
+		packageArgs.addFirst("-P"); //do not generate linemarkers
+		packageArgs.addFirst("-w"); //Suppress all warning
+		packageArgs.addFirst("-no-integrated-cpp");
+		packageArgs.addFirst("-E"); //do not discard comments
 		runProcess(packageArgs, CPP_PATH);
 	}
 
 	private void runProcess(LinkedList<String> packageArgs, String path) {
-		
 		packageArgs.addFirst(path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
-		
+
 		BufferedReader input = null;
 		BufferedReader error = null;
 		try {
@@ -49,7 +61,7 @@ public class CPPWrapper {
 						System.out.println(line);
 						FeatureAnalyzer.getDefault().logWarning(line);
 					}
-					
+
 					try {
 						process.waitFor();
 					} catch (InterruptedException e) {
@@ -67,6 +79,7 @@ public class CPPWrapper {
 				}
 			}
 		} catch (IOException e) {
+			openMessageBox(e);
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {
@@ -83,6 +96,23 @@ public class CPPWrapper {
 					}
 			}
 		}
+	}
+
+	/**
+	 * Opens a message box if GCC or CPP could not be executed.
+	 */
+	private void openMessageBox(final IOException e) {
+		UIJob uiJob = new UIJob("") {
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
+				d.setMessage(e.getMessage().toLowerCase());
+				d.setText("Compilation can not be executed.");
+				d.open();
+				return Status.OK_STATUS;
+			}
+		};
+		uiJob.setPriority(Job.SHORT);
+		uiJob.schedule();
 	}
 
 }
