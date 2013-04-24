@@ -2,15 +2,10 @@ package br.ufal.ic.featureanalyzer.controllers;
 
 import java.awt.event.MouseEvent;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -18,7 +13,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
@@ -29,75 +24,13 @@ import br.ufal.ic.featureanalyzer.views.PluginView;
 public class PluginViewController {
 
 	private TableViewer viewer;
-	private ViewContentProvider viewContentProvider = new ViewContentProvider();
+	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
 	private PluginView typeChefPluginView;
 
 	public PluginViewController(PluginView typeChefPluginView) {
 		this.typeChefPluginView = typeChefPluginView;
 	}
 
-	class ViewContentProvider implements IStructuredContentProvider {
-		private Object[] logs = new String[] {};
-
-		public void inputChanged(Viewer v, Object oldInput, Object newInput) {
-		}
-
-		public void dispose() {
-		}
-
-		public void setLogs(Object[] logs) {
-			this.logs = logs;
-		}
-
-		public Object[] getElements(Object parent) {
-			return logs;
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider implements
-			ITableLabelProvider {
-		public String getColumnText(Object obj, int index) {
-			switch (index) {
-			case 0:
-				if (obj instanceof Log)
-					return ((Log) obj).getMessage();
-			case 1:
-				if (obj instanceof Log)
-					return ((Log) obj).getFileName();
-			case 2:
-				if (obj instanceof Log)
-					return ((Log) obj).getPath();
-			case 3:
-				if (obj instanceof Log)
-					return ((Log) obj).getLineNumber();
-			case 4:
-				if (obj instanceof Log)
-					return ((Log) obj).getFeature();
-			case 5:
-				if (obj instanceof Log)
-					return ((Log) obj).getSeverity();
-			default:
-				return "";
-			}
-		}
-
-		public Image getColumnImage(Object obj, int index) {
-			switch (index) {
-			case 0:
-				return PlatformUI.getWorkbench().getSharedImages()
-						.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
-			case 1:
-				return PlatformUI.getWorkbench().getSharedImages()
-						.getImage(ISharedImages.IMG_OBJ_FILE);
-			case 2:
-				return PlatformUI.getWorkbench().getSharedImages()
-						.getImage(ISharedImages.IMG_OBJ_FOLDER);
-			default:
-				return null;
-			}
-
-		}
-	}
 
 	private class NameSorter extends ViewerSorter {
 
@@ -127,11 +60,12 @@ public class PluginViewController {
 							final Log log = (Log) data;
 							try {
 
-								IDE.openEditor(typeChefPluginView.getSite()
-										.getPage(), log.getFile());
+								IEditorPart editor = IDE.openEditor(
+										typeChefPluginView.getSite().getPage(),
+										log.getFile());
 
-								// editor.getSite().getSelectionProvider()
-								// .setSelection(log.selection());
+								editor.getSite().getSelectionProvider()
+										.setSelection(log.selection());
 
 							} catch (PartInitException e) {
 								// TODO Auto-generated catch block
@@ -145,7 +79,7 @@ public class PluginViewController {
 
 		viewer.setContentProvider(this.viewContentProvider);
 		viewer.setInput(this.typeChefPluginView.getViewSite());
-		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setLabelProvider(new PluginViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);

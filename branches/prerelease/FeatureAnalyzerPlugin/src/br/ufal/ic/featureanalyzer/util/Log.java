@@ -3,13 +3,18 @@ package br.ufal.ic.featureanalyzer.util;
 import java.io.File;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.filebuffers.FileBuffers;
+import org.eclipse.core.filebuffers.ITextFileBufferManager;
+import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.text.BadLocationException;
+import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
-
 
 public class Log {
 
@@ -100,8 +105,41 @@ public class Log {
 	public ITextSelection selection() {
 
 		if (iTextSelection == null) {
-			iTextSelection = (ITextSelection) new LogSelection(Integer.parseInt(line), Integer.parseInt(column));
+			int offset = 0;
+			try {
+				IDocument document = getDocument(getFullPath() + getFileName());
+
+				offset = document.getLineOffset(Integer.parseInt(line));
+
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (BadLocationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			iTextSelection = (ITextSelection) new LogSelection(
+					Integer.parseInt(line), Integer.parseInt(column), offset);
+
 		}
 		return iTextSelection;
+	}
+
+	private IDocument getDocument(String filename) throws CoreException {
+		IPath path = new Path(filename);
+
+		IFile file = ResourcesPlugin.getWorkspace().getRoot()
+				.getFileForLocation(path);
+
+		// XXX Does the method disconnect need to be called? When?
+		ITextFileBufferManager.DEFAULT.connect(file.getFullPath(),
+				LocationKind.IFILE, null);
+		return FileBuffers.getTextFileBufferManager()
+				.getTextFileBuffer(file.getFullPath(), LocationKind.IFILE)
+				.getDocument();
 	}
 }

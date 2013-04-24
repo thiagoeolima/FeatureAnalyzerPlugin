@@ -6,10 +6,12 @@ public class LogSelection implements ITextSelection {
 
 	private int line;
 	private int column;
+	private int offset;
 
-	public LogSelection(int line, int column) {
+	public LogSelection(int line, int column, int offset) {
 		this.line = line;
 		this.column = column;
+		this.offset = offset;
 		System.out.println(column);
 		System.out.println(line);
 	}
@@ -22,7 +24,7 @@ public class LogSelection implements ITextSelection {
 
 	@Override
 	public int getOffset() {
-		 return column;
+		return offset + column;
 	}
 
 	@Override

@@ -6,6 +6,8 @@ public interface Model {
 	
 	public List<String> getFiles();
 
+	public void start();
+	
 	public void run();
 
 	public Object[] getLogs();

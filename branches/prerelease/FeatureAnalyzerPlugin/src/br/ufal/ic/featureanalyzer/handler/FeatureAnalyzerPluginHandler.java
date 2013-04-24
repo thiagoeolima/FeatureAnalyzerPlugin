@@ -29,11 +29,11 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 	 */
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		this.window = HandlerUtil.getActiveWorkbenchWindow(event);
-		
+
 		if (controller == null) {
-			controller = new Controller();	
+			controller = new Controller();
 		}
-		
+
 		controller.setWindow(window);
 
 		try {
@@ -52,12 +52,12 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 				new Runnable() {
 					public void run() {
 						Object[] logs = controller.getLogs();
+						TypeChefPluginView.adaptTo(logs);
 						if (logs.length <= 0) {
 							MessageDialog.openInformation(window.getShell(),
 									"TypeChef",
 									"This file was successfully verified!");
 						}
-						TypeChefPluginView.adaptTo(logs);
 					}
 				}.run();
 			}

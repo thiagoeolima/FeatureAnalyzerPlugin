@@ -26,4 +26,10 @@ public class SuperC implements Model {
 		return null;
 	}
 
+	@Override
+	public void start() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

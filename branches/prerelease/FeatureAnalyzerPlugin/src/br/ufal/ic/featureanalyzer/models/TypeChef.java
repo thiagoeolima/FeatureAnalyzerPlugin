@@ -21,29 +21,35 @@ public class TypeChef implements Model {
 		// saved in the temp directory
 		outputFilePath = System.getProperty("java.io.tmpdir") + File.separator
 				+ "output";
-		this.start();
+		try {
+			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
+			arq.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 
-	private void start() {
+	public void start() {
+		fo.getFiles().clear();
 		// General processing options
 		String typeChefPreference = Activator.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
 
-		String[] parameters = { "--errorXML", outputFilePath,
-				typeChefPreference };
-		try {
-			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
-			arq.close();
-			fo.parseOptions(parameters);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		String[] parameters = {"--systemRoot",Activator.getDefault().getPreferenceStore()
+				.getString("SystemRoot"),
+				"--systemIncludes",Activator.getDefault().getPreferenceStore()
+						.getString("SystemIncludes"),
+				"--errorXML", outputFilePath,"--lexNoStdout",
+				typeChefPreference, "-h", "platform.h","-w"};
+
+		fo.parseOptions(parameters);
+
+		fo.setPrintToStdOutput(false);
+
 	}
 
 	public void run() {
-		
-
-		fo.setPrintToStdOutput(false);
 		// TODO: Flush the file
 		try {
 			Frontend.processFile(fo);
@@ -54,10 +60,8 @@ public class TypeChef implements Model {
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
 		xmlParser.processFile();
 
-		fo.getFiles().clear();
-
 	}
-	
+
 	public List<String> getFiles() {
 		return fo.getFiles();
 	}

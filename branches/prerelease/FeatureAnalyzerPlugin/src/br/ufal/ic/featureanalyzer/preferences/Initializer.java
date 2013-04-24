@@ -12,6 +12,8 @@ public class Initializer extends AbstractPreferenceInitializer {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		store.setDefault("TypeChecking", "typechef");
 		store.setDefault("TypeChefPreference", "--typecheck");
+		store.setDefault("SystemRoot", "/");
+		store.setDefault("SystemIncludes", "/usr/include");
 	}
 
 }
