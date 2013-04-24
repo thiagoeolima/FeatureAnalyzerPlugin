@@ -10,7 +10,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.featureanalyzer.controllers.Controller;
-import br.ufal.ic.featureanalyzer.views.PluginView;
+import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
 public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 	private IWorkbenchWindow window;
@@ -39,16 +39,16 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 		try {
 			// Open and active the TypeChef view
 			IWorkbenchPage page = window.getActivePage();
-			page.showView(PluginView.ID);
+			page.showView(AnalyzerView.ID);
 
 			controller.run();
 
 			// Update the tree view.
 			IViewPart treeView = HandlerUtil.getActiveWorkbenchWindow(event)
-					.getActivePage().findView(PluginView.ID);
+					.getActivePage().findView(AnalyzerView.ID);
 
-			if (treeView instanceof PluginView) {
-				final PluginView TypeChefPluginView = (PluginView) treeView;
+			if (treeView instanceof AnalyzerView) {
+				final AnalyzerView TypeChefPluginView = (AnalyzerView) treeView;
 				new Runnable() {
 					public void run() {
 						Object[] logs = controller.getLogs();

@@ -31,8 +31,8 @@
             name="Feature Analyzer"
             icon="icons/featured.png"
             category="FeatureAnalyzerPlugin"
-            class="br.ufal.ic.featureanalyzer.views.PluginView"
-            id="br.ufal.ic.featureanalyzer.views.PluginView">
+            class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
+            id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
       </view>
    </extension>
    <extension
@@ -43,7 +43,7 @@
                ratio="0.5"
                relative="org.eclipse.ui.views.ProblemView"
                relationship="right"
-               id="br.ufal.ic.featureanalyzer.views.PluginView">
+               id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
          </view>
       </perspectiveExtension>
    </extension>

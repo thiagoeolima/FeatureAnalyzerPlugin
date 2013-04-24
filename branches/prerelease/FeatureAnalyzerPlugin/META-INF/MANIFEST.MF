@@ -3,12 +3,17 @@ Bundle-ManifestVersion: 2
 Bundle-Name: FeatureAnalyzerPlugin
 Bundle-SymbolicName: FeatureAnalyzerPlugin;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-Activator: br.ufal.ic.featureanalyzer.activator.Activator
+Bundle-Activator: br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.core.resources;bundle-version="3.8.1",
- org.eclipse.ui.ide;bundle-version="3.8.1",
- org.eclipse.jface.text;bundle-version="3.8.1"
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.eclipse.jface.text,
+ org.eclipse.core.filebuffers,
+ de.ovgu.featureide.fm.core;bundle-version="2.6.4",
+ de.ovgu.featureide.core;bundle-version="2.6.4",
+ de.ovgu.featureide.ui;bundle-version="2.6.4",
+ de.ovgu.featureide.fm.ui;bundle-version="2.6.4"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.cdt.core.model,

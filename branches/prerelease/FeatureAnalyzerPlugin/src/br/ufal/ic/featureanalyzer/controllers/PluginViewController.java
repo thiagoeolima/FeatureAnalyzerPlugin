@@ -19,15 +19,15 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.featureanalyzer.util.Log;
-import br.ufal.ic.featureanalyzer.views.PluginView;
+import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
 public class PluginViewController {
 
 	private TableViewer viewer;
 	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
-	private PluginView typeChefPluginView;
+	private AnalyzerView typeChefPluginView;
 
-	public PluginViewController(PluginView typeChefPluginView) {
+	public PluginViewController(AnalyzerView typeChefPluginView) {
 		this.typeChefPluginView = typeChefPluginView;
 	}
 

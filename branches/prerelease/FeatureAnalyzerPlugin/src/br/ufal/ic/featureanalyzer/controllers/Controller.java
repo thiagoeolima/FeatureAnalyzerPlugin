@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.eclipse.ui.IWorkbenchWindow;
 
-import br.ufal.ic.featureanalyzer.activator.Activator;
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.models.Model;
 import br.ufal.ic.featureanalyzer.models.SuperC;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
@@ -23,7 +23,7 @@ public class Controller {
 
 	private void createdModel() throws Exception {
 		// General processing options
-		String typeChecking = Activator.getDefault().getPreferenceStore()
+		String typeChecking = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChecking");
 		if (typeChecking.equals("typechef") && !(model instanceof TypeChef)) {
 			model = new TypeChef();
