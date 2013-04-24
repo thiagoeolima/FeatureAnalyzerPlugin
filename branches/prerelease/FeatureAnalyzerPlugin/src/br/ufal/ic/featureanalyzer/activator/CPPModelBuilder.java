@@ -14,7 +14,7 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.PPModelBuilder;
 public class CPPModelBuilder extends PPModelBuilder {
 
 	public static final String OPERATORS = "[\\s!=<>\",;&\\^\\|\\(\\)]";
-	public static final String REGEX = "(\\s*#.*" + OPERATORS + ")(%s)("
+	public static final String REGEX = "(\\s*#.\\s*" + OPERATORS + ")(%s)("
 			+ OPERATORS + ")";
 	
 	public static final String COMMANDS = "if|ifdef|ifndef|elif|else|define|undef|endif";
@@ -106,7 +106,7 @@ public class CPPModelBuilder extends PPModelBuilder {
 					directivesList.add(directive);
 				}				
 				
-				if (command != FSTDirectiveCommand.DEFINE && command != FSTDirectiveCommand.UNDEFINE && command != FSTDirectiveCommand.CONDITION)
+				if (command != FSTDirectiveCommand.DEFINE && command != FSTDirectiveCommand.UNDEFINE)
 					directivesStack.push(directive);
 			}
 		}
@@ -124,7 +124,7 @@ public class CPPModelBuilder extends PPModelBuilder {
 	 * <li>set flag DOTALL</li>
 	 * <li>match any characters</li>
 	 * <li>match any whitespace characters</li>
-	 * <li>match "//# if/... [operators]feature[operators]"</li>
+	 * <li>match "# if/... [operators]feature[operators]"</li>
 	 * <li>match any further characters</li>
 	 * </ul>
 	 */

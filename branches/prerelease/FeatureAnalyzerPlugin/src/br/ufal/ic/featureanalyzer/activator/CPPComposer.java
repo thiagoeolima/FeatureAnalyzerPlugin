@@ -3,7 +3,9 @@ package br.ufal.ic.featureanalyzer.activator;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.Stack;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -17,6 +19,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.prop4j.And;
+import org.prop4j.Node;
+import org.prop4j.Not;
 
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
@@ -34,6 +39,9 @@ public class CPPComposer extends PPComposerExtensionClass{
 	public static final String COMPOSER_ID = "br.ufal.ic.featureanalyzer.cppcomposer";
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
 	
+	/** pattern for replacing preprocessor commands like "//#if" */
+	static final Pattern replaceCommandPattern = Pattern.compile("#(.+?)\\s");
+	
 	private CPPModelBuilder cppModelBuilder;
 
 	public CPPComposer() {
@@ -42,7 +50,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 	
 	@Override
 	public boolean initialize(IFeatureProject project) {
-		boolean supSuccess =super.initialize(project);
+		boolean supSuccess = super.initialize(project);
 		cppModelBuilder = new CPPModelBuilder(project);
 		
 		prepareFullBuild(null);
@@ -94,6 +102,9 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 	@Override
 	public void performFullBuild(IFile config) {
+		if(!isPluginInstalled(PLUGIN_CDT_ID)){
+			generateWarning(PLUGIN_WARNING);
+		}
 		if (!prepareFullBuild(config))
 			return;
 		try {
@@ -120,6 +131,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 		Job job = new Job("preprocessor annotation checking") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+				annotationChecking(featureProject.getSourceFolder());
+				setModelMarkers();
 				return Status.OK_STATUS;
 			}
 		};
@@ -127,6 +140,153 @@ public class CPPComposer extends PPComposerExtensionClass{
 		job.schedule();
 	}
 	
+	private void annotationChecking(IFolder folder) {
+		try {
+			for (final IResource res : folder.members()) {
+				if (res instanceof IFolder) {
+					annotationChecking((IFolder)res);
+				} else 
+				if (res instanceof IFile){
+					final Vector<String> lines = loadStringsFromFile((IFile) res);
+					// do checking and some stuff
+					processLinesOfFile(lines, (IFile) res);
+				}
+			}
+		} catch (CoreException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		}
+	}
+	
+	/**
+	 * Do checking for all lines of file.
+	 * 
+	 * @param lines all lines of file
+	 * @param res file
+	 */
+	synchronized private void processLinesOfFile(Vector<String> lines, IFile res){
+		expressionStack = new Stack<Node>();
+		
+		// count of if, ifelse and else to remove after processing of else from stack
+		ifelseCountStack = new Stack<Integer>();
+		
+		// go line for line
+		for (int j = 0; j < lines.size(); ++j) {
+			String line = lines.get(j);
+			
+			// if line is preprocessor directive
+			if (line.contains("#")) {
+				if (line.contains("#if") ||
+					line.contains("#elif ") ||
+					line.contains("#else") ||
+					line.contains("#ifdef ") ||
+					line.contains("#ifndef ")) {
+					
+					// if e1, elseif e2, ..., elseif en  ==  if -e1 && -e2 && ... && en
+					// if e1, elseif e2, ..., else  ==  if -e1 && -e2 && ...
+					if (line.contains("#elif ") || line.contains("#else")) {
+						if(!expressionStack.isEmpty()) {
+							Node lastElement = new Not(expressionStack.pop().clone());
+							expressionStack.push(lastElement);
+						}
+					} else if (line.contains("#if ") || line.contains("#ifdef ") || line.contains("#ifndef ")) {
+						ifelseCountStack.push(0);
+					}
+					
+					if (!ifelseCountStack.empty() && !line.contains("#else"))
+						ifelseCountStack.push(ifelseCountStack.pop() + 1);
+					
+					setMarkersContradictionalFeatures(line, res, j+1);
+					
+					setMarkersNotConcreteFeatures(line, res, j+1);
+				} else if (line.contains("#endif")) {
+					while (!ifelseCountStack.empty()) {
+						if (ifelseCountStack.peek() == 0)
+							break;
+						
+						if (!expressionStack.isEmpty())
+							expressionStack.pop();
+						
+						ifelseCountStack.push(ifelseCountStack.pop() - 1);
+					}
+					
+					if (!ifelseCountStack.empty())
+						ifelseCountStack.pop();
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Checks given line if it contains not existing or abstract features.
+	 * 
+	 * @param line content of line
+	 * @param res file containing given line
+	 * @param lineNumber line number of given line
+	 */
+	private void setMarkersNotConcreteFeatures(String line, IFile res, int lineNumber) {
+		String[] splitted = line.split(CPPModelBuilder.OPERATORS, 0);
+		
+		for (int i = 0; i < splitted.length; ++i) {
+			if (!splitted[i].equals("") && !splitted[i].contains("#")) {
+				setMarkersOnNotExistingOrAbstractFeature(splitted[i], lineNumber, res);
+			}
+		}
+	}
+	
+	/**
+	 * Checks given line if it contains expressions which are always 
+	 * <code>true</code> or <code>false</code>.<br /><br />
+	 * 
+	 * Check in three steps:
+	 * <ol>
+	 * <li>just the given line</li>
+	 * <li>the given line and the feature model</li>
+	 * <li>the given line, the surrounding lines and the feature model</li>
+	 * </ol>
+	 * 
+	 * @param line content of line
+	 * @param res file containing given line
+	 * @param lineNumber line number of given line
+	 */
+	private void setMarkersContradictionalFeatures(String line, IFile res, int lineNumber){
+		if (line.contains("#else")) {
+			if (!expressionStack.isEmpty()) {
+				Node[] nestedExpressions = new Node[expressionStack.size()];
+				nestedExpressions = expressionStack.toArray(nestedExpressions);
+				
+				And nestedExpressionsAnd = new And(nestedExpressions);
+				
+				isContradictionOrTautology(nestedExpressionsAnd.clone(), true, lineNumber, res);
+			}
+			
+			return;
+		}
+		
+		boolean negative = line.contains("#ifndef ");
+		
+		// remove "//#if ", "//ifdef", ...
+		line = replaceCommandPattern.matcher(line).replaceAll("");
+		
+		// prepare expression for NodeReader()
+		line = line.trim();
+		line = line.replace("&&", "&");
+		line = line.replace("||", "|");
+		line = line.replace("!", "-");
+		line = line.replace("&", " and ");
+		line = line.replace("|", " or ");
+		line = line.replace("-", " not ");
+		
+		//get all features and generate Node expression for given line
+		Node ppExpression = nodereader.stringToNode(line, featureList);
+		
+		if (ppExpression != null) {
+			if (negative)
+				ppExpression = new Not(ppExpression.clone());
+		
+			doThreeStepExpressionCheck(ppExpression, lineNumber, res);
+		} 
+		
+	}
 
 
 	/**
@@ -216,7 +376,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 	
 	private static ArrayList<String[]> createTempltes() {
 		 ArrayList<String[]> list = new  ArrayList<String[]>();
-		 list.add(new String[]{"C", "c", "\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n};"});
+		 list.add(new String[]{"C.c", "c", "\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n}"});
+		 list.add(new String[]{"C.h", "h", "\r\n" + "header" + " {\r\n\r\n}"});
 		 return list;
 	}
 
@@ -300,6 +461,11 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 	
 	@Override
+	public void copyNotComposedFiles(Configuration c, IFolder destination) {
+	
+	}
+	
+	@Override
 	public void buildFSTModel() {
 		cppModelBuilder.buildModel();
 	}
@@ -324,7 +490,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 	@Override
 	public boolean showContextFieldsAndMethods() {
-		return true;
+		return false;
 	}
 
 	@Override
