@@ -2,7 +2,6 @@ package br.ufal.ic.featureanalyzer.models;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.util.LinkedList;
 import java.util.List;
 
 import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
@@ -33,9 +32,9 @@ public class TypeChef implements Model {
 
 	}
 
-	public void start() {
+	public void start(List<String> list) {
+		CPPWrapper cppWrapper = new CPPWrapper();
 
-		fo.getFiles().clear();
 		// General processing options
 		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
@@ -46,7 +45,12 @@ public class TypeChef implements Model {
 				"--errorXML", outputFilePath,"--lexNoStdout",
 				typeChefPreference, "-h", "platform.h","-w"};
 		typeChefParams = parameters;
+
+		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemRoot"), FeatureAnalyzer
+				.getDefault().getPreferenceStore().getString("SystemIncludes"));
 		fo.setPrintToStdOutput(false);
+		fo.getFiles().addAll(list);
 
 	}
 
@@ -64,11 +68,7 @@ public class TypeChef implements Model {
 
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
 		xmlParser.processFile();
-
-	}
-
-	public List<String> getFiles() {
-		return fo.getFiles();
+		fo.getFiles().clear();
 	}
 
 	public Object[] getLogs() {

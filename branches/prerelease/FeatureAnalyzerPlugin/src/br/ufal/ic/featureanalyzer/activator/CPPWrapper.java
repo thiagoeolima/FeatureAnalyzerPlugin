@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -17,12 +17,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.progress.UIJob;
 
-@SuppressWarnings("restriction")
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
 	private final static String CPP_PATH = "cpp";
-	
-	public void gerenatePlatformHeader(List<String> list, String dir, String includeDir){
+
+	public void gerenatePlatformHeader(List<String> fileList, String dir,
+			String includeDir) {
+		List<String> list = new ArrayList<String>(fileList);
 		list.add("-o");
 		list.add(dir + File.separator + "platform.h");
 		list.add(0,"-I"+includeDir);
@@ -32,39 +33,41 @@ public class CPPWrapper {
 		runProcess(list, GCC_PATH);
 	}
 
-	public void runCompiler(List<String> packageArgs){
-		for(String s : packageArgs){
+	public void runCompiler(List<String> packageArgs) {
+		for (String s : packageArgs) {
 			System.out.print(" " + s);
 		}
 		runProcess(packageArgs, GCC_PATH);
 	}
 
 	public void runPreProcessor(List<String> packageArgs) {
-		packageArgs.add(0,"-C"); //do not discard comments
-		packageArgs.add(0,"-P"); //do not generate linemarkers
-		packageArgs.add(0,"-w"); //Suppress all warning
-		packageArgs.add(0,"-no-integrated-cpp");
-		packageArgs.add(0,"-E"); //do not discard comments
+		packageArgs.add(0, "-C"); // do not discard comments
+		packageArgs.add(0, "-P"); // do not generate linemarkers
+		packageArgs.add(0, "-w"); // Suppress all warning
+		packageArgs.add(0, "-no-integrated-cpp");
+		packageArgs.add(0, "-E"); // do not discard comments
 		runProcess(packageArgs, CPP_PATH);
 	}
 
 	private void runProcess(List<String> packageArgs, String path) {
-		packageArgs.add(0,path);
+		packageArgs.add(0, path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 
 		BufferedReader input = null;
 		BufferedReader error = null;
 		try {
 			Process process = processBuilder.start();
-			 input = new BufferedReader(new InputStreamReader(
-					process.getInputStream(), Charset.availableCharsets().get("UTF-8")));
-			 error = new BufferedReader(new InputStreamReader(
-					process.getErrorStream(), Charset.availableCharsets().get("UTF-8")));
+			input = new BufferedReader(new InputStreamReader(
+					process.getInputStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			error = new BufferedReader(new InputStreamReader(
+					process.getErrorStream(), Charset.availableCharsets().get(
+							"UTF-8")));
 			boolean x = true;
 			while (x) {
 				try {
 					String line;
-					while ((line = error.readLine()) != null){
+					while ((line = error.readLine()) != null) {
 						System.out.println(line);
 						FeatureAnalyzer.getDefault().logWarning(line);
 					}

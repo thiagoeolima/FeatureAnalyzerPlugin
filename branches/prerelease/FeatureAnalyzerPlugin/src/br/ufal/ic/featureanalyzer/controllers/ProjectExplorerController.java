@@ -16,16 +16,14 @@ public class ProjectExplorerController {
 	private IStructuredSelection selection;
 	private List<String> listFiles;
 
-	public ProjectExplorerController() {
-	}
 
 	public void setWindow(IWorkbenchWindow window) {
 		selection = (IStructuredSelection) window.getSelectionService()
 				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
 
-	public void setList(List<String> list) {
-		this.listFiles = list;
+	public  List<String> getList() {
+		return listFiles;
 	}
 	
 	public List<String> getListFiles(){
@@ -51,6 +49,8 @@ public class ProjectExplorerController {
 	}
 
 	public void run() throws Exception {
+		listFiles.clear();
+		
 		Object o = selection.getFirstElement();
 
 		if (o instanceof TranslationUnit) {

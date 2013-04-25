@@ -34,15 +34,10 @@ public class Controller {
 
 	public void run() throws Exception {
 		this.createdModel();
-		model.start();
-		pkgExplorerController.setList(model.getFiles());
 		pkgExplorerController.run();
 		model.run(pkgExplorerController.getListFiles());
 	}
 
-	public List<String> getFiles() {
-		return model.getFiles();
-	}
 
 	public Object[] getLogs() {
 		return model.getLogs();
