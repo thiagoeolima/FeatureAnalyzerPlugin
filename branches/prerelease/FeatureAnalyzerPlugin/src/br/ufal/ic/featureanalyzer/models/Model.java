@@ -4,8 +4,12 @@ import java.util.List;
 
 public interface Model {
 	
-	public void run(List<String> list);
+	public void run(List<String> listFiles);
 
 	public Object[] getLogs();
+
+	public List<String> getFiles();
+
+	public void start();
 
 }

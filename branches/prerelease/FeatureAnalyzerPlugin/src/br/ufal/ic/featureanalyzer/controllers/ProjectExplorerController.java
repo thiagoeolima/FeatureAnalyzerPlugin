@@ -22,8 +22,8 @@ public class ProjectExplorerController {
 				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
 
-	public  List<String> getList() {
-		return listFiles;
+	public void setList(List<String> list) {
+		this.listFiles = list;
 	}
 	
 	public List<String> getListFiles(){

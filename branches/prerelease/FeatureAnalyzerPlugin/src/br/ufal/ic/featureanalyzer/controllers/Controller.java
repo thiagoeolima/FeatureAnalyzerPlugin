@@ -34,6 +34,8 @@ public class Controller {
 
 	public void run() throws Exception {
 		this.createdModel();
+		model.start();
+		pkgExplorerController.setList(model.getFiles());
 		pkgExplorerController.run();
 		model.run(pkgExplorerController.getListFiles());
 	}

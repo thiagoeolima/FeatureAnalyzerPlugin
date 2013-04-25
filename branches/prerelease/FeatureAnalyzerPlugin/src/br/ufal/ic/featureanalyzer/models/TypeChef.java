@@ -32,8 +32,7 @@ public class TypeChef implements Model {
 
 	}
 
-	public void start(List<String> list) {
-		CPPWrapper cppWrapper = new CPPWrapper();
+	public void start() {
 
 		// General processing options
 		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
@@ -45,13 +44,7 @@ public class TypeChef implements Model {
 				"--errorXML", outputFilePath,"--lexNoStdout",
 				typeChefPreference, "-h", "platform.h","-w"};
 		typeChefParams = parameters;
-
-		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
-				.getPreferenceStore().getString("SystemRoot"), FeatureAnalyzer
-				.getDefault().getPreferenceStore().getString("SystemIncludes"));
 		fo.setPrintToStdOutput(false);
-		fo.getFiles().addAll(list);
-
 	}
 
 	public void run(List<String> listFiles) {
@@ -68,11 +61,18 @@ public class TypeChef implements Model {
 
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
 		xmlParser.processFile();
-		fo.getFiles().clear();
 	}
 
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}
+
+	@Override
+	public List<String> getFiles() {
+		return fo.getFiles();
+	}
+
+
+
 
 }
