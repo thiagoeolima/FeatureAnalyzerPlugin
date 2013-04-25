@@ -1,22 +1,9 @@
 package br.ufal.ic.featureanalyzer.models;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public class SuperC implements Model {
 	public SuperC() {
-
-	}
-
-	@Override
-	public List<String> getFiles() {
-		// TODO Auto-generated method stub
-		return new LinkedList<String>();
-	}
-
-	@Override
-	public void run() {
-		// TODO Auto-generated method stub
 
 	}
 
@@ -26,8 +13,9 @@ public class SuperC implements Model {
 		return null;
 	}
 
+
 	@Override
-	public void start() {
+	public void run(List<String> list) {
 		// TODO Auto-generated method stub
 		
 	}

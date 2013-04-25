@@ -2,7 +2,6 @@ package br.ufal.ic.featureanalyzer.models;
 
 import java.io.File;
 import java.io.RandomAccessFile;
-import java.util.LinkedList;
 import java.util.List;
 
 import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
@@ -32,32 +31,37 @@ public class TypeChef implements Model {
 
 	}
 
-	public void start() {
+	private void start(List<String> list) {
 		CPPWrapper cppWrapper = new CPPWrapper();
-		fo.getFiles().clear();
+
 		// General processing options
-		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("TypeChefPreference");
+		String typeChefPreference = FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("TypeChefPreference");
 
-		String[] parameters = {"--systemRoot",FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemRoot"),
-				"--systemIncludes",FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemIncludes"),
-				"--errorXML", outputFilePath,"--lexNoStdout",
-				typeChefPreference, "-h", "platform.h","-w"};
+		String[] parameters = {
+				"--systemRoot",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemRoot"),
+				"--systemIncludes",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemIncludes"), "--errorXML",
+				outputFilePath, "--lexNoStdout", typeChefPreference, "-h",
+				"platform.h", "-w" };
 
-		cppWrapper.gerenatePlatformHeader(getFiles(),FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemRoot"),FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemIncludes"));
+		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemRoot"), FeatureAnalyzer
+				.getDefault().getPreferenceStore().getString("SystemIncludes"));
 		
 		fo.parseOptions(parameters);
-
 		fo.setPrintToStdOutput(false);
+		fo.getFiles().addAll(list);
 
 	}
 
-	public void run() {
+	public void run(List<String> list) {
 		// TODO: Flush the file
+		start(list);
+
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
@@ -66,11 +70,7 @@ public class TypeChef implements Model {
 
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
 		xmlParser.processFile();
-
-	}
-
-	public List<String> getFiles() {
-		return fo.getFiles();
+		fo.getFiles().clear();
 	}
 
 	public Object[] getLogs() {

@@ -1,5 +1,6 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.ITranslationUnit;
@@ -16,6 +17,7 @@ public class ProjectExplorerController {
 	private List<String> listFiles;
 
 	public ProjectExplorerController() {
+		listFiles = new ArrayList<String>();
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
@@ -23,8 +25,8 @@ public class ProjectExplorerController {
 				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
 
-	public void setList(List<String> list) {
-		this.listFiles = list;
+	public  List<String> getList() {
+		return listFiles;
 	}
 
 	private void addFile(ITranslationUnit t) throws Exception {
@@ -46,6 +48,8 @@ public class ProjectExplorerController {
 	}
 
 	public void run() throws Exception {
+		listFiles.clear();
+		
 		Object o = selection.getFirstElement();
 
 		if (o instanceof TranslationUnit) {

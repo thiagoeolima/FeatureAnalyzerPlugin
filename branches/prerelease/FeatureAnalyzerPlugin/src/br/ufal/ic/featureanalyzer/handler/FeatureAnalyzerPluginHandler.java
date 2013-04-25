@@ -37,7 +37,7 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 		controller.setWindow(window);
 
 		try {
-			// Open and active the TypeChef view
+			// Open and active the Analyzer view
 			IWorkbenchPage page = window.getActivePage();
 			page.showView(AnalyzerView.ID);
 
