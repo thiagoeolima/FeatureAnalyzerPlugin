@@ -4,26 +4,33 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.LinkedList;
+import java.util.List;
 
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.util.BundleUtility;
 import org.eclipse.ui.progress.UIJob;
 
 @SuppressWarnings("restriction")
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
 	private final static String CPP_PATH = "cpp";
+	
+	public void gerenatePlatformHeader(LinkedList<String> list, String dir, String includeDir){
+		list.add("-o");
+		list.add(dir + File.separator + "platform.h");
+		list.addFirst("-I"+includeDir);
+	    list.addFirst("-std=gnu99");
+		list.addFirst("-E");
+		list.addFirst("-dM");
+		runProcess(list, GCC_PATH);
+	}
 
 	public void runCompiler(LinkedList<String> packageArgs){
 		for(String s : packageArgs){

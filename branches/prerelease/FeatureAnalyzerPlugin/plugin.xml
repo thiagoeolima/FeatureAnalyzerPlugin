@@ -82,4 +82,22 @@
          </toolbar>
       </menuContribution>
    </extension>
+   <extension
+         point="de.ovgu.featureide.core.composers">
+      <composer
+            class="br.ufal.ic.featureanalyzer.activator.CPPComposer"
+            description="C composer to FeatureIDE"
+            id="br.ufal.ic.featureanalyzer.cppcomposer"
+            name="C PreProcessors "
+            nature="FeatureIDE_Cnature">
+      </composer>
+   </extension>
+   <extension
+         point="de.ovgu.featureide.fm.core.FMComposer">
+      <fmComposer
+            class="br.ufal.ic.featureanalyzer.activator.CPPModelBuilder"
+            id="br.ufal.ic.featureanalyzer.fmcppcomposer"
+            name="C PreProcessor Feature Model">
+      </fmComposer>
+   </extension>
 </plugin>

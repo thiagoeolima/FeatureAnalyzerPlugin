@@ -1,5 +1,7 @@
 package br.ufal.ic.featureanalyzer.activator; 
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -28,7 +30,12 @@ import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
 import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirective;
 import de.ovgu.featureide.fm.core.Feature;
+import de.ovgu.featureide.fm.core.FeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
+import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
+import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
+import de.ovgu.featureide.fm.core.io.sxfm.SXFMWriter;
+import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 
 
 public class CPPComposer extends PPComposerExtensionClass{
@@ -102,6 +109,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 	@Override
 	public void performFullBuild(IFile config) {
+		runTypeChefAnalyzes();
 		if(!isPluginInstalled(PLUGIN_CDT_ID)){
 			generateWarning(PLUGIN_WARNING);
 		}
@@ -115,6 +123,24 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 		if (cppModelBuilder != null)
 			cppModelBuilder.buildModel();
+	}
+
+	private void runTypeChefAnalyzes() {
+		try {
+			IFile inputFile = featureProject.getModelFile();
+			File outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "sxfm.xml");
+			FeatureModel fm = new FeatureModel();
+			FeatureModelReaderIFileWrapper fmReader = new FeatureModelReaderIFileWrapper(new XmlFeatureModelReader(fm));
+			fmReader.readFromFile(inputFile);
+			SXFMWriter sxfm = new SXFMWriter(fm);
+			sxfm.writeToFile(outputFile);
+		} catch (FileNotFoundException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		} catch (UnsupportedModelException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		}
+		
+		
 	}
 
 	/* (non-Javadoc)
@@ -343,7 +369,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 					packageArgs = (LinkedList<String>) featureArgs.clone();
 					packageArgs.add(fullFilePath);
 				    packageArgs.add("-o");
-				    packageArgs.add(buildFolder.getRawLocation().toOSString() + "\\" + res.getName());
+				    packageArgs.add(buildFolder.getRawLocation().toOSString() + File.separator + res.getName());
 
 					//CommandLine syntax:
 					//	-DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1 
@@ -351,7 +377,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 				}
 			}
 			compilerArgs.add("-o");
-			compilerArgs.add(buildFolder.getRawLocation().toOSString()+ "\\" + buildFolder.getName());
+			compilerArgs.add(buildFolder.getRawLocation().toOSString()+ File.separator+ buildFolder.getName());
 			cpp.runCompiler(compilerArgs);
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
