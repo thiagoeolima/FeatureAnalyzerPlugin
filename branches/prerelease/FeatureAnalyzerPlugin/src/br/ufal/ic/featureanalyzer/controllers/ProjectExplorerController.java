@@ -1,6 +1,6 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.ITranslationUnit;
@@ -16,18 +16,17 @@ public class ProjectExplorerController {
 	private IStructuredSelection selection;
 	private List<String> listFiles;
 
+	public ProjectExplorerController() {
+		listFiles = new ArrayList<String>();
+	}
 
 	public void setWindow(IWorkbenchWindow window) {
 		selection = (IStructuredSelection) window.getSelectionService()
 				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
 
-	public void setList(List<String> list) {
-		this.listFiles = list;
-	}
-	
-	public List<String> getListFiles(){
-		return new LinkedList<String>(listFiles);
+	public List<String> getList() {
+		return listFiles;
 	}
 
 	private void addFile(ITranslationUnit t) throws Exception {
@@ -50,7 +49,7 @@ public class ProjectExplorerController {
 
 	public void run() throws Exception {
 		listFiles.clear();
-		
+
 		Object o = selection.getFirstElement();
 
 		if (o instanceof TranslationUnit) {

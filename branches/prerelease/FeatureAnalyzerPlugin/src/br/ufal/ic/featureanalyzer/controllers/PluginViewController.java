@@ -20,7 +20,6 @@ import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.featureanalyzer.util.Log;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
-import br.ufal.ic.featureanalyzer.views.PluginView;
 
 public class PluginViewController {
 
@@ -30,10 +29,6 @@ public class PluginViewController {
 
 	public PluginViewController(AnalyzerView typeChefPluginView) {
 		this.typeChefPluginView = typeChefPluginView;
-	}
-
-	public PluginViewController(PluginView pluginView) {
-		// TODO Auto-generated constructor stub
 	}
 
 	private class NameSorter extends ViewerSorter {

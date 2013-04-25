@@ -1,7 +1,5 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
-import java.util.List;
-
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
@@ -34,10 +32,8 @@ public class Controller {
 
 	public void run() throws Exception {
 		this.createdModel();
-		model.start();
-		pkgExplorerController.setList(model.getFiles());
 		pkgExplorerController.run();
-		model.run(pkgExplorerController.getListFiles());
+		model.run(pkgExplorerController.getList());
 	}
 
 

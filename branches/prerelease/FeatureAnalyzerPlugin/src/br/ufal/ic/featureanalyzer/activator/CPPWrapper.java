@@ -1,7 +1,9 @@
 package br.ufal.ic.featureanalyzer.activator;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -20,18 +22,6 @@ import org.eclipse.ui.progress.UIJob;
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
 	private final static String CPP_PATH = "cpp";
-
-	public void gerenatePlatformHeader(List<String> fileList, String dir,
-			String includeDir) {
-		List<String> list = new ArrayList<String>(fileList);
-		list.add("-o");
-		list.add(dir + File.separator + "platform.h");
-		list.add(0,"-I"+includeDir);
-	    list.add(0,"-std=gnu99");
-		list.add(0,"-E");
-		list.add(0,"-dM");
-		runProcess(list, GCC_PATH);
-	}
 
 	public void runCompiler(List<String> packageArgs) {
 		for (String s : packageArgs) {
@@ -126,6 +116,89 @@ public class CPPWrapper {
 		};
 		uiJob.setPriority(Job.SHORT);
 		uiJob.schedule();
+	}
+
+	public static void gerenatePlatformHeader(List<String> fileList,
+			String dir, String includeDir) {
+		List<String> list = new ArrayList<String>(fileList);
+		list.add(0, "-I" + includeDir);
+		list.add(0, "-std=gnu99");
+		list.add(0, "-E");
+		list.add(0, "-dM");
+		list.add(0, GCC_PATH);
+		ProcessBuilder processBuilder = new ProcessBuilder(list);
+
+		BufferedReader input = null;
+		BufferedReader error = null;
+		try {
+			Process process = processBuilder.start();
+			input = new BufferedReader(new InputStreamReader(
+					process.getInputStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			error = new BufferedReader(new InputStreamReader(
+					process.getErrorStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			boolean x = true;
+			while (x) {
+				try {
+					String line;
+					try {
+						File platform = new File(
+								System.getProperty("java.io.tmpdir")
+										+ File.separator + "platform.h");
+
+						platform.createNewFile();
+
+						FileWriter fileW = new FileWriter(platform);
+						BufferedWriter buffW = new BufferedWriter(fileW);
+
+						while ((line = input.readLine()) != null) {
+//							System.out.println(line);
+							buffW.write(line);
+							FeatureAnalyzer.getDefault().logWarning(line);
+						}
+						buffW.close();
+					} catch (Exception e) {
+						e.printStackTrace();
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+
+					try {
+						process.waitFor();
+					} catch (InterruptedException e) {
+						System.out.println(e.toString());
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+					int exitValue = process.exitValue();
+					if (exitValue != 0) {
+						throw new IOException(
+								"The process doesn't finish normally (exit="
+										+ exitValue + ")!");
+					}
+					x = false;
+				} catch (IllegalThreadStateException e) {
+					System.out.println(e.toString());
+					FeatureAnalyzer.getDefault().logError(e);
+				}
+			}
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			FeatureAnalyzer.getDefault().logError(e);
+		} finally {
+			try {
+				if (input != null)
+					input.close();
+			} catch (IOException e) {
+				FeatureAnalyzer.getDefault().logError(e);
+			} finally {
+				if (error != null)
+					try {
+						error.close();
+					} catch (IOException e) {
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+			}
+		}
 	}
 
 }

@@ -8,8 +8,4 @@ public interface Model {
 
 	public Object[] getLogs();
 
-	public List<String> getFiles();
-
-	public void start();
-
 }

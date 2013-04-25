@@ -14,7 +14,6 @@ public class TypeChef implements Model {
 	private FrontendOptionsWithConfigFiles fo;
 	private XMLParserTypeChef xmlParser;
 	private final String outputFilePath;
-	private String[] typeChefParams;
 
 	public TypeChef() {
 		fo = new FrontendOptionsWithConfigFiles();
@@ -27,32 +26,46 @@ public class TypeChef implements Model {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
 		} catch (Exception e) {
-			FeatureAnalyzer.getDefault().logError(e);
+			e.printStackTrace();
 		}
 
 	}
 
-	public void start() {
+	private void start(List<String> list) {
 
 		// General processing options
-		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("TypeChefPreference");
-		String[] parameters = {"--systemRoot",FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemRoot"),
-				"--systemIncludes",FeatureAnalyzer.getDefault().getPreferenceStore()
+		String typeChefPreference = FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("TypeChefPreference");
+
+		String[] parameters = {
+				"--systemRoot",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemRoot"),
+				"--systemIncludes",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
 						.getString("SystemIncludes"),
-				"--errorXML", outputFilePath,"--lexNoStdout",
-				typeChefPreference, "-h", "platform.h","-w"};
-		typeChefParams = parameters;
+				"--errorXML",
+				outputFilePath,
+				"--lexNoStdout",
+				typeChefPreference,
+				"-h",
+				System.getProperty("java.io.tmpdir") + File.separator
+						+ "platform.h", "-w" };
+
+		CPPWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemRoot"), FeatureAnalyzer
+				.getDefault().getPreferenceStore().getString("SystemIncludes"));
+
+		fo.parseOptions(parameters);
 		fo.setPrintToStdOutput(false);
+		fo.getFiles().addAll(list);
+
 	}
 
-	public void run(List<String> listFiles) {
-		CPPWrapper cppWrapper = new CPPWrapper();
-		cppWrapper.gerenatePlatformHeader(listFiles,FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemRoot"),FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemIncludes"));
-		fo.parseOptions(typeChefParams);
+	public void run(List<String> list) {
+		// TODO: Flush the file
+		start(list);
+
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
@@ -61,18 +74,11 @@ public class TypeChef implements Model {
 
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
 		xmlParser.processFile();
+		fo.getFiles().clear();
 	}
 
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}
-
-	@Override
-	public List<String> getFiles() {
-		return fo.getFiles();
-	}
-
-
-
 
 }
