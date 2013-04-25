@@ -22,34 +22,34 @@ public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
 	private final static String CPP_PATH = "cpp";
 	
-	public void gerenatePlatformHeader(LinkedList<String> list, String dir, String includeDir){
+	public void gerenatePlatformHeader(List<String> list, String dir, String includeDir){
 		list.add("-o");
 		list.add(dir + File.separator + "platform.h");
-		list.addFirst("-I"+includeDir);
-	    list.addFirst("-std=gnu99");
-		list.addFirst("-E");
-		list.addFirst("-dM");
+		list.add("-I"+includeDir);
+	    list.add(0,"-std=gnu99");
+		list.add(0,"-E");
+		list.add(0,"-dM");
 		runProcess(list, GCC_PATH);
 	}
 
-	public void runCompiler(LinkedList<String> packageArgs){
+	public void runCompiler(List<String> packageArgs){
 		for(String s : packageArgs){
 			System.out.print(" " + s);
 		}
 		runProcess(packageArgs, GCC_PATH);
 	}
 
-	public void runPreProcessor(LinkedList<String> packageArgs) {
-		packageArgs.addFirst("-C"); //do not discard comments
-		packageArgs.addFirst("-P"); //do not generate linemarkers
-		packageArgs.addFirst("-w"); //Suppress all warning
-		packageArgs.addFirst("-no-integrated-cpp");
-		packageArgs.addFirst("-E"); //do not discard comments
+	public void runPreProcessor(List<String> packageArgs) {
+		packageArgs.add(0,"-C"); //do not discard comments
+		packageArgs.add(0,"-P"); //do not generate linemarkers
+		packageArgs.add(0,"-w"); //Suppress all warning
+		packageArgs.add(0,"-no-integrated-cpp");
+		packageArgs.add(0,"-E"); //do not discard comments
 		runProcess(packageArgs, CPP_PATH);
 	}
 
-	private void runProcess(LinkedList<String> packageArgs, String path) {
-		packageArgs.addFirst(path);
+	private void runProcess(List<String> packageArgs, String path) {
+		packageArgs.add(0,path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 
 		BufferedReader input = null;
