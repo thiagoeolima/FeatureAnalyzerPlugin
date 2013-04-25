@@ -33,7 +33,7 @@ public class TypeChef implements Model {
 	}
 
 	public void start() {
-		CPPWrapper cppWrapper = new CPPWrapper();
+
 		fo.getFiles().clear();
 		// General processing options
 		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
@@ -45,10 +45,6 @@ public class TypeChef implements Model {
 						.getString("SystemIncludes"),
 				"--errorXML", outputFilePath,"--lexNoStdout",
 				typeChefPreference, "-h", "platform.h","-w"};
-
-		cppWrapper.gerenatePlatformHeader(getFiles(),FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemRoot"),FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemIncludes"));
 		
 		fo.parseOptions(parameters);
 
@@ -57,6 +53,11 @@ public class TypeChef implements Model {
 	}
 
 	public void run() {
+		CPPWrapper cppWrapper = new CPPWrapper();
+		System.out.println(getFiles().size());
+		cppWrapper.gerenatePlatformHeader(getFiles(),FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemRoot"),FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemIncludes"));
 		// TODO: Flush the file
 		try {
 			Frontend.processFile(fo);
