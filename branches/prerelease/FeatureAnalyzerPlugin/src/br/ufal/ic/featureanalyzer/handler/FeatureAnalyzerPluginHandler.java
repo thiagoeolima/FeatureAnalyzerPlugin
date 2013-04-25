@@ -40,9 +40,7 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 			// Open and active the TypeChef view
 			IWorkbenchPage page = window.getActivePage();
 			page.showView(AnalyzerView.ID);
-
 			controller.run();
-
 			// Update the tree view.
 			IViewPart treeView = HandlerUtil.getActiveWorkbenchWindow(event)
 					.getActivePage().findView(AnalyzerView.ID);

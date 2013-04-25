@@ -8,7 +8,7 @@ public interface Model {
 
 	public void start();
 	
-	public void run();
+	public void run(List<String> list);
 
 	public Object[] getLogs();
 

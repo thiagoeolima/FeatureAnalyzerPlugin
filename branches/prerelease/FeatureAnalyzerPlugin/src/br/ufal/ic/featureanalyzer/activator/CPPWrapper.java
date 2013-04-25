@@ -25,7 +25,7 @@ public class CPPWrapper {
 	public void gerenatePlatformHeader(List<String> list, String dir, String includeDir){
 		list.add("-o");
 		list.add(dir + File.separator + "platform.h");
-		list.add("-I"+includeDir);
+		list.add(0,"-I"+includeDir);
 	    list.add(0,"-std=gnu99");
 		list.add(0,"-E");
 		list.add(0,"-dM");
@@ -72,6 +72,7 @@ public class CPPWrapper {
 					try {
 						process.waitFor();
 					} catch (InterruptedException e) {
+						System.out.println(e.toString());
 						FeatureAnalyzer.getDefault().logError(e);
 					}
 					int exitValue = process.exitValue();
@@ -82,10 +83,12 @@ public class CPPWrapper {
 					}
 					x = false;
 				} catch (IllegalThreadStateException e) {
+					System.out.println(e.toString());
 					FeatureAnalyzer.getDefault().logError(e);
 				}
 			}
 		} catch (IOException e) {
+			System.out.println(e.toString());
 			openMessageBox(e);
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {

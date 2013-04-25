@@ -37,7 +37,7 @@ public class Controller {
 		model.start();
 		pkgExplorerController.setList(model.getFiles());
 		pkgExplorerController.run();
-		model.run();
+		model.run(pkgExplorerController.getListFiles());
 	}
 
 	public List<String> getFiles() {

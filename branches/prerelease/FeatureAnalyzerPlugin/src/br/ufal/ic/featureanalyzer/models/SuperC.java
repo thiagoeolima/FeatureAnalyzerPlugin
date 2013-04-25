@@ -15,7 +15,7 @@ public class SuperC implements Model {
 	}
 
 	@Override
-	public void run() {
+	public void run(List<String> listFiles) {
 		// TODO Auto-generated method stub
 
 	}

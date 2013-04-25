@@ -1,5 +1,6 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.ITranslationUnit;
@@ -25,6 +26,10 @@ public class ProjectExplorerController {
 
 	public void setList(List<String> list) {
 		this.listFiles = list;
+	}
+	
+	public List<String> getListFiles(){
+		return new LinkedList<String>(listFiles);
 	}
 
 	private void addFile(ITranslationUnit t) throws Exception {

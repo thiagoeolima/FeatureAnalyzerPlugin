@@ -1,7 +1,10 @@
 package br.ufal.ic.featureanalyzer.activator; 
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -23,6 +26,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.prop4j.And;
 import org.prop4j.Node;
+import org.prop4j.NodeWriter;
 import org.prop4j.Not;
 
 import de.ovgu.featureide.core.CorePlugin;
@@ -32,10 +36,12 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirective;
 import de.ovgu.featureide.fm.core.Feature;
 import de.ovgu.featureide.fm.core.FeatureModel;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
+import de.ovgu.featureide.fm.core.editing.NodeCreator;
 import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
 import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.sxfm.SXFMWriter;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
+import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
 
 public class CPPComposer extends PPComposerExtensionClass{
@@ -126,18 +132,32 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 
 	private void runTypeChefAnalyzes() {
+		IFile inputFile = featureProject.getModelFile();
+		File outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "cnf.txt");
+		BufferedWriter print = null;
 		try {
-			IFile inputFile = featureProject.getModelFile();
-			File outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "sxfm.xml");
+			print = new BufferedWriter(new FileWriter(outputFile));
 			FeatureModel fm = new FeatureModel();
 			FeatureModelReaderIFileWrapper fmReader = new FeatureModelReaderIFileWrapper(new XmlFeatureModelReader(fm));
 			fmReader.readFromFile(inputFile);
-			SXFMWriter sxfm = new SXFMWriter(fm);
-			sxfm.writeToFile(outputFile);
+			Node nodes = NodeCreator.createNodes(fm.clone()).toCNF();
+			StringBuilder cnf = new StringBuilder();
+			cnf.append(nodes.toString(NodeWriter.javaSymbols));
+			print.write(cnf.toString());
 		} catch (FileNotFoundException e) {
 			FeatureAnalyzer.getDefault().logError(e);
 		} catch (UnsupportedModelException e) {
 			FeatureAnalyzer.getDefault().logError(e);
+		} catch (IOException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		} finally{
+			if (print != null) {
+				try {
+					print.close();
+				} catch (IOException e) {
+					FMUIPlugin.getDefault().logError(e);
+				}
+			}
 		}
 		
 		

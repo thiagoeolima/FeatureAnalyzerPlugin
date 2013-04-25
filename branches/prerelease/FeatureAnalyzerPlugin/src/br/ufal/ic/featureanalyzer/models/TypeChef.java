@@ -15,6 +15,7 @@ public class TypeChef implements Model {
 	private FrontendOptionsWithConfigFiles fo;
 	private XMLParserTypeChef xmlParser;
 	private final String outputFilePath;
+	private String[] typeChefParams;
 
 	public TypeChef() {
 		fo = new FrontendOptionsWithConfigFiles();
@@ -27,7 +28,7 @@ public class TypeChef implements Model {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
 		} catch (Exception e) {
-			e.printStackTrace();
+			FeatureAnalyzer.getDefault().logError(e);
 		}
 
 	}
@@ -38,31 +39,27 @@ public class TypeChef implements Model {
 		// General processing options
 		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
-
 		String[] parameters = {"--systemRoot",FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("SystemRoot"),
 				"--systemIncludes",FeatureAnalyzer.getDefault().getPreferenceStore()
 						.getString("SystemIncludes"),
 				"--errorXML", outputFilePath,"--lexNoStdout",
 				typeChefPreference, "-h", "platform.h","-w"};
-		
-		fo.parseOptions(parameters);
-
+		typeChefParams = parameters;
 		fo.setPrintToStdOutput(false);
 
 	}
 
-	public void run() {
+	public void run(List<String> listFiles) {
 		CPPWrapper cppWrapper = new CPPWrapper();
-		System.out.println(getFiles().size());
-		cppWrapper.gerenatePlatformHeader(getFiles(),FeatureAnalyzer.getDefault().getPreferenceStore()
+		cppWrapper.gerenatePlatformHeader(listFiles,FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("SystemRoot"),FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("SystemIncludes"));
-		// TODO: Flush the file
+		fo.parseOptions(typeChefParams);
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
-			e.printStackTrace();
+			FeatureAnalyzer.getDefault().logError(e);
 		}
 
 		xmlParser.setXMLFile(fo.getErrorXMLFile());
