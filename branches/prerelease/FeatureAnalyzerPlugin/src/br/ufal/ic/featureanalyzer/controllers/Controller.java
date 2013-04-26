@@ -25,6 +25,7 @@ public class Controller {
 				.getString("TypeChecking");
 		if (typeChecking.equals("typechef") && !(model instanceof TypeChef)) {
 			model = new TypeChef();
+			model.setProject(pkgExplorerController.getActiveFeatureProject());
 		} else if (typeChecking.equals("superc") && !(model instanceof SuperC)) {
 			model = new SuperC();
 		}

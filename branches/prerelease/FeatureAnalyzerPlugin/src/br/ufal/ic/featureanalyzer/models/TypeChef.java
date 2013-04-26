@@ -1,18 +1,38 @@
 package br.ufal.ic.featureanalyzer.models;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.List;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.prop4j.Node;
+import org.prop4j.NodeWriter;
+
+import br.ufal.ic.featureanalyzer.activator.CPPComposer;
 import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
+import de.ovgu.featureide.core.IFeatureProject;
+import de.ovgu.featureide.fm.core.FeatureModel;
+import de.ovgu.featureide.fm.core.editing.NodeCreator;
+import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
+import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
+import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
+import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
 public class TypeChef implements Model {
 
 	private FrontendOptionsWithConfigFiles fo;
 	private XMLParserTypeChef xmlParser;
+	private IFeatureProject project;
+
+
 	private final String outputFilePath;
 
 	public TypeChef() {
@@ -31,16 +51,60 @@ public class TypeChef implements Model {
 
 	}
 
+
+	private void runTypeChefAnalyzes() {
+		IFile inputFile = project.getModelFile();
+		File outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "cnf.txt");
+		BufferedWriter print = null;
+		try {
+			print = new BufferedWriter(new FileWriter(outputFile));
+			FeatureModel fm = new FeatureModel();
+			FeatureModelReaderIFileWrapper fmReader = new FeatureModelReaderIFileWrapper(new XmlFeatureModelReader(fm));
+			fmReader.readFromFile(inputFile);
+			Node nodes = NodeCreator.createNodes(fm.clone()).toCNF();
+			StringBuilder cnf = new StringBuilder();
+			cnf.append(nodes.toString(NodeWriter.javaSymbols));
+			print.write(cnf.toString());
+		} catch (FileNotFoundException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		} catch (UnsupportedModelException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		} catch (IOException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		} finally{
+			if (print != null) {
+				try {
+					print.close();
+				} catch (IOException e) {
+					FMUIPlugin.getDefault().logError(e);
+				}
+			}
+		}
+	}
+	
+	@Override
+	public IFeatureProject getProject() {
+		return project;
+	}
+
+
+	@Override
+	public void setProject(IFeatureProject project) {
+		if(project != null){
+			this.project = project;
+		}
+		
+	}
+
 	private void start(List<String> list) {
+		runTypeChefAnalyzes();
 
 		// General processing options
 		String typeChefPreference = FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("TypeChefPreference");
 
 		String[] parameters = {
-				"--systemRoot",
-				FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemRoot"),
+				
 				"--systemIncludes",
 				FeatureAnalyzer.getDefault().getPreferenceStore()
 						.getString("SystemIncludes"),
