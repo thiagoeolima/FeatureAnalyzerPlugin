@@ -17,13 +17,6 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 	private Controller controller;
 
 	/**
-	 * The constructor.
-	 */
-
-	public FeatureAnalyzerPluginHandler() {
-	}
-
-	/**
 	 * the command has been executed, so extract extract the needed information
 	 * from the application context.
 	 */

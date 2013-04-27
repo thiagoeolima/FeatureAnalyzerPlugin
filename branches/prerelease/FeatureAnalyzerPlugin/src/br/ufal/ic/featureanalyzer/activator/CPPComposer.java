@@ -24,6 +24,7 @@ import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
+import br.ufal.ic.featureanalyzer.controllers.Controller;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -39,6 +40,9 @@ public class CPPComposer extends PPComposerExtensionClass{
 			+ PLUGIN_CDT_ID + " is not installed.";
 	public static final String COMPOSER_ID = "br.ufal.ic.featureanalyzer.cppcomposer";
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
+	public static final String CC_NATURE = "org.eclipse.cdt.core.ccnature";
+	
+	private Controller controller;
 
 	/** pattern for replacing preprocessor commands like "//#if" */
 	static final Pattern replaceCommandPattern = Pattern.compile("#(.+?)\\s");
@@ -54,6 +58,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 		boolean supSuccess = super.initialize(project);
 		cppModelBuilder = new CPPModelBuilder(project);
 
+		//Setup the controller
 		prepareFullBuild(null);
 		//annotationChecking();
 
@@ -83,7 +88,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 			String configPath, String buildPath) {
 		addNature(project);
 	}
-
+	
 	private void addNature(IProject project) {
 		try {
 			if (!project.isAccessible() || project.hasNature(C_NATURE))
@@ -96,10 +101,12 @@ public class CPPComposer extends PPComposerExtensionClass{
 			newNatures[natures.length] = C_NATURE;
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);
+			
 		} catch (CoreException e) {
 			CorePlugin.getDefault().logError(e);
 		}
-	}
+
+	} 
 
 	@Override
 	public void performFullBuild(IFile config) {

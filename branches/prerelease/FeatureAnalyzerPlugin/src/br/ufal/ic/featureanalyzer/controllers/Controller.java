@@ -2,6 +2,8 @@ package br.ufal.ic.featureanalyzer.controllers;
 
 import org.eclipse.ui.IWorkbenchWindow;
 
+import de.ovgu.featureide.core.IFeatureProject;
+
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.models.Model;
 import br.ufal.ic.featureanalyzer.models.SuperC;
@@ -11,6 +13,7 @@ public class Controller {
 	private ProjectExplorerController pkgExplorerController;
 	private Model model;
 
+
 	public Controller() {
 		pkgExplorerController = new ProjectExplorerController();
 	}
@@ -19,13 +22,13 @@ public class Controller {
 		pkgExplorerController.setWindow(window);
 	}
 
+
 	private void createdModel() throws Exception {
 		// General processing options
 		String typeChecking = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChecking");
 		if (typeChecking.equals("typechef") && !(model instanceof TypeChef)) {
 			model = new TypeChef();
-			model.setProject(pkgExplorerController.getActiveFeatureProject());
 		} else if (typeChecking.equals("superc") && !(model instanceof SuperC)) {
 			model = new SuperC();
 		}
@@ -41,4 +44,5 @@ public class Controller {
 	public Object[] getLogs() {
 		return model.getLogs();
 	}
+	
 }

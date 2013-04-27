@@ -2,6 +2,8 @@ package br.ufal.ic.featureanalyzer.models;
 
 import java.util.List;
 
+import org.eclipse.core.resources.IResource;
+
 import de.ovgu.featureide.core.IFeatureProject;
 
 public class SuperC implements Model {
@@ -10,11 +12,6 @@ public class SuperC implements Model {
 	}
 
 
-	@Override
-	public void run(List<String> listFiles) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public Object[] getLogs() {
@@ -29,6 +26,14 @@ public class SuperC implements Model {
 
 	public IFeatureProject getProject() {
 		return null;
+	}
+
+
+
+	@Override
+	public void run(List<IResource> list) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

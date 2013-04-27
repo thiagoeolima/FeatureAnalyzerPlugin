@@ -2,16 +2,14 @@ package br.ufal.ic.featureanalyzer.models;
 
 import java.util.List;
 
-import de.ovgu.featureide.core.IFeatureProject;
+import org.eclipse.core.resources.IResource;
 
 public interface Model {
 	
-	public void run(List<String> listFiles);
 
 	public Object[] getLogs();
 
-	public void setProject(IFeatureProject project);
+	public void run(List<IResource> list);
 
-	public IFeatureProject getProject();
 
 }
