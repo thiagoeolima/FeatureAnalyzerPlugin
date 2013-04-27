@@ -19,7 +19,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.cdt.core.model,
  org.eclipse.cdt.internal.core.model,
  org.eclipse.cdt.ui
-Bundle-ClassPath: lib/TypeChef-0.3.3.jar,
- .,
+Bundle-ClassPath: .,
+ lib/TypeChef-0.3.3.jar,
  lib/jdom-2.0.4.jar
 Bundle-Vendor: Ufal

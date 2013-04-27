@@ -29,7 +29,7 @@ public class XMLParserTypeChef {
 	public void processFile() {
 		logList.clear();
 		try {
-			Document document = (Document) builder.build(xmlFile);
+			Document document = builder.build(xmlFile);
 			Element rootNode = document.getRootElement();
 
 			TypeErroProcessFile(rootNode, "typeerror");
@@ -47,7 +47,7 @@ public class XMLParserTypeChef {
 		List<Element> list = rootNode.getChildren(type);
 
 		for (int i = 0; i < list.size(); i++) {
-			Element node = (Element) list.get(i);
+			Element node = list.get(i);
 			logList.add(new Log(node.getChild("position").getChildText("file"),
 					node.getChild("position").getChildText("line"), node
 							.getChild("position").getChildText("col"), node

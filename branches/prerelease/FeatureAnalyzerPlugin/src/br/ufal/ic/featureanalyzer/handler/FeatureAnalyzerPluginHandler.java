@@ -20,6 +20,7 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 	 * the command has been executed, so extract extract the needed information
 	 * from the application context.
 	 */
+	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 		this.window = HandlerUtil.getActiveWorkbenchWindow(event);
 
@@ -41,6 +42,7 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 			if (treeView instanceof AnalyzerView) {
 				final AnalyzerView TypeChefPluginView = (AnalyzerView) treeView;
 				new Runnable() {
+					@Override
 					public void run() {
 						Object[] logs = controller.getLogs();
 						TypeChefPluginView.adaptTo(logs);
@@ -54,6 +56,7 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
 			String message = e.getMessage() == null ? "Select a file/directory valid."
 					: e.getMessage();
 

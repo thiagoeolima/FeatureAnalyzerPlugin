@@ -1,13 +1,12 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.model.CContainer;
 import org.eclipse.cdt.internal.core.model.SourceRoot;
-import org.eclipse.cdt.internal.core.model.TranslationUnit;
-import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -16,9 +15,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-
-import de.ovgu.featureide.core.CorePlugin;
-import de.ovgu.featureide.core.IFeatureProject;
 
 // TODO: Put a Listener
 
@@ -32,12 +28,13 @@ public class ProjectExplorerController {
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
+		//Isso aqui apresenta problemas... algumas vezes quem t· aberto È o PackageExplorer.
 		selection = (IStructuredSelection) window.getSelectionService()
-				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
 	
 	public List<IResource> getList() {
-		return listFiles;
+		return new LinkedList<IResource>(listFiles);
 	}
 
 	
@@ -60,6 +57,7 @@ public class ProjectExplorerController {
 		listFiles.clear();
 
 		Object o = selection.getFirstElement();
+		System.out.println(o.getClass());
 		IResource aux;
 		if (o instanceof SourceRoot) {
 			 aux = ((SourceRoot) o).getResource() ;
@@ -70,7 +68,7 @@ public class ProjectExplorerController {
 		}else {
 			throw new Exception("Selecione um arquivo/diret√≥rio v√°lido.");
 		}
-		System.out.println(aux);
+		System.err.println(aux);
 		addResource(aux);
 	}
 }

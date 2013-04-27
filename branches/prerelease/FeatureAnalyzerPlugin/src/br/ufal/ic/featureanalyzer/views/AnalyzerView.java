@@ -15,6 +15,7 @@ public class AnalyzerView extends ViewPart {
 		controller = new PluginViewController(this);
 	}
 
+	@Override
 	public void createPartControl(Composite parent) {
 		controller.createPartControl(parent);
 	}

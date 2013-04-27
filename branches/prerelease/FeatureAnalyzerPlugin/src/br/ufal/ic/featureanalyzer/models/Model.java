@@ -11,5 +11,7 @@ public interface Model {
 
 	public void run(List<IResource> list);
 
+	void runCommandLineMode(List<IResource> list);
+
 
 }

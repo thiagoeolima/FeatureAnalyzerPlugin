@@ -6,9 +6,11 @@ import org.eclipse.jface.viewers.Viewer;
 class PluginViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new String[] {};
 
+	@Override
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
@@ -16,6 +18,7 @@ class PluginViewContentProvider implements IStructuredContentProvider {
 		this.logs = logs;
 	}
 
+	@Override
 	public Object[] getElements(Object parent) {
 		return logs;
 	}

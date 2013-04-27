@@ -2,8 +2,6 @@ package br.ufal.ic.featureanalyzer.controllers;
 
 import org.eclipse.ui.IWorkbenchWindow;
 
-import de.ovgu.featureide.core.IFeatureProject;
-
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.models.Model;
 import br.ufal.ic.featureanalyzer.models.SuperC;
@@ -38,6 +36,7 @@ public class Controller {
 		this.createdModel();
 		pkgExplorerController.run();
 		model.run(pkgExplorerController.getList());
+		//model.runCommandLineMode(pkgExplorerController.getList());
 	}
 
 

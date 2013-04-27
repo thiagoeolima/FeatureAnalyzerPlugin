@@ -1,18 +1,31 @@
 package br.ufal.ic.featureanalyzer.models;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
+import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.FileLocator;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.ui.internal.util.BundleUtility;
+import org.eclipse.ui.progress.UIJob;
 import org.prop4j.Node;
 import org.prop4j.NodeWriter;
 
@@ -20,7 +33,6 @@ import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
-import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.fm.core.FeatureModel;
 import de.ovgu.featureide.fm.core.editing.NodeCreator;
 import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
@@ -34,7 +46,6 @@ public class TypeChef implements Model {
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
 
-
 	private final String outputFilePath;
 
 	public TypeChef() {
@@ -42,8 +53,7 @@ public class TypeChef implements Model {
 		xmlParser = new XMLParserTypeChef();
 
 		// saved in the' temp directory
-		outputFilePath = System.getProperty("java.io.tmpdir") + File.separator
-				+ "output";
+		outputFilePath = System.getProperty("java.io.tmpdir") + File.separator + "output.xml";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
@@ -53,16 +63,18 @@ public class TypeChef implements Model {
 
 	}
 
-
-    //TODO tratar melhor as exceptions!
-	private void prepareFeatureModel(){
-		File inputFile = new File(project.getLocation().toOSString() + File.separator+ "model.xml");
-		File outputFile = new File(System.getProperty("java.io.tmpdir") + File.separator + "cnf.txt");
+	// TODO tratar melhor as exceptions!
+	private void prepareFeatureModel() {
+		File inputFile = new File(project.getLocation().toOSString()
+				+ File.separator + "model.xml");
+		File outputFile = new File(System.getProperty("java.io.tmpdir")
+				+ File.separator + "cnf.txt");
 		BufferedWriter print = null;
 		try {
 			print = new BufferedWriter(new FileWriter(outputFile));
 			FeatureModel fm = new FeatureModel();
-			FeatureModelReaderIFileWrapper fmReader = new FeatureModelReaderIFileWrapper(new XmlFeatureModelReader(fm));
+			FeatureModelReaderIFileWrapper fmReader = new FeatureModelReaderIFileWrapper(
+					new XmlFeatureModelReader(fm));
 			fmReader.readFromFile(inputFile);
 			Node nodes = NodeCreator.createNodes(fm.clone()).toCNF();
 			StringBuilder cnf = new StringBuilder();
@@ -74,7 +86,7 @@ public class TypeChef implements Model {
 			FeatureAnalyzer.getDefault().logError(e);
 		} catch (IOException e) {
 			FeatureAnalyzer.getDefault().logError(e);
-		} finally{
+		} finally {
 			if (print != null) {
 				try {
 					print.close();
@@ -84,36 +96,27 @@ public class TypeChef implements Model {
 			}
 		}
 	}
-	
 
 	private void start(List<String> list) {
 		CPPWrapper cppWrapper = new CPPWrapper();
-		prepareFeatureModel();
-		// General processing options
-		String typeChefPreference = FeatureAnalyzer.getDefault()
-				.getPreferenceStore().getString("TypeChefPreference");
+		prepareFeatureModel(); // General processing options String
+		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("TypeChefPreference");
 
-		String[] parameters = {
-				"--systemIncludes",
-				FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemIncludes"),
-				"--errorXML",
-				outputFilePath,
-				"--lexNoStdout",
-				typeChefPreference,
+		String[] parameters = {"-w", "--lexNoStdout", "--errorXML="+outputFilePath,typeChefPreference,
 				"-h",
 				System.getProperty("java.io.tmpdir") + File.separator
-						+ "platform.h", "-w" };
+						+ "platform.h"};
 
-		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer
-				.getDefault().getPreferenceStore().getString("SystemIncludes"));
+		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemIncludes"));
 
+		fo.getFiles().addAll(list);
 		fo.parseOptions(parameters);
 		fo.setPrintToStdOutput(false);
-		fo.getFiles().addAll(list);
-
 	}
 
+	@Override
 	public void run(List<IResource> list) {
 		// TODO: Flush the file
 		start(resourceToString(list));
@@ -121,6 +124,7 @@ public class TypeChef implements Model {
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
+			e.printStackTrace();
 			FeatureAnalyzer.getDefault().logError(e);
 		}
 
@@ -129,22 +133,137 @@ public class TypeChef implements Model {
 		fo.getFiles().clear();
 	}
 
+	@Override
+	public void runCommandLineMode(List<IResource> list) {
+		// TODO: Flush the file
+		startCommandLineMode(resourceToString(list));
+
+		xmlParser.setXMLFile(new File(outputFilePath));
+		xmlParser.processFile();
+		fo.getFiles().clear();
+	}
+
+	@SuppressWarnings("restriction")
+	private void startCommandLineMode(List<String> args) {
+		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("TypeChefPreference");
+		
+		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(),
+				"lib/" + "TypeChef-0.3.3.jar");
+		try {
+			url = FileLocator.toFileURL(url);
+		} catch (IOException e) {
+			FeatureAnalyzer.getDefault().logError(e);
+		}
+		Path pathToTypeChef = new Path(url.getFile());
+		args.add(0,System.getProperty("java.io.tmpdir") + File.separator
+				+ "platform.h");
+		args.add(0,"-h");
+		args.add(0,"--typecheck");
+		args.add(0, "--errorXML="+outputFilePath);
+		args.add(0, "--lexNoStdout");
+		args.add(0, "-w");
+		args.add(0, pathToTypeChef.toOSString());
+		args.add(0, "-jar");
+		args.add(0, "java");
+		for(String s : args){
+			System.err.print(s + " ");
+		}
+		ProcessBuilder processBuilder = new ProcessBuilder(args);
+
+		BufferedReader input = null;
+		BufferedReader error = null;
+		try {
+			Process process = processBuilder.start();
+			input = new BufferedReader(new InputStreamReader(
+					process.getInputStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			error = new BufferedReader(new InputStreamReader(
+					process.getErrorStream(), Charset.availableCharsets().get(
+							"UTF-8")));
+			boolean x = true;
+			while (x) {
+				try {
+					String line;
+					while ((line = error.readLine()) != null) {
+						System.out.println(line);
+						FeatureAnalyzer.getDefault().logWarning(line);
+					}
+
+					try {
+						process.waitFor();
+					} catch (InterruptedException e) {
+						System.out.println(e.toString());
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+					int exitValue = process.exitValue();
+					if (exitValue != 0) {
+						throw new IOException(
+								"The process doesn't finish normally (exit="
+										+ exitValue + ")!");
+					}
+					x = false;
+				} catch (IllegalThreadStateException e) {
+					System.out.println(e.toString());
+					FeatureAnalyzer.getDefault().logError(e);
+				}
+			}
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			openMessageBox(e);
+			FeatureAnalyzer.getDefault().logError(e);
+		} finally {
+			try {
+				if (input != null)
+					input.close();
+			} catch (IOException e) {
+				FeatureAnalyzer.getDefault().logError(e);
+			} finally {
+				if (error != null)
+					try {
+						error.close();
+					} catch (IOException e) {
+						FeatureAnalyzer.getDefault().logError(e);
+					}
+			}
+		}
+	}
+
+	/**
+	 * Opens a message box if GCC or CPP could not be executed.
+	 */
+	private void openMessageBox(final IOException e) {
+		UIJob uiJob = new UIJob("") {
+			@Override
+			public IStatus runInUIThread(IProgressMonitor monitor) {
+				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
+				d.setMessage(e.getMessage().toLowerCase());
+				d.setText("Compilation can not be executed.");
+				d.open();
+				return Status.OK_STATUS;
+			}
+		};
+		uiJob.setPriority(Job.SHORT);
+		uiJob.schedule();
+	}
+
 	private List<String> resourceToString(List<IResource> list) {
 		List<String> resoucesAsString = new LinkedList<String>();
-		//pega um dos arquivos para descobrir qual projeto esta sendo verificado...
-		if(project == null){
+		// pega um dos arquivos para descobrir qual projeto esta sendo
+		// verificado...
+		if (project == null) {
 			project = list.get(0).getProject();
 			System.err.println(project.toString());
 		}
-		for(IResource resouce : list){
-			System.out.println((resouce.getLocation().toOSString()));
-			resoucesAsString.add(resouce.getLocation().toOSString());
+		for (IResource resouce : list) {
+			System.out.println(resouce.getLocation().toString());
+			resoucesAsString.add(resouce.getLocation().toString());
 		}
 		return resoucesAsString;
 	}
 
+	@Override
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}
-
 }

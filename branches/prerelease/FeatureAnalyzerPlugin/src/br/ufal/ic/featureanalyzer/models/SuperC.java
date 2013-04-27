@@ -37,4 +37,12 @@ public class SuperC implements Model {
 	}
 
 
+
+	@Override
+	public void runCommandLineMode(List<IResource> list) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
 }

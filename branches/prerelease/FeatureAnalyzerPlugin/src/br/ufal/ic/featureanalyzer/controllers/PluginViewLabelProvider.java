@@ -9,6 +9,7 @@ import org.eclipse.ui.PlatformUI;
 import br.ufal.ic.featureanalyzer.util.Log;
 
 class PluginViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+	@Override
 	public String getColumnText(Object obj, int index) {
 		switch (index) {
 		case 0:
@@ -34,6 +35,7 @@ class PluginViewLabelProvider extends LabelProvider implements ITableLabelProvid
 		}
 	}
 
+	@Override
 	public Image getColumnImage(Object obj, int index) {
 		switch (index) {
 		case 0:

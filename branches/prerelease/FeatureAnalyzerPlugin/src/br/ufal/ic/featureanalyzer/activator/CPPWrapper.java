@@ -1,9 +1,7 @@
 package br.ufal.ic.featureanalyzer.activator;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
@@ -106,6 +104,7 @@ public class CPPWrapper {
 	 */
 	private void openMessageBox(final IOException e) {
 		UIJob uiJob = new UIJob("") {
+			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
 				d.setMessage(e.getMessage().toLowerCase());

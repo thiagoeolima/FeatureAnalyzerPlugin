@@ -122,7 +122,7 @@ public class Log {
 				e.printStackTrace();
 			}
 
-			iTextSelection = (ITextSelection) new LogSelection(
+			iTextSelection = new LogSelection(
 					Integer.parseInt(line), Integer.parseInt(column), offset);
 
 		}
