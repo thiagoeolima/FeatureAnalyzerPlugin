@@ -35,8 +35,8 @@ public class Controller {
 	public void run() throws Exception {
 		this.createdModel();
 		pkgExplorerController.run();
-		model.run(pkgExplorerController.getList());
-		//model.runCommandLineMode(pkgExplorerController.getList());
+		//model.run(pkgExplorerController.getList());
+		model.runCommandLineMode(pkgExplorerController.getList());
 	}
 
 

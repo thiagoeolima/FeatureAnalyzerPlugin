@@ -157,6 +157,9 @@ public class TypeChef implements Model {
 		}
 		Path pathToTypeChef = new Path(url.getFile());
 		args.add(0,System.getProperty("java.io.tmpdir") + File.separator
+				+ "cnf.txt");
+		args.add(0,"--featureModelFExpr");
+		args.add(0,System.getProperty("java.io.tmpdir") + File.separator
 				+ "platform.h");
 		args.add(0,"-h");
 		args.add(0,"--typecheck");
