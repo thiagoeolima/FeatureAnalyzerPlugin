@@ -45,15 +45,17 @@ public class TypeChef implements Model {
 	private FrontendOptionsWithConfigFiles fo;
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
+	private CPPWrapper cppWrapper;
 
 	private final String outputFilePath;
 
 	public TypeChef() {
+		cppWrapper = new CPPWrapper();
 		fo = new FrontendOptionsWithConfigFiles();
 		xmlParser = new XMLParserTypeChef();
 
 		// saved in the' temp directory
-		outputFilePath = System.getProperty("java.io.tmpdir") + File.separator + "output.xml";
+		outputFilePath = System.getProperty("java.io.tmpdir") + "output.xml";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
@@ -98,12 +100,11 @@ public class TypeChef implements Model {
 	}
 
 	private void start(List<String> list) {
-		CPPWrapper cppWrapper = new CPPWrapper();
 		prepareFeatureModel(); // General processing options String
 		String typeChefPreference = FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
 
-		String[] parameters = {"-w", "--lexNoStdout", "--errorXML="+outputFilePath,typeChefPreference,
+		String[] parameters = {list.get(0), "-w", "--lexNoStdout", "--errorXML="+outputFilePath,typeChefPreference,
 				"-h",
 				System.getProperty("java.io.tmpdir") + File.separator
 						+ "platform.h"};
@@ -111,7 +112,7 @@ public class TypeChef implements Model {
 		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("SystemIncludes"));
 
-		fo.getFiles().addAll(list);
+		//fo.getFiles().addAll(list);
 		fo.parseOptions(parameters);
 		fo.setPrintToStdOutput(false);
 	}
@@ -132,15 +133,42 @@ public class TypeChef implements Model {
 		xmlParser.processFile();
 		fo.getFiles().clear();
 	}
+	
+	/**
+	 *  Esse metodo eh executado dentro da classe CPPComposer
+	 * @param filesList Lista de arquivos que serão avaliados
+	 * @param project projeto dono do arquivo
+	 */
+	public void runCommandLineMode(List<String> filesList, IProject project) {
+		this.project = project;
+		runCommand(filesList);
+
+	}
+	/**
+	 * Abstração para evitar duplicação de código
+	 * @param filesList
+	 */
+	private void runCommand(List<String> filesList){
+		prepareFeatureModel();
+		cppWrapper.gerenatePlatformHeader(filesList, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemIncludes"));
+		
+		xmlParser.clearLogList();
+		
+		for(String file : filesList){
+			List<String> fileAux = new LinkedList<String>();
+			fileAux.add(file);
+			startCommandLineMode(fileAux);
+			xmlParser.setXMLFile(new File(outputFilePath));
+			xmlParser.processFile();
+		}
+		fo.getFiles().clear();
+	}
 
 	@Override
 	public void runCommandLineMode(List<IResource> list) {
-		// TODO: Flush the file
-		startCommandLineMode(resourceToString(list));
-
-		xmlParser.setXMLFile(new File(outputFilePath));
-		xmlParser.processFile();
-		fo.getFiles().clear();
+		List<String> filesList = resourceToString(list);
+		runCommand(filesList);
 	}
 
 	@SuppressWarnings("restriction")
@@ -156,13 +184,18 @@ public class TypeChef implements Model {
 			FeatureAnalyzer.getDefault().logError(e);
 		}
 		Path pathToTypeChef = new Path(url.getFile());
-		args.add(0,System.getProperty("java.io.tmpdir") + File.separator
+		//args.add(0,FeatureAnalyzer.getDefault()
+		//.getPreferenceStore().getString("SystemIncludes"));
+		//args.add(0,"--systemIncludes");
+		//args.add(0,"");
+	    //args.add(0,"--systemRoot");
+		args.add(0,System.getProperty("java.io.tmpdir")
 				+ "cnf.txt");
 		args.add(0,"--featureModelFExpr");
-		args.add(0,System.getProperty("java.io.tmpdir") + File.separator
+		args.add(0,System.getProperty("java.io.tmpdir")
 				+ "platform.h");
 		args.add(0,"-h");
-		args.add(0,"--typecheck");
+		args.add(0,typeChefPreference);
 		args.add(0, "--errorXML="+outputFilePath);
 		args.add(0, "--lexNoStdout");
 		args.add(0, "-w");
@@ -192,7 +225,6 @@ public class TypeChef implements Model {
 						System.out.println(line);
 						FeatureAnalyzer.getDefault().logWarning(line);
 					}
-
 					try {
 						process.waitFor();
 					} catch (InterruptedException e) {

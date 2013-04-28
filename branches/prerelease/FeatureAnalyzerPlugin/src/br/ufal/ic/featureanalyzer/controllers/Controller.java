@@ -10,6 +10,7 @@ import br.ufal.ic.featureanalyzer.models.TypeChef;
 public class Controller {
 	private ProjectExplorerController pkgExplorerController;
 	private Model model;
+	
 
 
 	public Controller() {
@@ -37,6 +38,10 @@ public class Controller {
 		pkgExplorerController.run();
 		//model.run(pkgExplorerController.getList());
 		model.runCommandLineMode(pkgExplorerController.getList());
+	}
+	
+	public Model getModel(){
+		return model;
 	}
 
 

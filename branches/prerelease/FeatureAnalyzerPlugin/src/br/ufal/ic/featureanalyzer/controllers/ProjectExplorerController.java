@@ -65,6 +65,10 @@ public class ProjectExplorerController {
 			 aux = ((CContainer) o).getResource();
 		}else if(o instanceof ITranslationUnit){
 			 aux = ((ITranslationUnit) o).getResource();
+		}else if(o instanceof IFile){
+			aux = (IResource) o;
+		}else if(o instanceof IFolder){
+			aux = (IResource) o;
 		}else {
 			throw new Exception("Selecione um arquivo/diretório válido.");
 		}

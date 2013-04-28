@@ -27,7 +27,6 @@ public class XMLParserTypeChef {
 	}
 
 	public void processFile() {
-		logList.clear();
 		try {
 			Document document = builder.build(xmlFile);
 			Element rootNode = document.getRootElement();
@@ -59,6 +58,10 @@ public class XMLParserTypeChef {
 
 	public List<Log> getLogList() {
 		return logList;
+	}
+	
+	public void clearLogList(){
+		logList.clear();
 	}
 
 	public Object[] getLogs() {

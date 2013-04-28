@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.activator; 
+package br.ufal.ic.featureanalyzer.activator;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,11 +20,20 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.handlers.HandlerUtil;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
-import br.ufal.ic.featureanalyzer.controllers.Controller;
+import br.ufal.ic.featureanalyzer.handler.FeatureAnalyzerPluginHandler;
+import br.ufal.ic.featureanalyzer.models.TypeChef;
+import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -32,8 +41,7 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirective;
 import de.ovgu.featureide.fm.core.Feature;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 
-
-public class CPPComposer extends PPComposerExtensionClass{
+public class CPPComposer extends PPComposerExtensionClass {
 
 	private static final String PLUGIN_CDT_ID = "org.eclipse.cdt";
 	private static final String PLUGIN_WARNING = "The required bundle "
@@ -41,13 +49,13 @@ public class CPPComposer extends PPComposerExtensionClass{
 	public static final String COMPOSER_ID = "br.ufal.ic.featureanalyzer.cppcomposer";
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
 	public static final String CC_NATURE = "org.eclipse.cdt.core.ccnature";
-	
-	private Controller controller;
 
 	/** pattern for replacing preprocessor commands like "//#if" */
 	static final Pattern replaceCommandPattern = Pattern.compile("#(.+?)\\s");
 
 	private CPPModelBuilder cppModelBuilder;
+
+	private TypeChef typeChef;
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -58,25 +66,27 @@ public class CPPComposer extends PPComposerExtensionClass{
 		boolean supSuccess = super.initialize(project);
 		cppModelBuilder = new CPPModelBuilder(project);
 
-		//Setup the controller
+		// Start typeChef
+		typeChef = new TypeChef();
+		// Setup the controller
 		prepareFullBuild(null);
-		//annotationChecking();
+		// annotationChecking();
 
-		if(supSuccess==false||cppModelBuilder==null) {
+		if (supSuccess == false || cppModelBuilder == null) {
 			return false;
 		} else {
 			return true;
 		}
 	}
-	
-	private static final LinkedHashSet<String> EXTENSIONS = createExtensions(); 
+
+	private static final LinkedHashSet<String> EXTENSIONS = createExtensions();
 
 	private static LinkedHashSet<String> createExtensions() {
 		LinkedHashSet<String> extensions = new LinkedHashSet<String>();
 		extensions.add("h");
 		extensions.add("c");
 		return extensions;
-	}  
+	}
 
 	@Override
 	public LinkedHashSet<String> extensions() {
@@ -88,7 +98,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 			String configPath, String buildPath) {
 		addNature(project);
 	}
-	
+
 	private void addNature(IProject project) {
 		try {
 			if (!project.isAccessible() || project.hasNature(C_NATURE))
@@ -101,16 +111,16 @@ public class CPPComposer extends PPComposerExtensionClass{
 			newNatures[natures.length] = C_NATURE;
 			description.setNatureIds(newNatures);
 			project.setDescription(description, null);
-			
+
 		} catch (CoreException e) {
 			CorePlugin.getDefault().logError(e);
 		}
 
-	} 
+	}
 
 	@Override
 	public void performFullBuild(IFile config) {
-		if(!isPluginInstalled(PLUGIN_CDT_ID)){
+		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
 			generateWarning(PLUGIN_WARNING);
 		}
 		if (!prepareFullBuild(config))
@@ -125,10 +135,11 @@ public class CPPComposer extends PPComposerExtensionClass{
 			cppModelBuilder.buildModel();
 	}
 
-	
-
-	/* (non-Javadoc)
-	 * @see de.ovgu.featureide.core.builder.ComposerExtensionClass#postModelChanged()
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * de.ovgu.featureide.core.builder.ComposerExtensionClass#postModelChanged()
 	 */
 	@Override
 	public void postModelChanged() {
@@ -154,9 +165,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 		try {
 			for (final IResource res : folder.members()) {
 				if (res instanceof IFolder) {
-					annotationChecking((IFolder)res);
-				} else 
-				if (res instanceof IFile){
+					annotationChecking((IFolder) res);
+				} else if (res instanceof IFile) {
 					final Vector<String> lines = loadStringsFromFile((IFile) res);
 					// do checking and some stuff
 					processLinesOfFile(lines, (IFile) res);
@@ -170,13 +180,16 @@ public class CPPComposer extends PPComposerExtensionClass{
 	/**
 	 * Do checking for all lines of file.
 	 * 
-	 * @param lines all lines of file
-	 * @param res file
+	 * @param lines
+	 *            all lines of file
+	 * @param res
+	 *            file
 	 */
-	synchronized private void processLinesOfFile(Vector<String> lines, IFile res){
+	synchronized private void processLinesOfFile(Vector<String> lines, IFile res) {
 		expressionStack = new Stack<Node>();
 
-		// count of if, ifelse and else to remove after processing of else from stack
+		// count of if, ifelse and else to remove after processing of else from
+		// stack
 		ifelseCountStack = new Stack<Integer>();
 
 		// go line for line
@@ -185,29 +198,31 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 			// if line is preprocessor directive
 			if (line.contains("#")) {
-				if (line.contains("#if") ||
-					line.contains("#elif ") ||
-					line.contains("#else") ||
-					line.contains("#ifdef ") ||
-					line.contains("#ifndef ")) {
+				if (line.contains("#if") || line.contains("#elif ")
+						|| line.contains("#else") || line.contains("#ifdef ")
+						|| line.contains("#ifndef ")) {
 
-					// if e1, elseif e2, ..., elseif en  ==  if -e1 && -e2 && ... && en
-					// if e1, elseif e2, ..., else  ==  if -e1 && -e2 && ...
+					// if e1, elseif e2, ..., elseif en == if -e1 && -e2 && ...
+					// && en
+					// if e1, elseif e2, ..., else == if -e1 && -e2 && ...
 					if (line.contains("#elif ") || line.contains("#else")) {
-						if(!expressionStack.isEmpty()) {
-							Node lastElement = new Not(expressionStack.pop().clone());
+						if (!expressionStack.isEmpty()) {
+							Node lastElement = new Not(expressionStack.pop()
+									.clone());
 							expressionStack.push(lastElement);
 						}
-					} else if (line.contains("#if ") || line.contains("#ifdef ") || line.contains("#ifndef ")) {
+					} else if (line.contains("#if ")
+							|| line.contains("#ifdef ")
+							|| line.contains("#ifndef ")) {
 						ifelseCountStack.push(0);
 					}
 
 					if (!ifelseCountStack.empty() && !line.contains("#else"))
 						ifelseCountStack.push(ifelseCountStack.pop() + 1);
 
-					setMarkersContradictionalFeatures(line, res, j+1);
+					setMarkersContradictionalFeatures(line, res, j + 1);
 
-					setMarkersNotConcreteFeatures(line, res, j+1);
+					setMarkersNotConcreteFeatures(line, res, j + 1);
 				} else if (line.contains("#endif")) {
 					while (!ifelseCountStack.empty()) {
 						if (ifelseCountStack.peek() == 0)
@@ -229,23 +244,29 @@ public class CPPComposer extends PPComposerExtensionClass{
 	/**
 	 * Checks given line if it contains not existing or abstract features.
 	 * 
-	 * @param line content of line
-	 * @param res file containing given line
-	 * @param lineNumber line number of given line
+	 * @param line
+	 *            content of line
+	 * @param res
+	 *            file containing given line
+	 * @param lineNumber
+	 *            line number of given line
 	 */
-	private void setMarkersNotConcreteFeatures(String line, IFile res, int lineNumber) {
+	private void setMarkersNotConcreteFeatures(String line, IFile res,
+			int lineNumber) {
 		String[] splitted = line.split(CPPModelBuilder.OPERATORS, 0);
 
 		for (int i = 0; i < splitted.length; ++i) {
 			if (!splitted[i].equals("") && !splitted[i].contains("#")) {
-				setMarkersOnNotExistingOrAbstractFeature(splitted[i], lineNumber, res);
+				setMarkersOnNotExistingOrAbstractFeature(splitted[i],
+						lineNumber, res);
 			}
 		}
 	}
 
 	/**
-	 * Checks given line if it contains expressions which are always 
-	 * <code>true</code> or <code>false</code>.<br /><br />
+	 * Checks given line if it contains expressions which are always
+	 * <code>true</code> or <code>false</code>.<br />
+	 * <br />
 	 * 
 	 * Check in three steps:
 	 * <ol>
@@ -254,11 +275,15 @@ public class CPPComposer extends PPComposerExtensionClass{
 	 * <li>the given line, the surrounding lines and the feature model</li>
 	 * </ol>
 	 * 
-	 * @param line content of line
-	 * @param res file containing given line
-	 * @param lineNumber line number of given line
+	 * @param line
+	 *            content of line
+	 * @param res
+	 *            file containing given line
+	 * @param lineNumber
+	 *            line number of given line
 	 */
-	private void setMarkersContradictionalFeatures(String line, IFile res, int lineNumber){
+	private void setMarkersContradictionalFeatures(String line, IFile res,
+			int lineNumber) {
 		if (line.contains("#else")) {
 			if (!expressionStack.isEmpty()) {
 				Node[] nestedExpressions = new Node[expressionStack.size()];
@@ -266,7 +291,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 				And nestedExpressionsAnd = new And(nestedExpressions);
 
-				isContradictionOrTautology(nestedExpressionsAnd.clone(), true, lineNumber, res);
+				isContradictionOrTautology(nestedExpressionsAnd.clone(), true,
+						lineNumber, res);
 			}
 
 			return;
@@ -286,7 +312,7 @@ public class CPPComposer extends PPComposerExtensionClass{
 		line = line.replace("|", " or ");
 		line = line.replace("-", " not ");
 
-		//get all features and generate Node expression for given line
+		// get all features and generate Node expression for given line
 		Node ppExpression = nodereader.stringToNode(line, featureList);
 
 		if (ppExpression != null) {
@@ -294,21 +320,26 @@ public class CPPComposer extends PPComposerExtensionClass{
 				ppExpression = new Not(ppExpression.clone());
 
 			doThreeStepExpressionCheck(ppExpression, lineNumber, res);
-		} 
+		}
 
 	}
-
 
 	/**
 	 * preprocess all files in folder
 	 * 
-	 * @param sourceFolder folder with files to preprocess
-	 * @param buildFolder folder for preprocessed files
-	 * @param annotationChecking <code>true</code> if preprocessor annotations should be checked
-	 * @param performFullBuild <code>true</code> if the munge should be called
+	 * @param sourceFolder
+	 *            folder with files to preprocess
+	 * @param buildFolder
+	 *            folder for preprocessed files
+	 * @param annotationChecking
+	 *            <code>true</code> if preprocessor annotations should be
+	 *            checked
+	 * @param performFullBuild
+	 *            <code>true</code> if the munge should be called
 	 * @throws CoreException
 	 */
-	private void preprocessSourceFiles(IFolder buildFolder) throws CoreException {
+	private void preprocessSourceFiles(IFolder buildFolder)
+			throws CoreException {
 		LinkedList<String> args = new LinkedList<String>();
 		for (String feature : activatedFeatures) {
 			args.add("-D" + feature);
@@ -317,11 +348,9 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 	}
 
-
-
 	/**
-	 * Calls cpp for each file separate
-	 * Creates all folders at the build path
+	 * Calls cpp for each file separate Creates all folders at the build path
+	 * 
 	 * @param featureArgs
 	 * @param sourceFolder
 	 * @param buildFolder
@@ -331,44 +360,82 @@ public class CPPComposer extends PPComposerExtensionClass{
 			IFolder buildFolder) {
 
 		CPPWrapper cpp = new CPPWrapper();
-		String fullFilePath;
-		if(buildFolder.getName().equals("src")){
+		if (buildFolder.getName().equals("src")) {
 			buildFolder = featureProject.getProject().getFolder("/build");
 		}
-		LinkedList<String> packageArgs;
-		LinkedList<String> compilerArgs = (LinkedList<String>) featureArgs.clone();
+		LinkedList<String> compilerArgs = (LinkedList<String>) featureArgs
+				.clone();
+		LinkedList<String> fileList = new LinkedList<String>();
 		try {
 			createBuildFolder(buildFolder);
-			for (final IResource res : sourceFolder.members()) {
-				if (res instanceof IFolder) {
-					runBuild(featureArgs, (IFolder)res, buildFolder.getFolder(res.getName()));
-				} else 
-				if (res instanceof IFile){
-					fullFilePath = res.getRawLocation().toOSString();
-					if(!res.getFileExtension().equals("c") && !res.getFileExtension().equals("h") ){
-						continue;
-					} else if(res.getFileExtension().equals("c")){
-						compilerArgs.add(fullFilePath);
-					}
-					packageArgs = (LinkedList<String>) featureArgs.clone();
-					packageArgs.add(fullFilePath);
-				    packageArgs.add("-o");
-				    packageArgs.add(buildFolder.getRawLocation().toOSString() + File.separator + res.getName());
-
-					//CommandLine syntax:
-					//	-DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1 
-					cpp.runPreProcessor(packageArgs);
-				}
-			}
+			prepareFilesConfiguration(featureArgs, fileList, sourceFolder, buildFolder, cpp);
+			runTypeChefAnalyzes(fileList);
+			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");
-			compilerArgs.add(buildFolder.getRawLocation().toOSString()+ File.separator+ buildFolder.getName());
+			compilerArgs.add(buildFolder.getLocation().toOSString()
+					+ File.separator + buildFolder.getName());
 			cpp.runCompiler(compilerArgs);
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
 		}
+	}
+
+	private void runTypeChefAnalyzes(LinkedList<String> filesList) {
+		IWorkbench workb = FeatureAnalyzer.getDefault().getWorkbench();
+		IWorkbenchWindow win = workb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+		
+		try {
+			// Open and active the Analyzer view
+			page.showView(AnalyzerView.ID);
+			typeChef.runCommandLineMode(filesList, featureProject.getProject());
+			// Update the tree view.
+			IViewPart treeView = win.getActivePage().findView(AnalyzerView.ID);
+
+			if (treeView instanceof AnalyzerView) {
+				final AnalyzerView TypeChefPluginView = (AnalyzerView) treeView;
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			String message = e.getMessage() == null ? "Select a file/directory valid."
+					: e.getMessage();
+
+			MessageDialog.openInformation(win.getShell(), "TypeChef", message);
+		}
 
 	}
 
+	@SuppressWarnings("unchecked")
+	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
+			LinkedList<String> fileList, IFolder sourceFolder,
+			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
+		String fullFilePath = null;
+		LinkedList<String> preProcessorArgs;
+		for (final IResource res : sourceFolder.members()) {
+			if (res instanceof IFolder) {
+				prepareFilesConfiguration(featureArgs, fileList, (IFolder) res,
+						buildFolder.getFolder(res.getName()), cpp);
+			} else if (res instanceof IFile) {
+				if (!res.getFileExtension().equals("c")
+						&& !res.getFileExtension().equals("h")) {
+					continue;
+				}
+				fullFilePath = res.getLocation().toOSString();
+				fileList.add(fullFilePath);
+				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
+				preProcessorArgs.add(fullFilePath);
+				preProcessorArgs.add("-o");
+				preProcessorArgs.add(buildFolder.getLocation().toOSString()
+						+ File.separator + res.getName());
+
+				// CommandLine syntax:
+				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1
+				cpp.runPreProcessor(preProcessorArgs);
+			}
+
+		}
+	}
 
 	private void createBuildFolder(IFolder buildFolder) throws CoreException {
 		if (!buildFolder.exists()) {
@@ -385,10 +452,11 @@ public class CPPComposer extends PPComposerExtensionClass{
 	private static final ArrayList<String[]> TEMPLATES = createTempltes();
 
 	private static ArrayList<String[]> createTempltes() {
-		 ArrayList<String[]> list = new  ArrayList<String[]>();
-		 list.add(new String[]{"C.c", "c", "\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n}"});
-		 list.add(new String[]{"C.h", "h", "\r\n" + "header" + " {\r\n\r\n}"});
-		 return list;
+		ArrayList<String[]> list = new ArrayList<String[]>();
+		list.add(new String[] { "C.c", "c",
+				"\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n}" });
+		list.add(new String[] { "C.h", "h", "\r\n" + "header" + " {\r\n\r\n}" });
+		return list;
 	}
 
 	@Override
@@ -398,15 +466,22 @@ public class CPPComposer extends PPComposerExtensionClass{
 			@Override
 			public IStatus run(IProgressMonitor monitor) {
 				try {
-					IMarker[] marker = file.findMarkers(null, false, IResource.DEPTH_ZERO);
+					IMarker[] marker = file.findMarkers(null, false,
+							IResource.DEPTH_ZERO);
 					if (marker.length != 0) {
 						for (IMarker m : marker) {
-							IFile sourceFile = findSourceFile(file, featureProject.getSourceFolder());
+							IFile sourceFile = findSourceFile(file,
+									featureProject.getSourceFolder());
 							if (!hasMarker(m, sourceFile)) {
-								IMarker newMarker = sourceFile.createMarker(CorePlugin.PLUGIN_ID + ".builderProblemMarker");
-								newMarker.setAttribute(IMarker.LINE_NUMBER, m.getAttribute(IMarker.LINE_NUMBER));
-								newMarker.setAttribute(IMarker.MESSAGE, m.getAttribute(IMarker.MESSAGE));
-								newMarker.setAttribute(IMarker.SEVERITY, m.getAttribute(IMarker.SEVERITY));
+								IMarker newMarker = sourceFile
+										.createMarker(CorePlugin.PLUGIN_ID
+												+ ".builderProblemMarker");
+								newMarker.setAttribute(IMarker.LINE_NUMBER,
+										m.getAttribute(IMarker.LINE_NUMBER));
+								newMarker.setAttribute(IMarker.MESSAGE,
+										m.getAttribute(IMarker.MESSAGE));
+								newMarker.setAttribute(IMarker.SEVERITY,
+										m.getAttribute(IMarker.SEVERITY));
 							}
 						}
 					}
@@ -418,13 +493,18 @@ public class CPPComposer extends PPComposerExtensionClass{
 
 			private boolean hasMarker(IMarker buildMarker, IFile sourceFile) {
 				try {
-					IMarker[] marker = sourceFile.findMarkers(null, true, IResource.DEPTH_ZERO);
-					int LineNumber = buildMarker.getAttribute(IMarker.LINE_NUMBER, -1);
-					String Message = buildMarker.getAttribute(IMarker.MESSAGE, null);
+					IMarker[] marker = sourceFile.findMarkers(null, true,
+							IResource.DEPTH_ZERO);
+					int LineNumber = buildMarker.getAttribute(
+							IMarker.LINE_NUMBER, -1);
+					String Message = buildMarker.getAttribute(IMarker.MESSAGE,
+							null);
 					if (marker.length > 0) {
 						for (IMarker m : marker) {
-							if (LineNumber == m.getAttribute(IMarker.LINE_NUMBER, -1)) {
-								if (Message.equals(m.getAttribute(IMarker.MESSAGE, null))) {
+							if (LineNumber == m.getAttribute(
+									IMarker.LINE_NUMBER, -1)) {
+								if (Message.equals(m.getAttribute(
+										IMarker.MESSAGE, null))) {
 									return true;
 								}
 							}
@@ -440,16 +520,17 @@ public class CPPComposer extends PPComposerExtensionClass{
 		job.schedule();
 	}
 
-	private IFile findSourceFile(IFile file, IFolder folder) throws CoreException {
-		for (IResource res: folder.members()) {
+	private IFile findSourceFile(IFile file, IFolder folder)
+			throws CoreException {
+		for (IResource res : folder.members()) {
 			if (res instanceof IFolder) {
-				IFile sourceFile = findSourceFile(file, (IFolder)res);
+				IFile sourceFile = findSourceFile(file, (IFolder) res);
 				if (sourceFile != null) {
 					return sourceFile;
 				}
 			} else if (res instanceof IFile) {
 				if (res.getName().equals(file.getName()))
-					return (IFile)res;
+					return (IFile) res;
 			}
 		}
 		return null;
@@ -481,7 +562,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 
 	@Override
-	public void buildConfiguration(IFolder folder, Configuration configuration, String congurationName) {
+	public void buildConfiguration(IFolder folder, Configuration configuration,
+			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
 		if (activatedFeatures == null) {
 			activatedFeatures = new ArrayList<String>();
@@ -504,7 +586,8 @@ public class CPPComposer extends PPComposerExtensionClass{
 	}
 
 	@Override
-	public LinkedList<FSTDirective> buildModelDirectivesForFile(Vector<String> lines) {
+	public LinkedList<FSTDirective> buildModelDirectivesForFile(
+			Vector<String> lines) {
 		return cppModelBuilder.buildModelDirectivesForFile(lines);
 	}
 
@@ -512,6 +595,5 @@ public class CPPComposer extends PPComposerExtensionClass{
 	public boolean needColor() {
 		return false;
 	}
-
 
 }

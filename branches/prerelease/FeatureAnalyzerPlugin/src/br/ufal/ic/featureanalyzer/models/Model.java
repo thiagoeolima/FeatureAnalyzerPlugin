@@ -10,7 +10,11 @@ public interface Model {
 	public Object[] getLogs();
 
 	public void run(List<IResource> list);
-
+	
+	/**
+	 * 
+	 * @param list - Lista de arquivos em forma de Resouces que serão avaliados
+	 */
 	void runCommandLineMode(List<IResource> list);
 
 
