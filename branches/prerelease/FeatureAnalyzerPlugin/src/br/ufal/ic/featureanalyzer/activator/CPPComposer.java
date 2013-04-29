@@ -25,13 +25,10 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
-import br.ufal.ic.featureanalyzer.handler.FeatureAnalyzerPluginHandler;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 import de.ovgu.featureide.core.CorePlugin;

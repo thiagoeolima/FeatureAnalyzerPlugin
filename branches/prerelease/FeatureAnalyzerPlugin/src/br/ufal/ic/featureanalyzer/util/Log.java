@@ -1,6 +1,10 @@
 package br.ufal.ic.featureanalyzer.util;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.filebuffers.FileBuffers;
@@ -16,6 +20,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+
 public class Log {
 
 	private String feature;
@@ -23,14 +29,14 @@ public class Log {
 	private String message;
 	private String fileName;
 	private String path;
-	private String line;
-	private String column;
+	private int line;
+	private int column;
 	private ITextSelection iTextSelection;
 
 	public Log(String fileName, String line, String column, String feature,
 			String severity, String message) {
-		this.line = line.trim();
-		this.column = column.trim();
+		this.line = Integer.parseInt(line.trim());
+		this.column = Integer.parseInt(column.trim());
 		this.feature = feature.trim();
 
 		if (severity == null) {
@@ -88,14 +94,6 @@ public class Log {
 		return workspace.getRoot().getLocation().toString() + path;
 	}
 
-	public String getLineNumber() {
-		return line;
-	}
-
-	public String getColumnNumber() {
-		return column;
-	}
-
 	public IFile getFile() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IPath location = Path.fromOSString(this.getFullPath() + this.fileName);
@@ -106,11 +104,46 @@ public class Log {
 
 		if (iTextSelection == null) {
 			int offset = 0;
+			int correctLine = 0;
+			int correctColunm = 0;
+
+			File parserFile = new File(FeatureAnalyzer.getDefault()
+					.getConfigDir().getAbsolutePath()
+					+ File.separator + "lexOutput.c");
+
+			File file = new File(this.getFullPath() + this.fileName);
 			try {
+
+				BufferedReader parserFileRead = new BufferedReader(
+						new FileReader(parserFile));
+
+				for (int i = 1, k = line - 1; (parserFileRead.readLine() != null)
+						&& (i < k); i++)
+					;
+
+				String findLine = parserFileRead.readLine().trim();
+
+				System.out.println(findLine);
+
+				BufferedReader fileReader = new BufferedReader(new FileReader(
+						file));
+				String outline = null;
+
+				for (correctLine = 0; (outline = fileReader.readLine()) != null; correctLine++) {
+					if (outline.contains(findLine)) {
+						correctColunm = outline.length();
+						break;
+					}
+				}
+
+				parserFileRead.close();
+				fileReader.close();
+
 				IDocument document = getDocument(getFullPath() + getFileName());
 
-				offset = document.getLineOffset(Integer.parseInt(line));
-
+				offset = document.getLineOffset(correctLine);
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
 			} catch (CoreException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -120,10 +153,12 @@ public class Log {
 			} catch (BadLocationException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
-			iTextSelection = new LogSelection(
-					Integer.parseInt(line), Integer.parseInt(column), offset);
+			iTextSelection = new LogSelection(correctLine, correctColunm,
+					offset);
 
 		}
 		return iTextSelection;

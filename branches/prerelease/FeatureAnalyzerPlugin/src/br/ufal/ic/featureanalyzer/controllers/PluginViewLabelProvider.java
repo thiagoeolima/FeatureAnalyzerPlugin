@@ -23,11 +23,8 @@ class PluginViewLabelProvider extends LabelProvider implements ITableLabelProvid
 				return ((Log) obj).getPath();
 		case 3:
 			if (obj instanceof Log)
-				return ((Log) obj).getLineNumber();
-		case 4:
-			if (obj instanceof Log)
 				return ((Log) obj).getFeature();
-		case 5:
+		case 4:
 			if (obj instanceof Log)
 				return ((Log) obj).getSeverity();
 		default:

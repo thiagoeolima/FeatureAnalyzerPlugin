@@ -89,9 +89,9 @@ public class PluginViewController {
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = { "Message", "File", "Path", "Line", "Feature",
+		String[] titles = { "Message", "File", "Path", "Feature",
 				"Severity" };
-		int[] bounds = { 300, 100, 100, 50, 100, 100 };
+		int[] bounds = { 300, 100, 100,100, 100 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);

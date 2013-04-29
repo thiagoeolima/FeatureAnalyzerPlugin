@@ -24,13 +24,13 @@ public class LogSelection implements ITextSelection {
 
 	@Override
 	public int getOffset() {
-		return offset + column;
+		return offset;
 	}
 
 	@Override
 	public int getLength() {
 		// TODO Auto-generated method stub
-		return 5;
+		return column;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class LogSelection implements ITextSelection {
 	@Override
 	public int getEndLine() {
 		// TODO Auto-generated method stub
-		return line;
+		return line+1;
 	}
 
 	@Override

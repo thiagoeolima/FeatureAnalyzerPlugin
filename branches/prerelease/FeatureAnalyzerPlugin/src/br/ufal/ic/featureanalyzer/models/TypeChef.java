@@ -40,6 +40,7 @@ import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
+@SuppressWarnings("restriction")
 public class TypeChef implements Model {
 
 	private FrontendOptionsWithConfigFiles fo;
@@ -137,6 +138,7 @@ public class TypeChef implements Model {
 	public void run(List<IResource> list) {
 		// TODO: Flush the file
 		start(resourceToString(list));
+		xmlParser.clearLogList();
 
 		try {
 			Frontend.processFile(fo);
@@ -192,7 +194,6 @@ public class TypeChef implements Model {
 		runCommand(filesList);
 	}
 
-	@SuppressWarnings("restriction")
 	private void startCommandLineMode(List<String> args) {
 		String typeChefPreference = FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("TypeChefPreference");
