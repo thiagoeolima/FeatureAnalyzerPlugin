@@ -10,9 +10,10 @@ public class AnalyzerView extends ViewPart {
 
 	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".views.AnalyzerView";
 	private PluginViewController controller;
-
+	
 	public AnalyzerView() {
-		controller = new PluginViewController(this);
+		controller = PluginViewController.getInstance();
+		controller.setTypeChefPluginView(this);
 	}
 
 	@Override

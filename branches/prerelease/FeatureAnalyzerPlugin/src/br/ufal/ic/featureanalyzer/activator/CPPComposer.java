@@ -29,6 +29,7 @@ import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
+import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 import de.ovgu.featureide.core.CorePlugin;
@@ -378,28 +379,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	}
 
 	private void runTypeChefAnalyzes(LinkedList<String> filesList) {
-		IWorkbench workb = FeatureAnalyzer.getDefault().getWorkbench();
-		IWorkbenchWindow win = workb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
+		PluginViewController viewController = PluginViewController.getInstance();
 		
-		try {
-			// Open and active the Analyzer view
-			page.showView(AnalyzerView.ID);
-			typeChef.runCommandLineMode(filesList, featureProject.getProject());
-			// Update the tree view.
-			IViewPart treeView = win.getActivePage().findView(AnalyzerView.ID);
-
-			if (treeView instanceof AnalyzerView) {
-				final AnalyzerView TypeChefPluginView = (AnalyzerView) treeView;
-			}
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			String message = e.getMessage() == null ? "Select a file/directory valid."
-					: e.getMessage();
-
-			MessageDialog.openInformation(win.getShell(), "TypeChef", message);
-		}
+		typeChef.runCommandLineMode(filesList, featureProject.getProject());
+		viewController.adaptTo(typeChef.getLogs());
 
 	}
 

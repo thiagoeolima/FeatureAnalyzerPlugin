@@ -85,6 +85,14 @@ public class Log {
 		return fileName;
 	}
 
+	@Override
+	public String toString() {
+		return "Log [feature=" + feature + ", severity=" + severity
+				+ ", message=" + message + ", fileName=" + fileName + ", path="
+				+ path + ", line=" + line + ", column=" + column
+				+ ", iTextSelection=" + iTextSelection + "]";
+	}
+
 	public String getPath() {
 		return path;
 	}
