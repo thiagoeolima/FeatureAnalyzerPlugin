@@ -57,7 +57,7 @@ public class TypeChef implements Model {
 
 		// saved in the' temp directory
 		outputFilePath = FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
+				.getAbsolutePath() + File.separator
 				+ "output.xml";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
@@ -212,11 +212,11 @@ public class TypeChef implements Model {
 		// args.add(0,"");
 		// args.add(0,"--systemRoot");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
+				.getAbsolutePath() + File.separator
 				+ "cnf.txt");
 		args.add(0, "--featureModelFExpr");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
+				.getAbsolutePath() + File.separator
 				+ "platform.h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
