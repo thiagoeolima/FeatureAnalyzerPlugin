@@ -20,7 +20,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.prop4j.And;
 import org.prop4j.Node;
@@ -50,8 +49,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private CPPModelBuilder cppModelBuilder;
 
 	private TypeChef typeChef;
-	
-	
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -365,10 +362,13 @@ public class CPPComposer extends PPComposerExtensionClass {
 		LinkedList<String> fileList = new LinkedList<String>();
 		try {
 			createBuildFolder(buildFolder);
-			prepareFilesConfiguration(featureArgs, fileList, sourceFolder, buildFolder, cpp);
+			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
+					buildFolder, cpp);
 			proceedCompilationFlag = runTypeChefAnalyzes(fileList);
-			if(!proceedCompilationFlag){
-				//If the typeChefAnalyzes conclude that the user don't want to proceeed the compilation in case of error, return without doing it.
+			if (!proceedCompilationFlag) {
+				// If the typeChefAnalyzes conclude that the user don't want to
+				// proceeed the compilation in case of error, return without
+				// doing it.
 				return;
 			}
 			compilerArgs.addAll(fileList);
@@ -383,22 +383,26 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	/**
 	 * Return true if the project can be compiled, false in otherwise
+	 * 
 	 * @param filesList
 	 * @return
 	 */
 	private boolean runTypeChefAnalyzes(LinkedList<String> filesList) {
-		final PluginViewController viewController = PluginViewController.getInstance();
-		typeChef.runCommandLineMode(filesList, featureProject.getProject());
-		
+		final PluginViewController viewController = PluginViewController
+				.getInstance();
+		//typeChef.runCommandLineMode(filesList, featureProject.getProject());
+		 typeChef.run(filesList, featureProject.getProject());
 		final Display display = Display.getDefault();
-		if(display == null){
+		if (display == null) {
 			throw new NullPointerException("Display is null");
 		}
-		if(typeChef.getLogs().length >=0){
-			display.syncExec(new Runnable(){
-				public void run(){
+		if (typeChef.getLogs().length >= 0) {
+			display.syncExec(new Runnable() {
+				public void run() {
 					viewController.adaptTo(typeChef.getLogs());
-					//MessageDialog.openQuestion(display.getActiveShell(), "Error!", "This project contains errors in some feature combinations");
+					// MessageDialog.openQuestion(display.getActiveShell(),
+					// "Error!",
+					// "This project contains errors in some feature combinations");
 				}
 			});
 			return false;
@@ -574,7 +578,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		for (Feature feature : configuration.getSelectedFeatures()) {
 			activatedFeatures.add(feature.getName());
 		}
-		
+
 		try {
 			preprocessSourceFiles(folder);
 		} catch (CoreException e) {

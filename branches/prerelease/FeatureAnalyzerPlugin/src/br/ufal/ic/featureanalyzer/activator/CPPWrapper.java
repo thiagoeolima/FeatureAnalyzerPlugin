@@ -120,6 +120,16 @@ public class CPPWrapper {
 	}
 
 	public void gerenatePlatformHeader(List<String> fileList, String includeDir) {
+		System.out.println( System.getProperty("os.name"));
+		if(System.getProperty("os.name").equals("Linux")){
+		 gerenatePlatformHeaderLinux(fileList, includeDir);
+		}else{
+			gerenatePlatformWin(fileList, includeDir);
+		}
+		
+	}
+	
+	public void gerenatePlatformWin(List<String> fileList, String includeDir) {
 		List<String> list = new ArrayList<String>(fileList);
 		list.add("-o");
 		list.add(FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()

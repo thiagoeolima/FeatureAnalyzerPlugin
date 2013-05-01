@@ -57,8 +57,8 @@ public class TypeChef implements Model {
 
 		// saved in the' temp directory
 		outputFilePath = FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath() + File.separator
-				+ "output.xml";
+				.getAbsolutePath()
+				+ File.separator + "output.xml";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
@@ -109,9 +109,11 @@ public class TypeChef implements Model {
 				.getPreferenceStore().getString("TypeChefPreference");
 
 		String[] parameters = {
+				"--systemIncludes",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemIncludes"),
 				"-w",
-				"--errorXML",
-				outputFilePath,
+				"--errorXML=" + outputFilePath,
 				typeChefPreference,
 				"-h",
 				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
@@ -120,24 +122,17 @@ public class TypeChef implements Model {
 				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
 						+ File.separator + "lexOutput.c" };
 
-		// cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
-		// .getPreferenceStore().getString("SystemIncludes"));
-		CPPWrapper.gerenatePlatformHeaderLinux(list, FeatureAnalyzer
-				.getDefault().getPreferenceStore().getString("SystemIncludes"));
+		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("SystemIncludes"));
 
 		try {
 			fo.parseOptions(parameters);
 		} catch (Exception e) {
-			e.printStackTrace();
+			// System.out.println("TypeChef:" + e.getMessage());
 		}
 		fo.getFiles().addAll(list);
 		fo.setPrintToStdOutput(false);
-	}
 
-	@Override
-	public void run(List<IResource> list) {
-		// TODO: Flush the file
-		start(resourceToString(list));
 		xmlParser.clearLogList();
 
 		try {
@@ -152,11 +147,17 @@ public class TypeChef implements Model {
 		fo.getFiles().clear();
 	}
 
+	@Override
+	public void run(List<IResource> list) {
+		List<String> filesList = resourceToString(list);
+		start(filesList);
+	}
+
 	/**
 	 * Esse metodo eh executado dentro da classe CPPComposer
 	 * 
 	 * @param filesList
-	 *            Lista de arquivos que ser�o avaliados
+	 *            Lista de arquivos que serão avaliados
 	 * @param project
 	 *            projeto dono do arquivo
 	 */
@@ -164,6 +165,12 @@ public class TypeChef implements Model {
 		this.project = project;
 		runCommand(filesList);
 
+	}
+
+	public void run(List<String> filesList, IProject project) {
+		// TODO: Flush the file
+		this.project = project;
+		start(filesList);
 	}
 
 	/**
@@ -193,7 +200,6 @@ public class TypeChef implements Model {
 		List<String> filesList = resourceToString(list);
 		runCommand(filesList);
 	}
-	
 
 	private void startCommandLineMode(List<String> args) {
 		String typeChefPreference = FeatureAnalyzer.getDefault()
@@ -213,12 +219,12 @@ public class TypeChef implements Model {
 		// args.add(0,"");
 		// args.add(0,"--systemRoot");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath() + File.separator
-				+ "cnf.txt");
+				.getAbsolutePath()
+				+ File.separator + "cnf.txt");
 		args.add(0, "--featureModelFExpr");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath() + File.separator
-				+ "platform.h");
+				.getAbsolutePath()
+				+ File.separator + "platform.h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath);
@@ -316,7 +322,7 @@ public class TypeChef implements Model {
 			System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
-			System.out.println("ADD + " +resouce.getLocation().toString());
+			System.out.println("ADD + " + resouce.getLocation().toString());
 			resoucesAsString.add(resouce.getLocation().toString());
 		}
 		return resoucesAsString;

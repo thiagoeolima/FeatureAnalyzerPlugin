@@ -13,7 +13,7 @@ public interface Model {
 	
 	/**
 	 * 
-	 * @param list - Lista de arquivos em forma de Resouces que serão avaliados
+	 * @param list - Lista de arquivos em forma de Resouces que serï¿½o avaliados
 	 */
 	void runCommandLineMode(List<IResource> list);
 
