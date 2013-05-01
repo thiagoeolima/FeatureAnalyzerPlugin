@@ -21,17 +21,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.swt.widgets.Display;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
 import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
-import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -54,6 +50,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private CPPModelBuilder cppModelBuilder;
 
 	private TypeChef typeChef;
+	
+	
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -65,8 +63,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 		cppModelBuilder = new CPPModelBuilder(project);
 
 		// Start typeChef
-		typeChef = new TypeChef();
 		// Setup the controller
+		typeChef = new TypeChef();
 		prepareFullBuild(null);
 		// annotationChecking();
 
@@ -356,6 +354,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@SuppressWarnings("unchecked")
 	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
+		boolean proceedCompilationFlag = true;
 
 		CPPWrapper cpp = new CPPWrapper();
 		if (buildFolder.getName().equals("src")) {
@@ -367,7 +366,11 @@ public class CPPComposer extends PPComposerExtensionClass {
 		try {
 			createBuildFolder(buildFolder);
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder, buildFolder, cpp);
-			runTypeChefAnalyzes(fileList);
+			proceedCompilationFlag = runTypeChefAnalyzes(fileList);
+			if(!proceedCompilationFlag){
+				//If the typeChefAnalyzes conclude that the user don't want to proceeed the compilation in case of error, return without doing it.
+				return;
+			}
 			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");
 			compilerArgs.add(buildFolder.getLocation().toOSString()
@@ -378,11 +381,29 @@ public class CPPComposer extends PPComposerExtensionClass {
 		}
 	}
 
-	private void runTypeChefAnalyzes(LinkedList<String> filesList) {
-		PluginViewController viewController = PluginViewController.getInstance();
-		
+	/**
+	 * Return true if the project can be compiled, false in otherwise
+	 * @param filesList
+	 * @return
+	 */
+	private boolean runTypeChefAnalyzes(LinkedList<String> filesList) {
+		final PluginViewController viewController = PluginViewController.getInstance();
 		typeChef.runCommandLineMode(filesList, featureProject.getProject());
-		viewController.adaptTo(typeChef.getLogs());
+		
+		final Display display = Display.getDefault();
+		if(display == null){
+			throw new NullPointerException("Display is null");
+		}
+		if(typeChef.getLogs().length >=0){
+			display.syncExec(new Runnable(){
+				public void run(){
+					viewController.adaptTo(typeChef.getLogs());
+					//MessageDialog.openQuestion(display.getActiveShell(), "Error!", "This project contains errors in some feature combinations");
+				}
+			});
+			return false;
+		}
+		return true;
 
 	}
 
@@ -553,6 +574,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		for (Feature feature : configuration.getSelectedFeatures()) {
 			activatedFeatures.add(feature.getName());
 		}
+		
 		try {
 			preprocessSourceFiles(folder);
 		} catch (CoreException e) {

@@ -53,7 +53,8 @@ public class PluginViewController {
 
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
-		viewer.setContentProvider(this.viewContentProvider);
+		viewer.refresh();
+		//viewer.setContentProvider(this.viewContentProvider);
 	}
 
 	public void createPartControl(Composite parent) {

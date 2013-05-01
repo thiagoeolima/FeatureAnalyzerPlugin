@@ -193,6 +193,7 @@ public class TypeChef implements Model {
 		List<String> filesList = resourceToString(list);
 		runCommand(filesList);
 	}
+	
 
 	private void startCommandLineMode(List<String> args) {
 		String typeChefPreference = FeatureAnalyzer.getDefault()
@@ -315,7 +316,7 @@ public class TypeChef implements Model {
 			System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
-			System.out.println(resouce.getLocation().toString());
+			System.out.println("ADD + " +resouce.getLocation().toString());
 			resoucesAsString.add(resouce.getLocation().toString());
 		}
 		return resoucesAsString;
