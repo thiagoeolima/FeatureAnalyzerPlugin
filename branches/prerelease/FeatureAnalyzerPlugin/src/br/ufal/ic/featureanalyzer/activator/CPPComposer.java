@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.prop4j.And;
 import org.prop4j.Node;
@@ -50,6 +51,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private TypeChef typeChef;
 
+	private boolean continueCompilationFlag = true;
+
 	public CPPComposer() {
 		super("CppComposer");
 	}
@@ -62,7 +65,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		// Start typeChef
 		// Setup the controller
 		typeChef = new TypeChef();
-		prepareFullBuild(null);
+		// prepareFullBuild(null);
 		// annotationChecking();
 
 		if (supSuccess == false || cppModelBuilder == null) {
@@ -113,9 +116,12 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	@Override
 	public void performFullBuild(IFile config) {
+
 		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
 			generateWarning(PLUGIN_WARNING);
 		}
+		//featureProject.setCurrentConfiguration(config);
+		
 		if (!prepareFullBuild(config))
 			return;
 		try {
@@ -320,16 +326,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	/**
 	 * preprocess all files in folder
 	 * 
-	 * @param sourceFolder
-	 *            folder with files to preprocess
 	 * @param buildFolder
 	 *            folder for preprocessed files
-	 * @param annotationChecking
-	 *            <code>true</code> if preprocessor annotations should be
-	 *            checked
-	 * @param performFullBuild
-	 *            <code>true</code> if the munge should be called
-	 * @throws CoreException
 	 */
 	private void preprocessSourceFiles(IFolder buildFolder)
 			throws CoreException {
@@ -351,11 +349,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@SuppressWarnings("unchecked")
 	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
-		boolean proceedCompilationFlag = true;
 
 		CPPWrapper cpp = new CPPWrapper();
 		if (buildFolder.getName().equals("src")) {
-			buildFolder = featureProject.getProject().getFolder("/build");
+			buildFolder = featureProject.getProject().getFolder(File.separator + "build");
 		}
 		LinkedList<String> compilerArgs = (LinkedList<String>) featureArgs
 				.clone();
@@ -364,10 +361,11 @@ public class CPPComposer extends PPComposerExtensionClass {
 			createBuildFolder(buildFolder);
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
-			proceedCompilationFlag = runTypeChefAnalyzes(fileList);
-			if (!proceedCompilationFlag) {
+
+			runTypeChefAnalyzes(fileList);
+			if (!continueCompilationFlag) {
 				// If the typeChefAnalyzes conclude that the user don't want to
-				// proceeed the compilation in case of error, return without
+				// proceeed the compilation in case of error or the user only wants preprocess files, return without
 				// doing it.
 				return;
 			}
@@ -390,8 +388,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private boolean runTypeChefAnalyzes(LinkedList<String> filesList) {
 		final PluginViewController viewController = PluginViewController
 				.getInstance();
-		//typeChef.runCommandLineMode(filesList, featureProject.getProject());
-		 typeChef.run(filesList, featureProject.getProject());
+		
+		typeChef.runCommandLineMode(filesList, featureProject.getProject());
+		// typeChef.run(filesList, featureProject.getProject());
 		final Display display = Display.getDefault();
 		if (display == null) {
 			throw new NullPointerException("Display is null");
@@ -400,9 +399,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 			display.syncExec(new Runnable() {
 				public void run() {
 					viewController.adaptTo(typeChef.getLogs());
-					// MessageDialog.openQuestion(display.getActiveShell(),
-					// "Error!",
-					// "This project contains errors in some feature combinations");
+					continueCompilationFlag = MessageDialog.openQuestion(
+							display.getActiveShell(),
+							"Error!",
+							"This project contains errors in some feature combinations.\n Do you want to continue the compilation?");
 				}
 			});
 			return false;
@@ -566,10 +566,16 @@ public class CPPComposer extends PPComposerExtensionClass {
 		cppModelBuilder.buildModel();
 	}
 
+	
 	@Override
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
+
 		super.buildConfiguration(folder, configuration, congurationName);
+		
+		//build direct from project.build...
+		//featureProject.setCurrentConfiguration(folder.getFile(congurationName + "." + getConfigurationExtension()));
+		
 		if (activatedFeatures == null) {
 			activatedFeatures = new ArrayList<String>();
 		} else {
@@ -584,6 +590,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
 		}
+		
+
 	}
 
 	@Override
