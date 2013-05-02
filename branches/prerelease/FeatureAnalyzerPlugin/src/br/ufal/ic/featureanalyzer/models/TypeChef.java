@@ -31,8 +31,6 @@ import org.prop4j.NodeWriter;
 
 import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import de.fosd.typechef.Frontend;
-import de.fosd.typechef.FrontendOptionsWithConfigFiles;
 import de.ovgu.featureide.fm.core.FeatureModel;
 import de.ovgu.featureide.fm.core.editing.NodeCreator;
 import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
@@ -41,9 +39,8 @@ import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
 @SuppressWarnings("restriction")
-public class TypeChef implements Model {
-
-	private FrontendOptionsWithConfigFiles fo;
+public class TypeChef {
+	
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
 	private CPPWrapper cppWrapper;
@@ -52,7 +49,6 @@ public class TypeChef implements Model {
 
 	public TypeChef() {
 		cppWrapper = new CPPWrapper();
-		fo = new FrontendOptionsWithConfigFiles();
 		xmlParser = new XMLParserTypeChef();
 
 		// saved in the' temp directory
@@ -103,56 +99,6 @@ public class TypeChef implements Model {
 		}
 	}
 
-	private void start(List<String> list) {
-		prepareFeatureModel(); // General processing options String
-		String typeChefPreference = FeatureAnalyzer.getDefault()
-				.getPreferenceStore().getString("TypeChefPreference");
-
-		String[] parameters = {
-				"--systemIncludes",
-				FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemIncludes"),
-				"-w",
-				"--errorXML=" + outputFilePath,
-				typeChefPreference,
-				"-h",
-				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-						+ File.separator + "platform.h",
-				"--lexOutput",
-				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-						+ File.separator + "lexOutput.c" };
-
-		cppWrapper.gerenatePlatformHeader(list, FeatureAnalyzer.getDefault()
-				.getPreferenceStore().getString("SystemIncludes"));
-
-		try {
-			fo.parseOptions(parameters);
-		} catch (Exception e) {
-			// System.out.println("TypeChef:" + e.getMessage());
-		}
-		fo.getFiles().addAll(list);
-		fo.setPrintToStdOutput(false);
-
-		xmlParser.clearLogList();
-
-		try {
-			Frontend.processFile(fo);
-		} catch (Exception e) {
-			e.printStackTrace();
-			FeatureAnalyzer.getDefault().logError(e);
-		}
-
-		xmlParser.setXMLFile(fo.getErrorXMLFile());
-		xmlParser.processFile();
-		fo.getFiles().clear();
-	}
-
-	@Override
-	public void run(List<IResource> list) {
-		List<String> filesList = resourceToString(list);
-		start(filesList);
-	}
-
 	/**
 	 * Esse metodo eh executado dentro da classe CPPComposer
 	 * 
@@ -161,16 +107,10 @@ public class TypeChef implements Model {
 	 * @param project
 	 *            projeto dono do arquivo
 	 */
-	public void runCommandLineMode(List<String> filesList, IProject project) {
-		this.project = project;
-		runCommand(filesList);
-
-	}
-
 	public void run(List<String> filesList, IProject project) {
 		// TODO: Flush the file
 		this.project = project;
-		start(filesList);
+		runCommand(filesList);
 	}
 
 	/**
@@ -192,11 +132,9 @@ public class TypeChef implements Model {
 			xmlParser.setXMLFile(new File(outputFilePath));
 			xmlParser.processFile();
 		}
-		fo.getFiles().clear();
 	}
 
-	@Override
-	public void runCommandLineMode(List<IResource> list) {
+	public void run(List<IResource> list) {
 		List<String> filesList = resourceToString(list);
 		runCommand(filesList);
 	}
@@ -213,9 +151,9 @@ public class TypeChef implements Model {
 			FeatureAnalyzer.getDefault().logError(e);
 		}
 		Path pathToTypeChef = new Path(url.getFile());
-		// args.add(0,FeatureAnalyzer.getDefault()
-		// .getPreferenceStore().getString("SystemIncludes"));
-		// args.add(0,"--systemIncludes");
+		args.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemIncludes"));
+		args.add(0, "--systemIncludes");
 		// args.add(0,"");
 		// args.add(0,"--systemRoot");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
@@ -228,7 +166,10 @@ public class TypeChef implements Model {
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath);
-		args.add(0, "--lexNoStdout");
+		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "lexOutput.c");
+		args.add(0, "--lexOutput");
 		args.add(0, "-w");
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
@@ -328,7 +269,6 @@ public class TypeChef implements Model {
 		return resoucesAsString;
 	}
 
-	@Override
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}

@@ -388,9 +388,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private boolean runTypeChefAnalyzes(LinkedList<String> filesList) {
 		final PluginViewController viewController = PluginViewController
 				.getInstance();
-		
-		typeChef.runCommandLineMode(filesList, featureProject.getProject());
-		// typeChef.run(filesList, featureProject.getProject());
+
+		typeChef.run(filesList, featureProject.getProject());
 		final Display display = Display.getDefault();
 		if (display == null) {
 			throw new NullPointerException("Display is null");
