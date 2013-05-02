@@ -41,7 +41,7 @@ import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
 @SuppressWarnings("restriction")
-public class TypeChef implements Model {
+public class TypeChef {
 
 	private FrontendOptionsWithConfigFiles fo;
 	private XMLParserTypeChef xmlParser;
@@ -147,7 +147,6 @@ public class TypeChef implements Model {
 		fo.getFiles().clear();
 	}
 
-	@Override
 	public void run(List<IResource> list) {
 		List<String> filesList = resourceToString(list);
 		start(filesList);
@@ -195,7 +194,7 @@ public class TypeChef implements Model {
 		fo.getFiles().clear();
 	}
 
-	@Override
+
 	public void runCommandLineMode(List<IResource> list) {
 		List<String> filesList = resourceToString(list);
 		runCommand(filesList);
@@ -328,7 +327,6 @@ public class TypeChef implements Model {
 		return resoucesAsString;
 	}
 
-	@Override
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}

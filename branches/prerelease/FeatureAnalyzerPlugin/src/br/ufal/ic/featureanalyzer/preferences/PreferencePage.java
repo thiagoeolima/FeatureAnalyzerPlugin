@@ -25,9 +25,9 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 	            getFieldEditorParent()));
 		
 		
-		addField(new RadioGroupFieldEditor("TypeChecking", "Type Checking", 1,
+	/*	addField(new RadioGroupFieldEditor("TypeChecking", "Type Checking", 1,
 				new String[][] { { "&Typechef", "typechef" },
-						{ "S&uperC", "superc" } }, getFieldEditorParent()));
+						{ "S&uperC", "superc" } }, getFieldEditorParent()));*/
 
 		addField(new RadioGroupFieldEditor("TypeChefPreference",
 				"TypeChef Preference ", 1, new String[][] {
