@@ -24,7 +24,6 @@ public class Controller {
 		this.createdModel();
 		pkgExplorerController.run();
 		model.run(pkgExplorerController.getList());
-		// model.runCommandLineMode(pkgExplorerController.getList());
 	}
 
 	public Object[] getLogs() {
