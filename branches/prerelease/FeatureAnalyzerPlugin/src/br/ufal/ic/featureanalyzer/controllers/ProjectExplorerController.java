@@ -38,7 +38,7 @@ public class ProjectExplorerController {
 	}
 
 	
-	private void addResource(IResource resource){
+	public void addResource(IResource resource){
 		if(resource instanceof IFile){
 			listFiles.add(resource);
 		} else if (resource instanceof IFolder){
@@ -52,6 +52,7 @@ public class ProjectExplorerController {
 			}
 		}
 	}
+	
 
 	public void run() throws Exception {
 		listFiles.clear();

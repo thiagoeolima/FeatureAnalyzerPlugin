@@ -237,7 +237,7 @@ public class TypeChef {
 	}
 
 	/**
-	 * Opens a message box if GCC or CPP could not be executed.
+	 * Opens a message box if TypeChef could not be executed.
 	 */
 	private void openMessageBox(final IOException e) {
 		UIJob uiJob = new UIJob("") {
@@ -245,7 +245,7 @@ public class TypeChef {
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
 				d.setMessage(e.getMessage().toLowerCase());
-				d.setText("Compilation can not be executed.");
+				d.setText("TypeChef could not be executed");
 				d.open();
 				return Status.OK_STATUS;
 			}

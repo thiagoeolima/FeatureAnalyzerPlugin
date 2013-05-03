@@ -24,6 +24,7 @@ import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.progress.UIJob;
+import org.fusesource.jansi.Ansi.Color;
 
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
@@ -75,7 +76,7 @@ public class CPPWrapper {
 				try {
 					String line;
 					while ((line = error.readLine()) != null) {
-						//use pattern to avoid errors in windows
+						//use pattern to avoid errors in Windows OS
 						String pattern = Pattern.quote(System.getProperty("file.separator"));
 						String[] errorLine = line.split(pattern);
 						consoleOut.println(errorLine[errorLine.length-1]);
@@ -101,7 +102,8 @@ public class CPPWrapper {
 				}
 			}
 		} catch (IOException e) {
-			openMessageBox(e);
+			System.out.println("Aqui dentro");
+			consoleOut.println("The Project contains errors! " + e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {
@@ -120,23 +122,6 @@ public class CPPWrapper {
 		}
 	}
 
-	/**
-	 * Opens a message box if GCC or CPP could not be executed.
-	 */
-	private void openMessageBox(final IOException e) {
-		UIJob uiJob = new UIJob("") {
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
-				d.setMessage("The project contains errors!");
-				d.setText("Compilation can not be executed.");
-				d.open();
-				return Status.OK_STATUS;
-			}
-		};
-		uiJob.setPriority(Job.SHORT);
-		uiJob.schedule();
-	}
 
 	public void gerenatePlatformHeader(List<String> fileList, String includeDir) {
 		System.out.println( System.getProperty("os.name"));
