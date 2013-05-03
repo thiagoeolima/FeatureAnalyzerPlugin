@@ -128,7 +128,8 @@ public class CPPWrapper {
 		if(System.getProperty("os.name").equals("Linux")){
 		 gerenatePlatformHeaderLinux(fileList, includeDir);
 		}else{
-			gerenatePlatformWin(fileList, includeDir);
+			 gerenatePlatformHeaderLinux(fileList, includeDir);
+			//gerenatePlatformWin(fileList, includeDir);
 		}
 		
 	}

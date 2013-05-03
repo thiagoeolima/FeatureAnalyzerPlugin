@@ -126,18 +126,27 @@ public class CPPComposer extends PPComposerExtensionClass {
 		if (!prepareFullBuild(config))
 			return;
 		
-		//this perfom a build using the Feature configuration selected
-		IFolder buildFolder = featureProject.getBuildFolder();
-		
-		if (buildFolder.getName().equals("src")) {
-			buildFolder = featureProject.getProject().getFolder(File.separator + "build");
-		}
-		
-		runTypeChefAnalyzes(featureProject.getSourceFolder());
-		
-		if(continueCompilationFlag){
-			runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), buildFolder);
-		}
+
+		Job job = new Job("Analyzing!") {
+			@Override
+			protected IStatus run(IProgressMonitor monitor) {
+				//this perfom a build using the Feature configuration selected
+				IFolder buildFolder = featureProject.getBuildFolder();
+				
+				if (buildFolder.getName().equals("src")) {
+					buildFolder = featureProject.getProject().getFolder(File.separator + "build");
+				}
+				runTypeChefAnalyzes(featureProject.getSourceFolder());
+				
+				if(continueCompilationFlag){
+					runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), buildFolder);
+				}
+				return Status.OK_STATUS;
+			}
+		};
+		job.setPriority(Job.SHORT);
+		job.schedule();
+
 		
 
 
