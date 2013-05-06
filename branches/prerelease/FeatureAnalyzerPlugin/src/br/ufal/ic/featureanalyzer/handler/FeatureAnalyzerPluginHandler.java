@@ -1,11 +1,8 @@
 package br.ufal.ic.featureanalyzer.handler;
 
-import java.io.File;
-
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -46,13 +43,14 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 				protected IStatus run(IProgressMonitor monitor) {
 					//this perfom a analyzes based in the user selection
 					try {
-						controller.run();
+//						controller.run();
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 					return Status.OK_STATUS;
 				}
 			};
+			controller.run();
 			job.setPriority(Job.SHORT);
 			job.schedule();
 			// Update the tree view.

@@ -17,14 +17,13 @@ public class Controller {
 	}
 
 	private void createdModel() throws Exception {
-			model = new TypeChef();
+		model = new TypeChef();
 	}
 
 	public void run() throws Exception {
 		this.createdModel();
 		pkgExplorerController.run();
 		model.run(pkgExplorerController.getList());
-
 	}
 
 	public Object[] getLogs() {

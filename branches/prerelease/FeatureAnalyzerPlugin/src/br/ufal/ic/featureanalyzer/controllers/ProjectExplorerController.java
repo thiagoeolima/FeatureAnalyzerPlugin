@@ -28,7 +28,7 @@ public class ProjectExplorerController {
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
-		//Isso aqui apresenta problemas... algumas vezes quem tá aberto é o PackageExplorer.
+		//Isso aqui apresenta problemas... algumas vezes quem tï¿½ aberto ï¿½ o PackageExplorer.
 		selection = (IStructuredSelection) window.getSelectionService()
 			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 	}
@@ -73,7 +73,7 @@ public class ProjectExplorerController {
 		}else {
 			throw new Exception("Selecione um arquivo/diretÃ³rio vÃ¡lido.");
 		}
-		System.err.println(aux);
+		System.out.println(aux);
 		addResource(aux);
 	}
 }

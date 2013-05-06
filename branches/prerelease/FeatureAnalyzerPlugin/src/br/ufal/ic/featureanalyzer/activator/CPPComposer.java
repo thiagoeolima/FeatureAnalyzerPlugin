@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -166,6 +165,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		//annotationChecking();
 	}
 
+	@SuppressWarnings("unused")
 	private void annotationChecking() {
 		deleteAllPreprocessorAnotationMarkers();
 		Job job = new Job("preprocessor annotation checking") {
@@ -418,7 +418,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		if (display == null) {
 			throw new NullPointerException("Display is null");
 		}
-		if (typeChef.getLogs().length >= 0) {
+		if (typeChef.getLogs().length > 0) {
 			display.syncExec(new Runnable() {
 				public void run() {
 					viewController.adaptTo(typeChef.getLogs());
