@@ -103,8 +103,6 @@ public class TypeChef {
 		}
 	}
 
-	// ----------------------
-
 	private void start(List<String> list) {
 		prepareFeatureModel(); // General processing options String
 		String typeChefPreference = FeatureAnalyzer.getDefault()
@@ -153,8 +151,6 @@ public class TypeChef {
 		xmlParser.processFile();
 		fo.getFiles().clear();
 	}
-
-	// ---------------------
 	/**
 	 * Esse metodo eh executado dentro da classe CPPComposer
 	 * 
