@@ -2,9 +2,10 @@ package br.ufal.ic.featureanalyzer.activator;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Pattern;
@@ -53,7 +54,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private TypeChef typeChef;
 
+	private static Set<Long> threadInExecutionSet = new HashSet<Long>();
 	private boolean continueCompilationFlag = false;
+	private boolean runTypeChefAnalyzesFlag = true;
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -119,39 +122,39 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public void performFullBuild(IFile config) {
 
-		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
-			generateWarning(PLUGIN_WARNING);
-		}
-
-		if (!prepareFullBuild(config))
-			return;
-		
-
-		Job job = new Job("Analyzing!") {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				//this perfom a build using the Feature configuration selected
-				IFolder buildFolder = featureProject.getBuildFolder();
-				
-				if (buildFolder.getName().equals("src")) {
-					buildFolder = featureProject.getProject().getFolder(File.separator + "build");
-				}
-				runTypeChefAnalyzes(featureProject.getSourceFolder());
-				
-				if(continueCompilationFlag){
-					runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), buildFolder);
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		job.setPriority(Job.SHORT);
-		job.schedule();
-
-		
-
-
-		if (cppModelBuilder != null)
-			cppModelBuilder.buildModel();
+//		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
+//			generateWarning(PLUGIN_WARNING);
+//		}
+//
+//		if (!prepareFullBuild(config))
+//			return;
+//		
+//
+//		Job job = new Job("Analyzing!") {
+//			@Override
+//			protected IStatus run(IProgressMonitor monitor) {
+//				//this perfom a build using the Feature configuration selected
+//				IFolder buildFolder = featureProject.getBuildFolder();
+//				
+//				if (buildFolder.getName().equals("src")) {
+//					buildFolder = featureProject.getProject().getFolder(File.separator + "build");
+//				}
+//				runTypeChefAnalyzes(featureProject.getSourceFolder());
+//				
+//				if(continueCompilationFlag){
+//					runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), buildFolder);
+//				}
+//				return Status.OK_STATUS;
+//			}
+//		};
+//		job.setPriority(Job.SHORT);
+//		job.schedule();
+//
+//		
+//
+//
+//		if (cppModelBuilder != null)
+//			cppModelBuilder.buildModel();
 	}
 
 	/*
@@ -409,6 +412,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private boolean runTypeChefAnalyzes(IFolder folder) {
 		final PluginViewController viewController = PluginViewController
 				.getInstance();
+		
 
 		//typeChef.run(iFolder, featureProject.getProject());
 		ProjectExplorerController prjController = new ProjectExplorerController();
@@ -418,7 +422,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		if (display == null) {
 			throw new NullPointerException("Display is null");
 		}
-		if (typeChef.getLogs().length >= 0) {
+		if (typeChef.getLogs().length > 0) {
 			display.syncExec(new Runnable() {
 				public void run() {
 					viewController.adaptTo(typeChef.getLogs());
@@ -496,7 +500,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 		return list;
 	}
 
-	//Por enquanto sem uso!
 	@Override
 	public void postCompile(IResourceDelta delta, final IFile file) {
 		super.postCompile(delta, file);
@@ -600,12 +603,20 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public boolean postAddNature(IFolder source, IFolder destination) {
 		return true;
 	}
-	
+	long threadId;
 	@Override
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
-
 		super.buildConfiguration(folder, configuration, congurationName);
+		synchronized (this) {
+			if(threadInExecutionSet.isEmpty()){
+				ProjectErrorLogger.getInstance().clearLogList();
+				threadInExecutionSet.add(Thread.currentThread().getId());
+				System.out.println(threadId =Thread.currentThread().getId());
+				runTypeChefAnalyzes(folder);
+			}
+		}
+		System.out.println(Thread.currentThread().getId());
 		
 		if (activatedFeatures == null) {
 			activatedFeatures = new ArrayList<String>();
@@ -615,10 +626,17 @@ public class CPPComposer extends PPComposerExtensionClass {
 		for (Feature feature : configuration.getSelectedFeatures()) {
 			activatedFeatures.add(feature.getName());
 		}
-
-
+		
 		runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), folder);
-
+		
+		synchronized (this) {
+			threadInExecutionSet.remove(Thread.currentThread().getId());
+			if(threadInExecutionSet.isEmpty()){
+				for(String s : ProjectErrorLogger.getInstance().getProjectsList()){
+					System.err.println("Project " + s + " Contains errors!");
+				}
+			}
+		}
 	}
 
 	@Override
@@ -635,6 +653,11 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public boolean needColor() {
 		return false;
+	}
+	
+	@Override
+	public boolean canGeneratInParallelJobs() {
+		return true;
 	}
 
 }
