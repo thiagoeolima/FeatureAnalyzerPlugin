@@ -110,6 +110,9 @@ public class TypeChef {
 
 		String[] parameters = {
 				"-w",
+				"--systemIncludes",
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemIncludes"),
 				"--featureModelFExpr",
 				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
 						+ File.separator + "cnf.txt",
@@ -125,7 +128,7 @@ public class TypeChef {
 
 		CPPWrapper.gerenatePlatformHeaderLinux(list, FeatureAnalyzer
 				.getDefault().getPreferenceStore().getString("SystemIncludes"));
-
+	
 		try {
 			fo.parseOptions(parameters);
 		} catch (Exception e) {
@@ -139,7 +142,7 @@ public class TypeChef {
 		// TODO: Flush the file
 		start(resourceToString(list));
 		xmlParser.clearLogList();
-
+		System.out.println("----");
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
@@ -151,6 +154,7 @@ public class TypeChef {
 		xmlParser.processFile();
 		fo.getFiles().clear();
 	}
+
 	/**
 	 * Esse metodo eh executado dentro da classe CPPComposer
 	 * 

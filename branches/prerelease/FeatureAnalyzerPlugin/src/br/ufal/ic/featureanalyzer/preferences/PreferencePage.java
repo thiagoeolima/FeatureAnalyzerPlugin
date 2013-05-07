@@ -1,5 +1,6 @@
 package br.ufal.ic.featureanalyzer.preferences;
 
+import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
@@ -19,15 +20,14 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
 	@Override
 	public void createFieldEditors() {
-	    addField(new DirectoryFieldEditor("SystemRoot", "System Root:",
-	            getFieldEditorParent()));
-	    addField(new DirectoryFieldEditor("SystemIncludes", "System Includes:",
-	            getFieldEditorParent()));
-		
-		
-	/*	addField(new RadioGroupFieldEditor("TypeChecking", "Type Checking", 1,
-				new String[][] { { "&Typechef", "typechef" },
-						{ "S&uperC", "superc" } }, getFieldEditorParent()));*/
+		addField(new DirectoryFieldEditor("SystemRoot", "&System Root:",
+				getFieldEditorParent()));
+
+		addField(new DirectoryFieldEditor("SystemIncludes",
+				"&System Includes:", getFieldEditorParent()));
+
+		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Model",
+				getFieldEditorParent()));
 
 		addField(new RadioGroupFieldEditor("TypeChefPreference",
 				"TypeChef Preference ", 1, new String[][] {
