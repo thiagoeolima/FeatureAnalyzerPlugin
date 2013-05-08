@@ -133,7 +133,7 @@ public class Log {
 
 				String findLine = parserFileRead.readLine();
 
-				System.out.println(findLine);
+//				System.out.println(findLine);
 
 				BufferedReader fileReader = new BufferedReader(new FileReader(
 						file));

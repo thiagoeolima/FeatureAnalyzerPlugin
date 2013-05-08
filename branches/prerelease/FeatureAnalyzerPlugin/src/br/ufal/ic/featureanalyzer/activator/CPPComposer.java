@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
@@ -173,6 +172,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		// annotationChecking();
 	}
 
+	@SuppressWarnings("unused")
 	private void annotationChecking() {
 		deleteAllPreprocessorAnotationMarkers();
 		Job job = new Job("preprocessor annotation checking") {
@@ -390,12 +390,12 @@ public class CPPComposer extends PPComposerExtensionClass {
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
 
+			// If the typeChefAnalyzes conclude that the user don't want to
+			// proceeed the compilation in case of error or the user only
+			// wants preprocess files, return without
+			// doing it.
 			if (!continueCompilationFlag) {
-				// If the typeChefAnalyzes conclude that the user don't want to
-				// proceeed the compilation in case of error or the user only
-				// wants preprocess files, return without
-				// doing it.
-				// return;
+				return;
 			}
 			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");

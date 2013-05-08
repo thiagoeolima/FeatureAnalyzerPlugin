@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,6 +32,9 @@ import org.prop4j.NodeWriter;
 
 import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import de.fosd.typechef.Frontend;
+import de.fosd.typechef.FrontendOptions;
+import de.fosd.typechef.FrontendOptionsWithConfigFiles;
 import de.ovgu.featureide.fm.core.FeatureModel;
 import de.ovgu.featureide.fm.core.editing.NodeCreator;
 import de.ovgu.featureide.fm.core.io.FeatureModelReaderIFileWrapper;
@@ -40,21 +44,22 @@ import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
 @SuppressWarnings("restriction")
 public class TypeChef {
-	
+
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
 	private CPPWrapper cppWrapper;
+	private FrontendOptions fo;
 
 	private final String outputFilePath;
 
 	public TypeChef() {
 		cppWrapper = new CPPWrapper();
 		xmlParser = new XMLParserTypeChef();
-
+		fo = new FrontendOptionsWithConfigFiles();
 		// saved in the' temp directory
 		outputFilePath = FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "output.xml";
+				+ File.separator + "output";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
@@ -99,6 +104,71 @@ public class TypeChef {
 		}
 	}
 
+	private void start(List<String> list) {
+		if (FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getBoolean("FEATURE_MODEL")) {
+			prepareFeatureModel(); // General processing options String
+		}
+
+		String typeChefPreference = FeatureAnalyzer.getDefault()
+				.getPreferenceStore().getString("TypeChefPreference");
+
+		ArrayList<String> paramters = new ArrayList<String>();
+
+		paramters.add("-w");
+		paramters.add("--systemIncludes");
+		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemIncludes"));
+		paramters.add("--errorXML");
+		paramters.add(outputFilePath);
+		paramters.add(typeChefPreference);
+		paramters.add("-h");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "platform.h");
+		paramters.add("--lexOutput");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "lexOutput.c");
+
+		if (FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getBoolean("FEATURE_MODEL")) {
+			paramters.add("--featureModelFExpr");
+			paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ File.separator + "cnf.txt");
+		}
+
+		CPPWrapper.gerenatePlatformHeaderLinux(list, FeatureAnalyzer
+				.getDefault().getPreferenceStore().getString("SystemIncludes"));
+
+		try {
+			fo.parseOptions((String[]) paramters.toArray(new String[paramters
+					.size()]));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		fo.getFiles().addAll(list);
+		fo.setPrintToStdOutput(false);
+	}
+
+	public void run(List<IResource> list) {
+		// TODO: Flush the file
+		start(resourceToString(list));
+		xmlParser.clearLogList();
+
+		try {
+			Frontend.processFile(fo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			FeatureAnalyzer.getDefault().logError(e);
+		}
+
+		xmlParser.setXMLFile(fo.getErrorXMLFile());
+		xmlParser.processFile();
+		fo.getFiles().clear();
+	}
+
 	/**
 	 * Esse metodo eh executado dentro da classe CPPComposer
 	 * 
@@ -128,15 +198,10 @@ public class TypeChef {
 		for (String file : filesList) {
 			List<String> fileAux = new LinkedList<String>();
 			fileAux.add(file);
-			startCommandLineMode(fileAux);
+			startCommandLineMode(filesList);
 			xmlParser.setXMLFile(new File(outputFilePath));
 			xmlParser.processFile();
 		}
-	}
-
-	public void run(List<IResource> list) {
-		List<String> filesList = resourceToString(list);
-		runCommand(filesList);
 	}
 
 	private void startCommandLineMode(List<String> args) {
@@ -144,7 +209,7 @@ public class TypeChef {
 				.getPreferenceStore().getString("TypeChefPreference");
 
 		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(),
-				"lib/" + "TypeChef-0.3.3.jar");
+				"lib/" + "TypeChef-0.3.5.jar");
 		try {
 			url = FileLocator.toFileURL(url);
 		} catch (IOException e) {
@@ -193,7 +258,7 @@ public class TypeChef {
 			while (x) {
 				try {
 					String line;
-					while ((line = error.readLine()) != null) {
+					while ((line = input.readLine()) != null) {
 						System.out.println(line);
 						FeatureAnalyzer.getDefault().logWarning(line);
 					}
@@ -263,8 +328,11 @@ public class TypeChef {
 			System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
-			System.out.println("ADD + " + resouce.getLocation().toString());
-			resoucesAsString.add(resouce.getLocation().toString());
+			if (resouce.getLocation().toString().trim().endsWith(".c")
+					|| resouce.getLocation().toString().trim().endsWith(".h")) {
+				resoucesAsString.add(resouce.getLocation().toString());
+				System.out.println("ADD + " + resouce.getLocation().toString());
+			}
 		}
 		return resoucesAsString;
 	}
