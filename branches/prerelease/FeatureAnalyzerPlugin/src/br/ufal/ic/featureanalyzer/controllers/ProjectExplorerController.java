@@ -31,6 +31,10 @@ public class ProjectExplorerController {
 		//Isso aqui apresenta problemas... algumas vezes quem t� aberto � o PackageExplorer.
 		selection = (IStructuredSelection) window.getSelectionService()
 			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+		if(selection == null){
+			selection = (IStructuredSelection) window.getSelectionService()
+					.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+		}
 	}
 	
 	public List<IResource> getList() {
