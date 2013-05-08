@@ -10,7 +10,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
-
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -18,6 +17,8 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 //import org.fusesource.jansi.Ansi.Color;
+
+import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
 
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
@@ -33,10 +34,11 @@ public class CPPWrapper {
 	}
 
 	public void runCompiler(List<String> packageArgs) {
+		System.out.println();
 		for (String s : packageArgs) {
 			System.out.print(" " + s);
 		}
-		runProcess(packageArgs, GCC_PATH);
+		runProcess(packageArgs, GCC_PATH, true);
 	}
 
 	public void runPreProcessor(List<String> packageArgs) {
@@ -45,10 +47,16 @@ public class CPPWrapper {
 		packageArgs.add(0, "-w"); // Suppress all warning
 		packageArgs.add(0, "-no-integrated-cpp");
 		packageArgs.add(0, "-E"); // do not discard comments
-		runProcess(packageArgs, CPP_PATH);
+		runProcess(packageArgs, CPP_PATH, false);
 	}
-
-	private void runProcess(List<String> packageArgs, String path) {
+	
+	/**
+	 * 
+	 * @param packageArgs args from the process
+	 * @param path path of the GCC
+	 * @return true if the compilation apresent no errors, false in otherwise
+	 */
+	private void runProcess(List<String> packageArgs, String path, boolean logError) {
 		packageArgs.add(0, path);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 
@@ -68,14 +76,27 @@ public class CPPWrapper {
 			while (x) {
 				try {
 					String line;
-					while ((line = error.readLine()) != null) {
-						// use pattern to avoid errors in Windows OS
-						String pattern = Pattern.quote(System
-								.getProperty("file.separator"));
-						String[] errorLine = line.split(pattern);
-						consoleOut.println(errorLine[errorLine.length - 1]);
-						FeatureAnalyzer.getDefault().logWarning(line);
+					if((line = error.readLine()) != null){
+						if(logError){
+							ProjectConfigurationErrorLogger prjConfi = ProjectConfigurationErrorLogger.getInstance();
+							//the string that comes here, have /variant00x/variant00x/ 
+							//that will be used by the compiler to generate the executable
+							String s = packageArgs.get(packageArgs.size()-1);
+							//let's "clean" it...
+							int lastFileSeparator = s.lastIndexOf(File.separator);
+							s = s.substring(0, lastFileSeparator);
+							prjConfi.addConfigurationWithError(s);
+						}
+						 do {
+							//use pattern to avoid errors in Windows OS
+							String pattern = Pattern.quote(System.getProperty("file.separator"));
+							String[] errorLine = line.split(pattern);
+							consoleOut.println(errorLine[errorLine.length-1]);
+							FeatureAnalyzer.getDefault().logWarning(line);
+						}while((line = error.readLine()) != null);
+
 					}
+					
 
 					try {
 						process.waitFor();
@@ -96,9 +117,7 @@ public class CPPWrapper {
 				}
 			}
 		} catch (IOException e) {
-			System.out.println("Aqui dentro");
-			consoleOut
-					.println("The Project contains errors! " + e.getMessage());
+			consoleOut.println("The Project contains errors! " + e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {
@@ -107,12 +126,13 @@ public class CPPWrapper {
 			} catch (IOException e) {
 				FeatureAnalyzer.getDefault().logError(e);
 			} finally {
-				if (error != null)
+				if (error != null){
 					try {
 						error.close();
 					} catch (IOException e) {
 						FeatureAnalyzer.getDefault().logError(e);
 					}
+				}
 			}
 		}
 	}
@@ -137,7 +157,7 @@ public class CPPWrapper {
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
 		list.add(0, "-dM");
-		runProcess(list, GCC_PATH);
+		runProcess(list, GCC_PATH,false);
 	}
 
 	public static void gerenatePlatformHeaderLinux(List<String> fileList,
@@ -213,8 +233,10 @@ public class CPPWrapper {
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {
-				if (input != null)
+				if (input != null){
 					input.close();
+				}
+					
 			} catch (IOException e) {
 				FeatureAnalyzer.getDefault().logError(e);
 			} finally {
