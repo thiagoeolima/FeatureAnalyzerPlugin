@@ -28,9 +28,13 @@ public class ProjectExplorerController {
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
-		//Isso aqui apresenta problemas... algumas vezes quem tá aberto é o PackageExplorer.
+		//Isso aqui apresenta problemas... algumas vezes quem tï¿½ aberto ï¿½ o PackageExplorer.
 		selection = (IStructuredSelection) window.getSelectionService()
 			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+		if(selection == null){
+			selection = (IStructuredSelection) window.getSelectionService()
+					.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+		}
 	}
 	
 	public List<IResource> getList() {
@@ -38,7 +42,7 @@ public class ProjectExplorerController {
 	}
 
 	
-	private void addResource(IResource resource){
+	public void addResource(IResource resource){
 		if(resource instanceof IFile){
 			listFiles.add(resource);
 		} else if (resource instanceof IFolder){
@@ -52,6 +56,7 @@ public class ProjectExplorerController {
 			}
 		}
 	}
+	
 
 	public void run() throws Exception {
 		listFiles.clear();
@@ -72,7 +77,7 @@ public class ProjectExplorerController {
 		}else {
 			throw new Exception("Selecione um arquivo/diretÃ³rio vÃ¡lido.");
 		}
-		System.err.println(aux);
+		System.out.println(aux);
 		addResource(aux);
 	}
 }

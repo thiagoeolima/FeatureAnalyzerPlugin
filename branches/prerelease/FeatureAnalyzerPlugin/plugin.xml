@@ -5,12 +5,12 @@
          point="org.eclipse.ui.commands">
       <category
             id="FeatureAnalyzerPlugin.commands.category"
-            name="Feature Analyzer">
+            name="%category.name">
       </category>
       <command
             categoryId="FeatureAnalyzerPlugin.commands.category"
             id="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
-            name="Generate Interface">
+            name="%command.name">
       </command>
    </extension>
    <extension
@@ -24,29 +24,18 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="FeatureAnalyzer"
+            name="%category.name.0"
             id="FeatureAnalyzerPlugin">
       </category>
       <view
-            name="Feature Analyzer"
+            name="%view.name"
             icon="icons/featured.png"
             category="FeatureAnalyzerPlugin"
             class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
             id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
       </view>
    </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.jdt.ui.JavaPerspective">
-         <view
-               ratio="0.5"
-               relative="org.eclipse.ui.views.ProblemView"
-               relationship="right"
-               id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
-         </view>
-      </perspectiveExtension>
-   </extension>
+ 
     <extension
          point="org.eclipse.help.contexts">
       <contexts
@@ -58,7 +47,7 @@
       <page
             class="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
             id="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
-            name="Feature Analyzer">
+            name="%page.name">
       </page>
    </extension>
    <extension
@@ -76,7 +65,7 @@
             <command
                   commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
                   icon="icons/featured.png"
-                  tooltip="Feature Analyzer"
+                  tooltip="%command.tooltip"
                   id="br.ufal.ic.featureanalyzerplugin.toolbars.FeatureAnalyzerCommand">
             </command>
          </toolbar>

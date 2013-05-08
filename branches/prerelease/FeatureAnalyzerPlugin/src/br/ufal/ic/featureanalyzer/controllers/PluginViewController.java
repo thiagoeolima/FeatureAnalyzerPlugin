@@ -26,10 +26,26 @@ public class PluginViewController {
 	private TableViewer viewer;
 	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
 	private AnalyzerView typeChefPluginView;
+	private static PluginViewController INSTANCE; 
 
-	public PluginViewController(AnalyzerView typeChefPluginView) {
+
+	
+	public static PluginViewController getInstance(){
+		if(INSTANCE == null){
+			INSTANCE = new PluginViewController();
+		}
+		return INSTANCE;
+	}
+	
+
+	public AnalyzerView getTypeChefPluginView() {
+		return typeChefPluginView;
+	}
+
+	public void setTypeChefPluginView(AnalyzerView typeChefPluginView) {
 		this.typeChefPluginView = typeChefPluginView;
 	}
+
 
 	private class NameSorter extends ViewerSorter {
 
@@ -37,7 +53,8 @@ public class PluginViewController {
 
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
-		viewer.setContentProvider(this.viewContentProvider);
+		viewer.refresh();
+		//viewer.setContentProvider(this.viewContentProvider);
 	}
 
 	public void createPartControl(Composite parent) {

@@ -85,6 +85,14 @@ public class Log {
 		return fileName;
 	}
 
+	@Override
+	public String toString() {
+		return "Log [feature=" + feature + ", severity=" + severity
+				+ ", message=" + message + ", fileName=" + fileName + ", path="
+				+ path + ", line=" + line + ", column=" + column
+				+ ", iTextSelection=" + iTextSelection + "]";
+	}
+
 	public String getPath() {
 		return path;
 	}
@@ -106,6 +114,8 @@ public class Log {
 			int offset = 0;
 			int correctLine = 0;
 			int correctColunm = 0;
+			int nextLineNumber = 0;
+			boolean notLine = true;
 
 			File parserFile = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
@@ -121,27 +131,40 @@ public class Log {
 						&& (i < k); i++)
 					;
 
-				String findLine = parserFileRead.readLine().trim();
+				String findLine = parserFileRead.readLine();
 
-				System.out.println(findLine);
+//				System.out.println(findLine);
 
 				BufferedReader fileReader = new BufferedReader(new FileReader(
 						file));
 				String outline = null;
-
-				for (correctLine = 0; (outline = fileReader.readLine()) != null; correctLine++) {
-					if (outline.contains(findLine)) {
-						correctColunm = outline.length();
-						break;
+				
+				while(findLine != null && notLine) {
+					findLine.trim();
+					for (correctLine = 0; (outline = fileReader.readLine()) != null; correctLine++) {
+						if (outline.contains(findLine)) {
+							notLine = false;
+							break;
+						}
+					}
+					if (notLine) {
+						nextLineNumber++;
+						findLine = parserFileRead.readLine();
+						fileReader.close();
+						fileReader = new BufferedReader(new FileReader(
+								file));
 					}
 				}
-
+				
+				correctLine -= nextLineNumber;
+				
 				parserFileRead.close();
 				fileReader.close();
 
 				IDocument document = getDocument(getFullPath() + getFileName());
 
 				offset = document.getLineOffset(correctLine);
+				correctColunm = document.getLineLength(correctLine);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (CoreException e) {

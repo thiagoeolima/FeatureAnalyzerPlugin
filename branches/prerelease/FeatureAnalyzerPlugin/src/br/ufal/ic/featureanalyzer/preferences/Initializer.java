@@ -9,10 +9,11 @@ public class Initializer extends AbstractPreferenceInitializer {
 
 	@Override
 	public void initializeDefaultPreferences() {
-		IPreferenceStore store = FeatureAnalyzer.getDefault().getPreferenceStore();
-		store.setDefault("TypeChecking", "typechef");
+		IPreferenceStore store = FeatureAnalyzer.getDefault()
+				.getPreferenceStore();
 		store.setDefault("TypeChefPreference", "--typecheck");
 		store.setDefault("SystemRoot", "/");
+		store.setDefault("FEATURE_MODEL", true);
 		store.setDefault("SystemIncludes", "/usr/include");
 	}
 
