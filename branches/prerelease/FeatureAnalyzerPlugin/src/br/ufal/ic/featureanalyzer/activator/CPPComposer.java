@@ -64,8 +64,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private TypeChef typeChef;
 
-	private boolean continueCompilationFlag = false;
-	private Set<Long> threadInExecId = new HashSet<Long>();
+	private static boolean continueCompilationFlag = false;
+	private static Set<Long> threadInExecId = new HashSet<Long>();
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -549,7 +549,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * Lock the execution of all threads until the user decide what do if the
 	 * project has errors
 	 */
-	private synchronized void beforeTypeChefAnalyzes() {
+	private synchronized void syncTypeChefAnalyzes() {
 		if (threadInExecId.isEmpty()) {
 			ProjectConfigurationErrorLogger.getInstance().clearLogList();
 			runTypeChefAnalyzes(featureProject.getSourceFolder());
@@ -560,9 +560,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 	// return logList.toArray(new Log[logList.size()]);
 
 	/**
-	 * Shwo project with errors
+	 * Show variants with errors
 	 */
-	private synchronized void unlockTypeChefAnalyzes() {
+	private synchronized void verifyVariantsWithProblems() {
 		threadInExecId.remove(Thread.currentThread().getId());
 		if (threadInExecId.isEmpty()) {
 			if (!ProjectConfigurationErrorLogger.getInstance()
@@ -581,6 +581,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 						}
 						InvalidProductViewController.getInstance().adaptTo(logs.toArray(new InvalidProductViewLog[logs.size()]));
 					}
+					
 				});
 
 			}
@@ -594,7 +595,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
 
-		beforeTypeChefAnalyzes();
+		syncTypeChefAnalyzes();
 
 		/**
 		 * synchronized method above are causing some errors... To solve that,
@@ -609,7 +610,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		runBuild(getActivatedFeatureArgs(myActivatedFeatures),
 				featureProject.getSourceFolder(), folder);
 
-		unlockTypeChefAnalyzes();
+		verifyVariantsWithProblems();
 
 	}
 

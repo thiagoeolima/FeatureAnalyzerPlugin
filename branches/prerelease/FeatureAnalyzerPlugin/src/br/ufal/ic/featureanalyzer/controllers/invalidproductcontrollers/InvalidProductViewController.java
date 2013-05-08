@@ -13,7 +13,9 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.featureanalyzer.controllers.PluginViewContentProvider;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
@@ -97,9 +99,7 @@ public class InvalidProductViewController {
 							final InvalidProductViewLog log = (InvalidProductViewLog) data;
 //							try {
 //
-//								IEditorPart editor = IDE.openEditor(
-//										view.getSite().getPage(),
-//										log.getFile());
+//								
 //
 //							} catch (PartInitException e) {
 //								// TODO Auto-generated catch block
@@ -116,7 +116,7 @@ public class InvalidProductViewController {
 		viewer.setLabelProvider(new InvalidProductViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		table.setHeaderVisible(true);
-		table.setLinesVisible(false);
+		table.setLinesVisible(true);
 
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "TableView.viewer");
