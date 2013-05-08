@@ -26,7 +26,7 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 		addField(new DirectoryFieldEditor("SystemIncludes",
 				"&System Includes:", getFieldEditorParent()));
 
-		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Model",
+		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Feature Model",
 				getFieldEditorParent()));
 
 		addField(new RadioGroupFieldEditor("TypeChefPreference",

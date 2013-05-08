@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -104,33 +105,46 @@ public class TypeChef {
 	}
 
 	private void start(List<String> list) {
-		prepareFeatureModel(); // General processing options String
+		if (FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getBoolean("FEATURE_MODEL")) {
+			prepareFeatureModel(); // General processing options String
+		}
+
 		String typeChefPreference = FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("TypeChefPreference");
 
-		String[] parameters = {
-				"-w",
-				"--systemIncludes",
-				FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemIncludes"),
-				"--featureModelFExpr",
-				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-						+ File.separator + "cnf.txt",
-				"--errorXML",
-				outputFilePath,
-				typeChefPreference,
-				"-h",
-				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-						+ File.separator + "platform.h",
-				"--lexOutput",
-				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-						+ File.separator + "lexOutput.c" };
+		ArrayList<String> paramters = new ArrayList<String>();
+
+		paramters.add("-w");
+		paramters.add("--systemIncludes");
+		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemIncludes"));
+		paramters.add("--errorXML");
+		paramters.add(outputFilePath);
+		paramters.add(typeChefPreference);
+		paramters.add("-h");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "platform.h");
+		paramters.add("--lexOutput");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "lexOutput.c");
+
+		if (FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getBoolean("FEATURE_MODEL")) {
+			paramters.add("--featureModelFExpr");
+			paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ File.separator + "cnf.txt");
+		}
 
 		CPPWrapper.gerenatePlatformHeaderLinux(list, FeatureAnalyzer
 				.getDefault().getPreferenceStore().getString("SystemIncludes"));
-	
+
 		try {
-			fo.parseOptions(parameters);
+			fo.parseOptions((String[]) paramters.toArray(new String[paramters
+					.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -142,7 +156,7 @@ public class TypeChef {
 		// TODO: Flush the file
 		start(resourceToString(list));
 		xmlParser.clearLogList();
-		System.out.println("----");
+
 		try {
 			Frontend.processFile(fo);
 		} catch (Exception e) {
@@ -189,11 +203,6 @@ public class TypeChef {
 			xmlParser.processFile();
 		}
 	}
-
-	// public void run(List<IResource> list) {
-	// List<String> filesList = resourceToString(list);
-	// runCommand(filesList);
-	// }
 
 	private void startCommandLineMode(List<String> args) {
 		String typeChefPreference = FeatureAnalyzer.getDefault()

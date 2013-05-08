@@ -175,7 +175,7 @@ public class CPPWrapper {
 						BufferedWriter buffW = new BufferedWriter(fileW);
 
 						while ((line = input.readLine()) != null) {
-							System.out.println(line);
+							// System.out.println(line);
 							buffW.write(line + "\n");
 						}
 
