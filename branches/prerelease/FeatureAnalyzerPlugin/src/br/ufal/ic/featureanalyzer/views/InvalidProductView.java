@@ -22,9 +22,6 @@ public class InvalidProductView extends ViewPart {
 
 	}
 
-	public void adaptTo(Object[] logs) {
-		controller.adaptTo(logs);
-	}
 	
 	@Override
 	public void setFocus() {

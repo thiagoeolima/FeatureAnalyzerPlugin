@@ -39,8 +39,7 @@
             class="br.ufal.ic.featureanalyzer.views.InvalidProductView"
             icon="icons/invalidproduct.png"
             id="br.ufal.ic.featureanalyzer.views.invalideproductview"
-            name="Invalid Product"
-            restorable="true">
+            name="%invalidproducview.name">
       </view>
    </extension>
  

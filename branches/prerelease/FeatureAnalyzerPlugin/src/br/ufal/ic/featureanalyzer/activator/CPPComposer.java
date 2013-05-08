@@ -423,8 +423,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * @return
 	 */
 	private void runTypeChefAnalyzes(IFolder folder) {
-		final PluginViewController viewController = PluginViewController
-				.getInstance();
 
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
@@ -436,6 +434,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 		if (typeChef.getLogs().length > 0) {
 			display.syncExec(new Runnable() {
 				public void run() {
+					PluginViewController viewController = PluginViewController
+							.getInstance();
 					viewController.adaptTo(typeChef.getLogs());
 					continueCompilationFlag = MessageDialog.openQuestion(
 							display.getActiveShell(),

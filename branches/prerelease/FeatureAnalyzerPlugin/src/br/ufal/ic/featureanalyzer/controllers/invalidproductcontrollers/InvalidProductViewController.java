@@ -124,8 +124,8 @@ public class InvalidProductViewController {
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = { "Variant Name", "Path"};
-		int[] bounds = { 100, 400};
+		String[] titles = {"Variant Name", "Path"};
+		int[] bounds = {100, 400};
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);
