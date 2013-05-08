@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
@@ -31,6 +32,7 @@ import org.prop4j.Not;
 import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
+import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -54,9 +56,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private TypeChef typeChef;
 
-	private static Set<Long> threadInExecutionSet = new HashSet<Long>();
 	private boolean continueCompilationFlag = false;
-	private boolean runTypeChefAnalyzesFlag = true;
+	private Set<Long> threadInExecId = new HashSet<Long>();
+
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -71,7 +73,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		// Setup the controller
 		typeChef = new TypeChef();
 		prepareFullBuild(null);
-		//annotationChecking();
+		// annotationChecking();
 
 		if (supSuccess == false || cppModelBuilder == null) {
 			return false;
@@ -122,39 +124,41 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public void performFullBuild(IFile config) {
 
-//		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
-//			generateWarning(PLUGIN_WARNING);
-//		}
-//
-//		if (!prepareFullBuild(config))
-//			return;
-//		
-//
-//		Job job = new Job("Analyzing!") {
-//			@Override
-//			protected IStatus run(IProgressMonitor monitor) {
-//				//this perfom a build using the Feature configuration selected
-//				IFolder buildFolder = featureProject.getBuildFolder();
-//				
-//				if (buildFolder.getName().equals("src")) {
-//					buildFolder = featureProject.getProject().getFolder(File.separator + "build");
-//				}
-//				runTypeChefAnalyzes(featureProject.getSourceFolder());
-//				
-//				if(continueCompilationFlag){
-//					runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), buildFolder);
-//				}
-//				return Status.OK_STATUS;
-//			}
-//		};
-//		job.setPriority(Job.SHORT);
-//		job.schedule();
-//
-//		
-//
-//
-//		if (cppModelBuilder != null)
-//			cppModelBuilder.buildModel();
+		// if (!isPluginInstalled(PLUGIN_CDT_ID)) {
+		// generateWarning(PLUGIN_WARNING);
+		// }
+		//
+		// if (!prepareFullBuild(config))
+		// return;
+		//
+		//
+		// Job job = new Job("Analyzing!") {
+		// @Override
+		// protected IStatus run(IProgressMonitor monitor) {
+		// //this perfom a build using the Feature configuration selected
+		// IFolder buildFolder = featureProject.getBuildFolder();
+		//
+		// if (buildFolder.getName().equals("src")) {
+		// buildFolder = featureProject.getProject().getFolder(File.separator +
+		// "build");
+		// }
+		// runTypeChefAnalyzes(featureProject.getSourceFolder());
+		//
+		// if(continueCompilationFlag){
+		// runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(),
+		// buildFolder);
+		// }
+		// return Status.OK_STATUS;
+		// }
+		// };
+		// job.setPriority(Job.SHORT);
+		// job.schedule();
+		//
+		//
+		//
+		//
+		// if (cppModelBuilder != null)
+		// cppModelBuilder.buildModel();
 	}
 
 	/*
@@ -166,7 +170,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public void postModelChanged() {
 		prepareFullBuild(null);
-		//annotationChecking();
+		// annotationChecking();
 	}
 
 	private void annotationChecking() {
@@ -262,7 +266,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 			}
 		}
 	}
-	
 
 	/**
 	 * Checks given line if it contains not existing or abstract features.
@@ -352,12 +355,13 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * 
 	 * @param buildFolder
 	 *            folder for preprocessed files
-	 * @return a list of all activated features with C arguments. e.g.: -D FEATUREA -D FEATIRE B
+	 * @return a list of all activated features with C arguments. e.g.: -D
+	 *         FEATUREA -D FEATIRE B
 	 * 
 	 */
-	private LinkedList<String> getActivatedFeatureArgs(){
+	private LinkedList<String> getActivatedFeatureArgs(List<String> myActivatedFeatures) {
 		LinkedList<String> args = new LinkedList<String>();
-		for (String feature : activatedFeatures) {
+		for (String feature : myActivatedFeatures) {
 			args.add("-D" + feature);
 		}
 		return args;
@@ -370,28 +374,28 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * @param featureArgs
 	 * @param sourceFolder
 	 * @param buildFolder
-	 * @param buildConfig if true, the configuration will be compiled
+	 * @param buildConfig
+	 *            if true, the configuration will be compiled
 	 */
 	@SuppressWarnings("unchecked")
-	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
+	private synchronized void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
 
 		CPPWrapper cpp = new CPPWrapper();
 
-		LinkedList<String> compilerArgs = (LinkedList<String>) featureArgs
-				.clone();
+		LinkedList<String> compilerArgs = new LinkedList<String>(featureArgs);
 		LinkedList<String> fileList = new LinkedList<String>();
 		try {
 			createBuildFolder(buildFolder);
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
 
-			
 			if (!continueCompilationFlag) {
 				// If the typeChefAnalyzes conclude that the user don't want to
-				// proceeed the compilation in case of error or the user only wants preprocess files, return without
+				// proceeed the compilation in case of error or the user only
+				// wants preprocess files, return without
 				// doing it.
-				//return;
+				// return;
 			}
 			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");
@@ -409,12 +413,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * @param iFolder
 	 * @return
 	 */
-	private boolean runTypeChefAnalyzes(IFolder folder) {
+	private void runTypeChefAnalyzes(IFolder folder) {
 		final PluginViewController viewController = PluginViewController
 				.getInstance();
-		
 
-		//typeChef.run(iFolder, featureProject.getProject());
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
 		typeChef.run(prjController.getList());
@@ -432,19 +434,23 @@ public class CPPComposer extends PPComposerExtensionClass {
 							"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
 				}
 			});
-			return false;
 		}
-		return true;
-
 	}
 
 	/**
-	 * In this method, all files in a given source folder are preprocessed by CPP
-	 * @param featureArgs arguments to CPP preprocessor and compiler
-	 * @param fileList list of all files found in all folders and subfolders
-	 * @param sourceFolder the origem of files
-	 * @param buildFolder the destination of the compilation/preprocessment
-	 * @param cpp that contains methods that compile/preprocess C files
+	 * In this method, all files in a given source folder are preprocessed by
+	 * CPP
+	 * 
+	 * @param featureArgs
+	 *            arguments to CPP preprocessor and compiler
+	 * @param fileList
+	 *            list of all files found in all folders and subfolders
+	 * @param sourceFolder
+	 *            the origem of files
+	 * @param buildFolder
+	 *            the destination of the compilation/preprocessment
+	 * @param cpp
+	 *            that contains methods that compile/preprocess C files
 	 * @throws CoreException
 	 */
 	@SuppressWarnings("unchecked")
@@ -502,87 +508,14 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	@Override
 	public void postCompile(IResourceDelta delta, final IFile file) {
-		super.postCompile(delta, file);
-		Job job = new Job("Propagate problem markers") {
-			@Override
-			public IStatus run(IProgressMonitor monitor) {
-				try {
-					IMarker[] marker = file.findMarkers(null, false,
-							IResource.DEPTH_ZERO);
-					if (marker.length != 0) {
-						for (IMarker m : marker) {
-							IFile sourceFile = findSourceFile(file,
-									featureProject.getSourceFolder());
-							if (!hasMarker(m, sourceFile)) {
-								IMarker newMarker = sourceFile
-										.createMarker(CorePlugin.PLUGIN_ID
-												+ ".builderProblemMarker");
-								newMarker.setAttribute(IMarker.LINE_NUMBER,
-										m.getAttribute(IMarker.LINE_NUMBER));
-								newMarker.setAttribute(IMarker.MESSAGE,
-										m.getAttribute(IMarker.MESSAGE));
-								newMarker.setAttribute(IMarker.SEVERITY,
-										m.getAttribute(IMarker.SEVERITY));
-							}
-						}
-					}
-				} catch (CoreException e) {
-					FeatureAnalyzer.getDefault().logError(e);
-				}
-				return Status.OK_STATUS;
-			}
 
-			private boolean hasMarker(IMarker buildMarker, IFile sourceFile) {
-				try {
-					IMarker[] marker = sourceFile.findMarkers(null, true,
-							IResource.DEPTH_ZERO);
-					int LineNumber = buildMarker.getAttribute(
-							IMarker.LINE_NUMBER, -1);
-					String Message = buildMarker.getAttribute(IMarker.MESSAGE,
-							null);
-					if (marker.length > 0) {
-						for (IMarker m : marker) {
-							if (LineNumber == m.getAttribute(
-									IMarker.LINE_NUMBER, -1)) {
-								if (Message.equals(m.getAttribute(
-										IMarker.MESSAGE, null))) {
-									return true;
-								}
-							}
-						}
-					}
-				} catch (CoreException e) {
-					FeatureAnalyzer.getDefault().logError(e);
-				}
-				return false;
-			}
-		};
-		job.setPriority(Job.DECORATE);
-		job.schedule();
 	}
-
-	private IFile findSourceFile(IFile file, IFolder folder)
-			throws CoreException {
-		for (IResource res : folder.members()) {
-			if (res instanceof IFolder) {
-				IFile sourceFile = findSourceFile(file, (IFolder) res);
-				if (sourceFile != null) {
-					return sourceFile;
-				}
-			} else if (res instanceof IFile) {
-				if (res.getName().equals(file.getName()))
-					return (IFile) res;
-			}
-		}
-		return null;
-	}
-
 
 	@Override
 	public boolean hasFeatureFolder() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean hasFeatureFolders() {
 		return false;
@@ -593,50 +526,65 @@ public class CPPComposer extends PPComposerExtensionClass {
 		return false;
 	}
 
-
 	@Override
 	public void buildFSTModel() {
 		cppModelBuilder.buildModel();
 	}
-	
+
 	@Override
 	public boolean postAddNature(IFolder source, IFolder destination) {
 		return true;
 	}
-	long threadId;
+	
+	/**
+	 * Lock the execution of all threads until the user decide what do if the project has errors
+	 */
+	private synchronized void beforeTypeChefAnalyzes(){
+		if(threadInExecId.isEmpty()){
+			System.err.println("CAI AQUI DENTRO");
+			ProjectConfigurationErrorLogger.getInstance().clearLogList();
+			runTypeChefAnalyzes(featureProject.getSourceFolder());
+			System.out.println("\nAnalisando e travado!");
+		}
+		threadInExecId.add(Thread.currentThread().getId());
+	}
+	
+	/**
+	 * Shwo project with errors
+	 */
+	private synchronized void unlockTypeChefAnalyzes(){
+		threadInExecId.remove(Thread.currentThread().getId());
+		if(threadInExecId.isEmpty()){
+			for(String s : ProjectConfigurationErrorLogger.getInstance().getProjectsList()){
+				System.out.println("\n Erro na config " + s);
+			}
+		}
+		
+	}
+	
+	
+
 	@Override
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
-		synchronized (this) {
-			if(threadInExecutionSet.isEmpty()){
-				ProjectErrorLogger.getInstance().clearLogList();
-				threadInExecutionSet.add(Thread.currentThread().getId());
-				System.out.println(threadId =Thread.currentThread().getId());
-				runTypeChefAnalyzes(folder);
-			}
-		}
-		System.out.println(Thread.currentThread().getId());
 		
-		if (activatedFeatures == null) {
-			activatedFeatures = new ArrayList<String>();
-		} else {
-			activatedFeatures.clear();
-		}
+		beforeTypeChefAnalyzes();
+		
+		/** synchronized method above are causing some errors... To solve that, use my own feature list*/
+		List<String> myActivatedFeatures = new LinkedList<String>();
+		
 		for (Feature feature : configuration.getSelectedFeatures()) {
-			activatedFeatures.add(feature.getName());
+			myActivatedFeatures.add(feature.getName());
 		}
+
+		runBuild(getActivatedFeatureArgs(myActivatedFeatures), featureProject.getSourceFolder(),
+				folder);
 		
-		runBuild(getActivatedFeatureArgs(), featureProject.getSourceFolder(), folder);
+		unlockTypeChefAnalyzes();
 		
-		synchronized (this) {
-			threadInExecutionSet.remove(Thread.currentThread().getId());
-			if(threadInExecutionSet.isEmpty()){
-				for(String s : ProjectErrorLogger.getInstance().getProjectsList()){
-					System.err.println("Project " + s + " Contains errors!");
-				}
-			}
-		}
+
+
 	}
 
 	@Override
@@ -654,7 +602,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public boolean needColor() {
 		return false;
 	}
-	
+
 	@Override
 	public boolean canGeneratInParallelJobs() {
 		return true;

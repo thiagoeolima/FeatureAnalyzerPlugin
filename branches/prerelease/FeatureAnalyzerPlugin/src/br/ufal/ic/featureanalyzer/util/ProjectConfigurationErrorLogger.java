@@ -1,17 +1,18 @@
-package br.ufal.ic.featureanalyzer.activator;
+package br.ufal.ic.featureanalyzer.util;
 
 import java.util.LinkedList;
 import java.util.List;
 
-public class ProjectErrorLogger {
+public class ProjectConfigurationErrorLogger {
 
-	private static ProjectErrorLogger INSTANCE;
+	private static ProjectConfigurationErrorLogger INSTANCE;
 	private List<String> projectsName;
-	private ProjectErrorLogger() {
+	private ProjectConfigurationErrorLogger() {
 		projectsName = new LinkedList<String>();
 	}
 	
 	public void clearLogList(){
+		System.out.println("Clear log List");
 		projectsName.clear();
 	}
 	
@@ -19,16 +20,16 @@ public class ProjectErrorLogger {
 		return new LinkedList<String>(projectsName);
 	}
 	
-	public void addProject(String projectName){
+	public void addConfigurationWithError(String projectName){
 		if(!projectsName.contains(projectName)){
 			projectsName.add(projectName);
 		}
 	}
 	
 	
-	public static ProjectErrorLogger getInstance(){
+	public static ProjectConfigurationErrorLogger getInstance(){
 		if(INSTANCE == null){
-			INSTANCE = new ProjectErrorLogger();
+			INSTANCE = new ProjectConfigurationErrorLogger();
 		}
 		return INSTANCE;
 	}

@@ -27,6 +27,8 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import org.eclipse.ui.progress.UIJob;
 import org.fusesource.jansi.Ansi.Color;
 
+import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
+
 public class CPPWrapper {
 	private final static String GCC_PATH = "gcc";
 	private final static String CPP_PATH = "cpp";
@@ -41,10 +43,11 @@ public class CPPWrapper {
 	}
 
 	public void runCompiler(List<String> packageArgs) {
+		System.out.println();
 		for (String s : packageArgs) {
 			System.out.print(" " + s);
 		}
-		runProcess(packageArgs, GCC_PATH,true);
+		runProcess(packageArgs, GCC_PATH, true);
 	}
 
 	public void runPreProcessor(List<String> packageArgs) {
@@ -83,6 +86,16 @@ public class CPPWrapper {
 				try {
 					String line;
 					if((line = error.readLine()) != null){
+						if(logError){
+							ProjectConfigurationErrorLogger prjConfi = ProjectConfigurationErrorLogger.getInstance();
+							//the string that comes here, have /variant00x/variant00x/ 
+							//that will be used by the compiler to generate the executable
+							String s = packageArgs.get(packageArgs.size()-1);
+							//let's "clean" it...
+							int lastFileSeparator = s.lastIndexOf(File.separator);
+							s = s.substring(0, lastFileSeparator);
+							prjConfi.addConfigurationWithError(s);
+						}
 						 do {
 							//use pattern to avoid errors in Windows OS
 							String pattern = Pattern.quote(System.getProperty("file.separator"));
