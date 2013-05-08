@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.logging.Handler;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
@@ -24,14 +25,22 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
 import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
+import br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers.InvalidProductViewController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
+import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
+import br.ufal.ic.featureanalyzer.util.Log;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
+import br.ufal.ic.featureanalyzer.views.AnalyzerView;
+import br.ufal.ic.featureanalyzer.views.InvalidProductView;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -57,7 +66,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private boolean continueCompilationFlag = false;
 	private Set<Long> threadInExecId = new HashSet<Long>();
-
 
 	public CPPComposer() {
 		super("CppComposer");
@@ -359,7 +367,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 *         FEATUREA -D FEATIRE B
 	 * 
 	 */
-	private LinkedList<String> getActivatedFeatureArgs(List<String> myActivatedFeatures) {
+	private LinkedList<String> getActivatedFeatureArgs(
+			List<String> myActivatedFeatures) {
 		LinkedList<String> args = new LinkedList<String>();
 		for (String feature : myActivatedFeatures) {
 			args.add("-D" + feature);
@@ -378,8 +387,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 *            if true, the configuration will be compiled
 	 */
 	@SuppressWarnings("unchecked")
-	private synchronized void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
-			IFolder buildFolder) {
+	private synchronized void runBuild(LinkedList<String> featureArgs,
+			IFolder sourceFolder, IFolder buildFolder) {
 
 		CPPWrapper cpp = new CPPWrapper();
 
@@ -535,55 +544,72 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public boolean postAddNature(IFolder source, IFolder destination) {
 		return true;
 	}
-	
+
 	/**
-	 * Lock the execution of all threads until the user decide what do if the project has errors
+	 * Lock the execution of all threads until the user decide what do if the
+	 * project has errors
 	 */
-	private synchronized void beforeTypeChefAnalyzes(){
-		if(threadInExecId.isEmpty()){
-			System.err.println("CAI AQUI DENTRO");
+	private synchronized void beforeTypeChefAnalyzes() {
+		if (threadInExecId.isEmpty()) {
 			ProjectConfigurationErrorLogger.getInstance().clearLogList();
 			runTypeChefAnalyzes(featureProject.getSourceFolder());
-			System.out.println("\nAnalisando e travado!");
 		}
 		threadInExecId.add(Thread.currentThread().getId());
 	}
-	
+
+	// return logList.toArray(new Log[logList.size()]);
+
 	/**
 	 * Shwo project with errors
 	 */
-	private synchronized void unlockTypeChefAnalyzes(){
+	private synchronized void unlockTypeChefAnalyzes() {
 		threadInExecId.remove(Thread.currentThread().getId());
-		if(threadInExecId.isEmpty()){
-			for(String s : ProjectConfigurationErrorLogger.getInstance().getProjectsList()){
-				System.out.println("\n Erro na config " + s);
+		if (threadInExecId.isEmpty()) {
+			if (!ProjectConfigurationErrorLogger.getInstance()
+					.getProjectsList().isEmpty()) {
+				final Display display = Display.getDefault();
+				if (display == null) {
+					throw new NullPointerException("Display is null");
+				}
+				display.syncExec(new Runnable() {
+					public void run() {
+						List<InvalidProductViewLog> logs = new LinkedList<InvalidProductViewLog>();
+						for (String s : ProjectConfigurationErrorLogger.getInstance()
+								.getProjectsList()) {
+							logs.add(new InvalidProductViewLog(s));
+							System.out.println(s);
+						}
+						InvalidProductViewController.getInstance().adaptTo(logs.toArray(new InvalidProductViewLog[logs.size()]));
+					}
+				});
+
 			}
+
 		}
-		
+
 	}
-	
-	
 
 	@Override
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
-		
+
 		beforeTypeChefAnalyzes();
-		
-		/** synchronized method above are causing some errors... To solve that, use my own feature list*/
+
+		/**
+		 * synchronized method above are causing some errors... To solve that,
+		 * use my own feature list
+		 */
 		List<String> myActivatedFeatures = new LinkedList<String>();
-		
+
 		for (Feature feature : configuration.getSelectedFeatures()) {
 			myActivatedFeatures.add(feature.getName());
 		}
 
-		runBuild(getActivatedFeatureArgs(myActivatedFeatures), featureProject.getSourceFolder(),
-				folder);
-		
-		unlockTypeChefAnalyzes();
-		
+		runBuild(getActivatedFeatureArgs(myActivatedFeatures),
+				featureProject.getSourceFolder(), folder);
 
+		unlockTypeChefAnalyzes();
 
 	}
 

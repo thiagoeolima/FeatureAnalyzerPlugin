@@ -34,6 +34,14 @@
             class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
             id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
       </view>
+      <view
+            category="FeatureAnalyzerPlugin"
+            class="br.ufal.ic.featureanalyzer.views.InvalidProductView"
+            icon="icons/invalidproduct.png"
+            id="br.ufal.ic.featureanalyzer.views.invalideproductview"
+            name="Invalid Product"
+            restorable="true">
+      </view>
    </extension>
  
     <extension
