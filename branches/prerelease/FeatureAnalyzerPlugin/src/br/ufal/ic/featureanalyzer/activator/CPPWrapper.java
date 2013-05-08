@@ -26,12 +26,27 @@ public class CPPWrapper {
 	private MessageConsole console;
 
 	public CPPWrapper() {
-		ConsolePlugin plugin = ConsolePlugin.getDefault();
-		IConsoleManager conMan = plugin.getConsoleManager();
-		console = new MessageConsole("TypeChefConsole", null);
-		conMan.addConsoles(new IConsole[] { console });
+//		ConsolePlugin plugin = ConsolePlugin.getDefault();
+//		IConsoleManager conMan = plugin.getConsoleManager();
+//		console = new MessageConsole("TypeChefConsole", null);
+//		conMan.addConsoles(new IConsole[] { console });
+		
+		console = findConsole("TypeChefConsole");
 
 	}
+	
+	   private MessageConsole findConsole(String name) {
+		      ConsolePlugin plugin = ConsolePlugin.getDefault();
+		      IConsoleManager conMan = plugin.getConsoleManager();
+		      IConsole[] existing = conMan.getConsoles();
+		      for (int i = 0; i < existing.length; i++)
+		         if (name.equals(existing[i].getName()))
+		            return (MessageConsole) existing[i];
+		      //no console found, so create a new one
+		      MessageConsole myConsole = new MessageConsole(name, null);
+		      conMan.addConsoles(new IConsole[]{myConsole});
+		      return myConsole;
+		   }
 
 	public void runCompiler(List<String> packageArgs) {
 		System.out.println();
@@ -84,9 +99,11 @@ public class CPPWrapper {
 							String s = packageArgs.get(packageArgs.size()-1);
 							//let's "clean" it...
 							int lastFileSeparator = s.lastIndexOf(File.separator);
-							s = s.substring(0, lastFileSeparator);
-							prjConfi.addConfigurationWithError(s);
+							String variantPath = s.substring(0, lastFileSeparator);
+							prjConfi.addConfigurationWithError(variantPath);
+							consoleOut.println("Variant Name: " + s.substring(lastFileSeparator));
 						}
+						
 						 do {
 							//use pattern to avoid errors in Windows OS
 							String pattern = Pattern.quote(System.getProperty("file.separator"));
@@ -94,7 +111,7 @@ public class CPPWrapper {
 							consoleOut.println(errorLine[errorLine.length-1]);
 							FeatureAnalyzer.getDefault().logWarning(line);
 						}while((line = error.readLine()) != null);
-
+						 consoleOut.println();
 					}
 					
 
@@ -117,7 +134,7 @@ public class CPPWrapper {
 				}
 			}
 		} catch (IOException e) {
-			consoleOut.println("The Project contains errors! " + e.getMessage());
+			//consoleOut.println("The Project contains errors! " + e.getMessage());
 			FeatureAnalyzer.getDefault().logError(e);
 		} finally {
 			try {

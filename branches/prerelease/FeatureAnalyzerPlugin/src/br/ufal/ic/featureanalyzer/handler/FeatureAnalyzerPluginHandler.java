@@ -10,6 +10,7 @@ import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
+import br.ufal.ic.featureanalyzer.views.InvalidProductView;
 
 public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 	private IWorkbenchWindow window;

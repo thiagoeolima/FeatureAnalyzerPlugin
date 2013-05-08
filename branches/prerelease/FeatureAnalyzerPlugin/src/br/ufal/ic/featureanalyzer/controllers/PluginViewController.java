@@ -28,6 +28,7 @@ public class PluginViewController {
 	private AnalyzerView typeChefPluginView;
 	private static PluginViewController INSTANCE; 
 
+	private PluginViewController(){}
 
 	
 	public static PluginViewController getInstance(){

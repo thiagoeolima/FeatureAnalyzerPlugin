@@ -3,7 +3,7 @@ package br.ufal.ic.featureanalyzer.controllers;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-class PluginViewContentProvider implements IStructuredContentProvider {
+public class PluginViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new String[] {};
 
 	@Override
