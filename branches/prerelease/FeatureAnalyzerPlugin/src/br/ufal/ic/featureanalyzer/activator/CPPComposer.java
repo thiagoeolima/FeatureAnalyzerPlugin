@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Vector;
-import java.util.logging.Handler;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFile;
@@ -25,9 +24,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
@@ -37,10 +33,7 @@ import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers.InvalidProductViewController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
-import br.ufal.ic.featureanalyzer.util.Log;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
-import br.ufal.ic.featureanalyzer.views.AnalyzerView;
-import br.ufal.ic.featureanalyzer.views.InvalidProductView;
 import de.ovgu.featureide.core.CorePlugin;
 import de.ovgu.featureide.core.IFeatureProject;
 import de.ovgu.featureide.core.builder.preprocessor.PPComposerExtensionClass;
@@ -436,6 +429,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 				public void run() {
 					PluginViewController viewController = PluginViewController
 							.getInstance();
+					viewController.showPluginView();
 					viewController.adaptTo(typeChef.getLogs());
 					continueCompilationFlag = MessageDialog.openQuestion(
 							display.getActiveShell(),

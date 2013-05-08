@@ -8,14 +8,16 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.featureanalyzer.controllers.PluginViewContentProvider;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
@@ -34,6 +36,7 @@ public class InvalidProductViewController {
 	public static InvalidProductViewController getInstance(){
 		if(INSTANCE == null){
 			INSTANCE = new InvalidProductViewController();
+			INSTANCE.showInvalidProduct();
 		}
 		return INSTANCE;
 	}
@@ -148,5 +151,25 @@ public class InvalidProductViewController {
 		viewer.getControl().setFocus();
 	}
 	
-	
+	private void showInvalidProduct() {
+		Display.getDefault().syncExec(new Runnable() {
+			public void run() {
+				IWorkbenchWindow activeWindow;
+				IWorkbenchPage activePage;
+				activeWindow = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow();
+				if (activeWindow != null) {
+					activePage = activeWindow.getActivePage();
+					if (activePage != null) {
+						try {
+							activePage
+									.showView(InvalidProductView.ID);
+						} catch (PartInitException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		});
+	}
 }
