@@ -18,7 +18,7 @@ public class InvalidProductViewLabelProvider extends LabelProvider implements IT
 				return ((InvalidProductViewLog) obj).getProductName();
 		case 1:
 			if (obj instanceof InvalidProductViewLog)
-				return ((InvalidProductViewLog) obj).getFullpath();
+				return ((InvalidProductViewLog) obj).getRelativePath();
 		default:
 			return "";
 		}
