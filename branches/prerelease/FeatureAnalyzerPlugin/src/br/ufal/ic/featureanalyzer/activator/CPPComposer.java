@@ -379,7 +379,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * @param buildConfig
 	 *            if true, the configuration will be compiled
 	 */
-	@SuppressWarnings("unchecked")
 	private synchronized void runBuild(LinkedList<String> featureArgs,
 			IFolder sourceFolder, IFolder buildFolder) {
 
