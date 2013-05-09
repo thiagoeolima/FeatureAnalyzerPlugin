@@ -12,10 +12,10 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.ui.ISelectionService;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.util.Log;
 
 // TODO: Put a Listener
 
@@ -29,7 +29,6 @@ public class ProjectExplorerController {
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
-		//Isso aqui apresenta problemas... algumas vezes quem t� aberto � o PackageExplorer.
 		selection = (IStructuredSelection) window.getSelectionService()
 			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
 		if(selection == null){
@@ -45,6 +44,16 @@ public class ProjectExplorerController {
 	
 	public void addResource(IResource resource){
 		if(resource instanceof IFile){
+			
+			//remove markers
+			IFile file = (IFile) resource;
+			try {
+				file.deleteMarkers(Log.MARKER_TYPE, false,
+						IResource.DEPTH_ZERO);
+			} catch (CoreException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			listFiles.add(resource);
 		} else if (resource instanceof IFolder){
 			try {

@@ -11,6 +11,7 @@ import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.filebuffers.ITextFileBufferManager;
 import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -32,7 +33,9 @@ public class Log {
 	private int line;
 	private int column;
 	private ITextSelection iTextSelection;
-
+	
+	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
+	
 	public Log(String fileName, String line, String column, String feature,
 			String severity, String message) {
 		this.line = Integer.parseInt(line.trim());
@@ -65,6 +68,16 @@ public class Log {
 					temp[1].length() - this.fileName.length());
 		} else {
 			this.path = fileName.trim();
+		}
+
+		try {
+			IMarker marker = getFile().createMarker(MARKER_TYPE);
+			marker.setAttribute(IMarker.MESSAGE, this.message);
+			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
+			marker.setAttribute(IMarker.LINE_NUMBER,
+					selection().getStartLine() + 1);
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
 
 	}
@@ -133,13 +146,13 @@ public class Log {
 
 				String findLine = parserFileRead.readLine();
 
-//				System.out.println(findLine);
+				// System.out.println(findLine);
 
 				BufferedReader fileReader = new BufferedReader(new FileReader(
 						file));
 				String outline = null;
-				
-				while(findLine != null && notLine) {
+
+				while (findLine != null && notLine) {
 					findLine.trim();
 					for (correctLine = 0; (outline = fileReader.readLine()) != null; correctLine++) {
 						if (outline.contains(findLine)) {
@@ -151,13 +164,12 @@ public class Log {
 						nextLineNumber++;
 						findLine = parserFileRead.readLine();
 						fileReader.close();
-						fileReader = new BufferedReader(new FileReader(
-								file));
+						fileReader = new BufferedReader(new FileReader(file));
 					}
 				}
-				
+
 				correctLine -= nextLineNumber;
-				
+
 				parserFileRead.close();
 				fileReader.close();
 

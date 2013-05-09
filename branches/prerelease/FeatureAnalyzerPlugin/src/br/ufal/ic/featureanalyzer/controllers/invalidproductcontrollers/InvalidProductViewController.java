@@ -99,7 +99,7 @@ public class InvalidProductViewController {
 					if (event.button == MouseEvent.BUTTON1 && event.count == 2) {
 						Object data = clickedItem.getData();
 						if (data instanceof InvalidProductViewLog) {
-							final InvalidProductViewLog log = (InvalidProductViewLog) data;
+//							final InvalidProductViewLog log = (InvalidProductViewLog) data;
 //							try {
 //
 //								

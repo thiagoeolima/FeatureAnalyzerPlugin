@@ -11,9 +11,10 @@ public class InvalidProductViewLog {
 	public InvalidProductViewLog(String path) {
 		String pattern = Pattern.quote(System.getProperty("file.separator"));
 		String[] fullPath = path.split(pattern);
-		this.fullpath = fullPath[fullPath.length - 3]  + File.separator + fullPath[fullPath.length - 2] + File.separator +  fullPath[fullPath.length - 1];
+		this.fullpath = fullPath[fullPath.length - 3] + File.separator
+				+ fullPath[fullPath.length - 2] + File.separator
+				+ fullPath[fullPath.length - 1];
 		this.productName = fullPath[fullPath.length - 1];
-		
 	}
 
 	public String getProductName() {
@@ -31,6 +32,5 @@ public class InvalidProductViewLog {
 	public void setFullpath(String fullpath) {
 		this.fullpath = fullpath;
 	}
-	
-	
+
 }

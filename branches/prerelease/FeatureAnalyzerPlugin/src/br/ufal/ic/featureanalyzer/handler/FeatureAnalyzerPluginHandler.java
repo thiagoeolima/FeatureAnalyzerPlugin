@@ -36,8 +36,8 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		controller.run();
+
+		 controller.run();
 
 		return null;
 	}

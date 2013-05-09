@@ -1,13 +1,12 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobManager;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableContext;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -31,51 +30,52 @@ public class Controller {
 	}
 
 	public void run() {
-		Job job = new Job("Analyzing!") {
-			@Override
-			protected IStatus run(IProgressMonitor monitor) {
-				// this perfom a analyzes based in the user selection
-				monitor.beginTask("Analyzing the selected files", 100);
+		IRunnableContext context = window.getWorkbench().getProgressService();
+		try {
+			context.run(true, false, new IRunnableWithProgress() {
 
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
+				@Override
+				public void run(IProgressMonitor monitor)
+						throws InvocationTargetException, InterruptedException {
+					// this perfom a analyzes based in the user selection
+					monitor.beginTask("Analyzing the selected files", 100);
 
-				try {
-					monitorUpdate(monitor, 25);
-					pkgExplorerController.run();
-				} catch (Exception e) {
-					e.printStackTrace();
-					return Status.CANCEL_STATUS;
+
+					try {
+						monitorUpdate(monitor, 25);
+						pkgExplorerController.run();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+
+					model.run(pkgExplorerController.getList());
+					monitorUpdate(monitor, 75);
+					// Update the tree view.
+					syncWithPluginView();
+				}
+				public void monitorUpdate(IProgressMonitor monitor,int value) {
+					try {
+						// Sleep a second
+						TimeUnit.SECONDS.sleep(1);
+
+						// Report that value units are done
+						monitor.worked(value);
+					} catch (InterruptedException e1) {
+						e1.printStackTrace();
+					}
 				}
 
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
-
-				model.run(pkgExplorerController.getList());
-				monitorUpdate(monitor, 75);
-				// Update the tree view.
-				syncWithPluginView();
-				return Status.OK_STATUS;
 			}
 
-			public void monitorUpdate(IProgressMonitor monitor,int value) {
-				try {
-					// Sleep a second
-					TimeUnit.SECONDS.sleep(1);
-
-					// Report that value units are done
-					monitor.worked(value);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-		};
-		// Setting the progress monitor
-		IJobManager manager = job.getJobManager();
-		
-		
-		job.setPriority(Job.BUILD);
-		job.schedule();
+			);
+		} catch (InvocationTargetException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
 	}
 
 	private void syncWithPluginView() {

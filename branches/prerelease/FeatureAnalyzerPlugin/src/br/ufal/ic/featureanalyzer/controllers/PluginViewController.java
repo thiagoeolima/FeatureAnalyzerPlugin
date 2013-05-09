@@ -29,18 +29,17 @@ public class PluginViewController {
 	private TableViewer viewer;
 	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
 	private AnalyzerView typeChefPluginView;
-	private static PluginViewController INSTANCE; 
+	private static PluginViewController INSTANCE;
 
-	private PluginViewController(){}
+	private PluginViewController() {
+	}
 
-	
-	public static PluginViewController getInstance(){
-		if(INSTANCE == null){
+	public static PluginViewController getInstance() {
+		if (INSTANCE == null) {
 			INSTANCE = new PluginViewController();
 		}
 		return INSTANCE;
 	}
-	
 
 	public AnalyzerView getTypeChefPluginView() {
 		return typeChefPluginView;
@@ -50,7 +49,6 @@ public class PluginViewController {
 		this.typeChefPluginView = typeChefPluginView;
 	}
 
-
 	private class NameSorter extends ViewerSorter {
 
 	}
@@ -58,7 +56,7 @@ public class PluginViewController {
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
 		viewer.refresh();
-		//viewer.setContentProvider(this.viewContentProvider);
+		// viewer.setContentProvider(this.viewContentProvider);
 	}
 
 	public void createPartControl(Composite parent) {
@@ -83,7 +81,6 @@ public class PluginViewController {
 								IEditorPart editor = IDE.openEditor(
 										typeChefPluginView.getSite().getPage(),
 										log.getFile());
-
 								editor.getSite().getSelectionProvider()
 										.setSelection(log.selection());
 
@@ -110,9 +107,8 @@ public class PluginViewController {
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = { "Message", "File", "Path", "Feature",
-				"Severity" };
-		int[] bounds = { 300, 100, 100,100, 100 };
+		String[] titles = { "Message", "File", "Path", "Feature", "Severity" };
+		int[] bounds = { 300, 100, 100, 100, 100 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);
@@ -134,7 +130,7 @@ public class PluginViewController {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
+
 	public void showPluginView() {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
@@ -146,8 +142,7 @@ public class PluginViewController {
 					activePage = activeWindow.getActivePage();
 					if (activePage != null) {
 						try {
-							activePage
-									.showView(AnalyzerView.ID);
+							activePage.showView(AnalyzerView.ID);
 						} catch (PartInitException e) {
 							e.printStackTrace();
 						}
