@@ -380,7 +380,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 *            if true, the configuration will be compiled
 	 */
 	@SuppressWarnings("unchecked")
-	private synchronized void runBuild(LinkedList<String> featureArgs,
+	private void runBuild(LinkedList<String> featureArgs,
 			IFolder sourceFolder, IFolder buildFolder) {
 
 		CPPWrapper cpp = new CPPWrapper();
@@ -503,9 +503,14 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private static ArrayList<String[]> createTempltes() {
 		ArrayList<String[]> list = new ArrayList<String[]>();
-		list.add(new String[] { "C.c", "c",
+		list.add(new String[] { "C Source File", "c",
 				"\r\n" + "int main(int argc, char **argv)" + " {\r\n\r\n}" });
-		list.add(new String[] { "C.h", "h", "\r\n" + "header" + " {\r\n\r\n}" });
+		list.add(new String[] {
+				"C Header File",
+				"h",
+				"#ifndef " + CLASS_NAME_PATTERN + "_H_\n"
+						+ "#define " + CLASS_NAME_PATTERN
+						+ "_H_\n\n\n" + "#endif /* " + CLASS_NAME_PATTERN + "_H_ */"  });
 		return list;
 	}
 
@@ -568,14 +573,16 @@ public class CPPComposer extends PPComposerExtensionClass {
 				display.syncExec(new Runnable() {
 					public void run() {
 						List<InvalidProductViewLog> logs = new LinkedList<InvalidProductViewLog>();
-						for (String s : ProjectConfigurationErrorLogger.getInstance()
-								.getProjectsList()) {
+						for (String s : ProjectConfigurationErrorLogger
+								.getInstance().getProjectsList()) {
 							logs.add(new InvalidProductViewLog(s));
 							System.out.println(s);
 						}
-						InvalidProductViewController.getInstance().adaptTo(logs.toArray(new InvalidProductViewLog[logs.size()]));
+						InvalidProductViewController.getInstance().adaptTo(
+								logs.toArray(new InvalidProductViewLog[logs
+										.size()]));
 					}
-					
+
 				});
 
 			}

@@ -15,7 +15,7 @@ public class InvalidProductViewLog {
 
 	
 	
-	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
+	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.invalidproduct";
 	
 	private String productName;
 	private String relativePath;
