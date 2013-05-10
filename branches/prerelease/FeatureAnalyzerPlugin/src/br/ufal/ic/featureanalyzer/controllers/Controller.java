@@ -38,7 +38,7 @@ public class Controller {
 				public void run(IProgressMonitor monitor)
 						throws InvocationTargetException, InterruptedException {
 					// this perfom a analyzes based in the user selection
-					monitor.beginTask("Analyzing the selected files", 100);
+					monitor.beginTask("Analyzing selected files", 100);
 
 
 					try {
@@ -48,7 +48,8 @@ public class Controller {
 						e.printStackTrace();
 					}
 
-					model.run(pkgExplorerController.getList());
+					//model.run(pkgExplorerController.getList());
+					model.runCommand(pkgExplorerController.getList());
 					monitorUpdate(monitor, 75);
 					// Update the tree view.
 					syncWithPluginView();

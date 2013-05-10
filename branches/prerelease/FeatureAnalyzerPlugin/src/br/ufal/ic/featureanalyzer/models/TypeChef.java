@@ -169,136 +169,36 @@ public class TypeChef {
 		fo.getFiles().clear();
 	}
 
-	/**
-	 * Esse metodo eh executado dentro da classe CPPComposer
-	 * 
-	 * @param filesList
-	 *            Lista de arquivos que serão avaliados
-	 * @param project
-	 *            projeto dono do arquivo
-	 */
-	public void run(List<String> filesList, IProject project) {
-		// TODO: Flush the file
-		this.project = project;
-		runCommand(filesList);
-	}
 
 	/**
 	 * Abstra��o para evitar duplica��o de c�digo
 	 * 
 	 * @param filesList
 	 */
-	private void runCommand(List<String> filesList) {
-		prepareFeatureModel();
-		cppWrapper.gerenatePlatformHeader(filesList, FeatureAnalyzer
-				.getDefault().getPreferenceStore().getString("SystemIncludes"));
-
+	public void runCommand(List<IResource> filesList) {
+		List<IResource> listAux = new LinkedList<IResource>();
 		xmlParser.clearLogList();
-
-		for (String file : filesList) {
-			List<String> fileAux = new LinkedList<String>();
-			fileAux.add(file);
-			startCommandLineMode(filesList);
-			xmlParser.setXMLFile(new File(outputFilePath));
-			xmlParser.processFile();
-		}
-	}
-
-	private void startCommandLineMode(List<String> args) {
-		String typeChefPreference = FeatureAnalyzer.getDefault()
-				.getPreferenceStore().getString("TypeChefPreference");
-
-		URL url = BundleUtility.find(FeatureAnalyzer.getDefault().getBundle(),
-				"lib/" + "TypeChef-0.3.5.jar");
-		try {
-			url = FileLocator.toFileURL(url);
-		} catch (IOException e) {
-			FeatureAnalyzer.getDefault().logError(e);
-		}
-		Path pathToTypeChef = new Path(url.getFile());
-		args.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemIncludes"));
-		args.add(0, "--systemIncludes");
-		// args.add(0,"");
-		// args.add(0,"--systemRoot");
-		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ File.separator + "cnf.txt");
-		args.add(0, "--featureModelFExpr");
-		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ File.separator + "platform.h");
-		args.add(0, "-h");
-		args.add(0, typeChefPreference);
-		args.add(0, "--errorXML=" + outputFilePath);
-		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ File.separator + "lexOutput.c");
-		args.add(0, "--lexOutput");
-		args.add(0, "-w");
-		args.add(0, pathToTypeChef.toOSString());
-		args.add(0, "-jar");
-		args.add(0, "java");
-		for (String s : args) {
-			System.err.print(s + " ");
-		}
-		ProcessBuilder processBuilder = new ProcessBuilder(args);
-
-		BufferedReader input = null;
-		BufferedReader error = null;
-		try {
-			Process process = processBuilder.start();
-			input = new BufferedReader(new InputStreamReader(
-					process.getInputStream(), Charset.availableCharsets().get(
-							"UTF-8")));
-			error = new BufferedReader(new InputStreamReader(
-					process.getErrorStream(), Charset.availableCharsets().get(
-							"UTF-8")));
-			boolean x = true;
-			while (x) {
-				try {
-					String line;
-					while ((line = input.readLine()) != null) {
-						System.out.println(line);
-						FeatureAnalyzer.getDefault().logWarning(line);
-					}
-					try {
-						process.waitFor();
-					} catch (InterruptedException e) {
-						System.out.println(e.toString());
-						FeatureAnalyzer.getDefault().logError(e);
-					}
-					int exitValue = process.exitValue();
-					if (exitValue != 0) {
-						throw new IOException(
-								"The process doesn't finish normally (exit="
-										+ exitValue + ")!");
-					}
-					x = false;
-				} catch (IllegalThreadStateException e) {
-					System.out.println(e.toString());
-					FeatureAnalyzer.getDefault().logError(e);
-				}
-			}
-		} catch (IOException e) {
-			System.out.println(e.toString());
-			openMessageBox(e);
-			FeatureAnalyzer.getDefault().logError(e);
-		} finally {
+		fo = new FrontendOptionsWithConfigFiles();
+		for(IResource resource : filesList){
+			listAux.add(resource);
+			start(resourceToString(listAux));
+			listAux.clear();
+			
 			try {
-				if (input != null)
-					input.close();
-			} catch (IOException e) {
+				Frontend.processFile(fo);
+			} catch (Exception e) {
+				e.printStackTrace();
 				FeatureAnalyzer.getDefault().logError(e);
-			} finally {
-				if (error != null)
-					try {
-						error.close();
-					} catch (IOException e) {
-						FeatureAnalyzer.getDefault().logError(e);
-					}
 			}
+
+			xmlParser.setXMLFile(fo.getErrorXMLFile());
+			xmlParser.processFile();
+			fo.getFiles().clear();
+			
 		}
+		
+		
+
 	}
 
 	/**
