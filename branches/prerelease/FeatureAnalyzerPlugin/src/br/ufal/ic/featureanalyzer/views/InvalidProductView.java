@@ -8,9 +8,10 @@ import br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers.InvalidP
 
 public class InvalidProductView extends ViewPart {
 
-	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".views.invalideproductview";
+	public static final String ID = FeatureAnalyzer.PLUGIN_ID
+			+ ".views.invalideproductview";
 	private InvalidProductViewController controller;
-	
+
 	public InvalidProductView() {
 		controller = InvalidProductViewController.getInstance();
 		controller.setView(this);
@@ -21,7 +22,7 @@ public class InvalidProductView extends ViewPart {
 		controller.createPartControl(parent);
 
 	}
-	
+
 	@Override
 	public void setFocus() {
 		controller.setFocus();

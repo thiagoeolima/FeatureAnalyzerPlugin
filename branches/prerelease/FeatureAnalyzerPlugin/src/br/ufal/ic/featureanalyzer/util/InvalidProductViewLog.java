@@ -13,31 +13,28 @@ import org.eclipse.core.runtime.Path;
 
 public class InvalidProductViewLog {
 
-	
-	
 	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.invalidproduct";
-	
+
 	private String productName;
 	private String relativePath;
 
 	public InvalidProductViewLog(String path) {
 		String pattern = Pattern.quote(System.getProperty("file.separator"));
 		String[] relativePath = path.split(pattern);
-		this.relativePath = relativePath[relativePath.length - 3] + File.separator
-				+ relativePath[relativePath.length - 2] + File.separator
-				+ relativePath[relativePath.length - 1];
+		this.relativePath = relativePath[relativePath.length - 3]
+				+ File.separator + relativePath[relativePath.length - 2]
+				+ File.separator + relativePath[relativePath.length - 1];
 		this.productName = relativePath[relativePath.length - 1];
-		
+
 		try {
 			IMarker marker = getFolder().createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, "Invalid product variant");
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
-			marker.setAttribute(IMarker.LOCATION,this.relativePath);
+			marker.setAttribute(IMarker.LOCATION, this.relativePath);
 		} catch (CoreException e) {
 			e.printStackTrace();
 		}
 	}
-	
 
 	public IFolder getFolder() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();

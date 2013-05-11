@@ -45,7 +45,6 @@ public class TypeChef {
 
 	public TypeChef() {
 		xmlParser = new XMLParserTypeChef();
-		fo = new FrontendOptionsWithConfigFiles();
 		// saved in the' temp directory
 		outputFilePath = FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -99,7 +98,7 @@ public class TypeChef {
 				.getBoolean("FEATURE_MODEL")) {
 			prepareFeatureModel(); // General processing options String
 		}
-
+		
 		String typeChefPreference = FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("TypeChefPreference");
 
@@ -128,52 +127,35 @@ public class TypeChef {
 					.getAbsolutePath()
 					+ File.separator + "cnf.txt");
 		}
-
-		CPPWrapper.gerenatePlatformHeaderLinux(list, FeatureAnalyzer
-				.getDefault().getPreferenceStore().getString("SystemIncludes"));
-
+		
+		fo = new FrontendOptionsWithConfigFiles();
+		
 		try {
 			fo.parseOptions((String[]) paramters.toArray(new String[paramters
 					.size()]));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
 		fo.getFiles().addAll(list);
 		fo.setPrintToStdOutput(false);
 	}
 
-	public void run(List<IResource> list) {
-		// TODO: Flush the file
-		start(resourceToString(list));
-		xmlParser.clearLogList();
-
-		try {
-			Frontend.processFile(fo);
-		} catch (Exception e) {
-			e.printStackTrace();
-			FeatureAnalyzer.getDefault().logError(e);
-		}
-
-		xmlParser.setXMLFile(fo.getErrorXMLFile());
-		xmlParser.processFile();
-		fo.getFiles().clear();
-	}
-
-
-	/**
-	 * Abstra��o para evitar duplica��o de c�digo
-	 * 
-	 * @param filesList
-	 */
-	public void runCommand(List<IResource> filesList) {
+	public void run(List<IResource> filesList) {
 		List<IResource> listAux = new LinkedList<IResource>();
 		xmlParser.clearLogList();
 		fo = new FrontendOptionsWithConfigFiles();
-		for(IResource resource : filesList){
+		
+		CPPWrapper.gerenatePlatformHeaderLinux(
+				resourceToString(filesList),
+				FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("SystemIncludes"));
+		
+		for (IResource resource : filesList) {
 			listAux.add(resource);
 			start(resourceToString(listAux));
 			listAux.clear();
-			
+
 			try {
 				Frontend.processFile(fo);
 			} catch (Exception e) {
@@ -184,7 +166,7 @@ public class TypeChef {
 			xmlParser.setXMLFile(fo.getErrorXMLFile());
 			xmlParser.processFile();
 			fo.getFiles().clear();
-			
+
 		}
 
 	}

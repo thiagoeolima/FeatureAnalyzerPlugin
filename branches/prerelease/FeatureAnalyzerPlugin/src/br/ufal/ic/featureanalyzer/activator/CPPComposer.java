@@ -420,7 +420,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
-		typeChef.runCommand(prjController.getList());
+		typeChef.run(prjController.getList());
 		final Display display = Display.getDefault();
 		if (display == null) {
 			throw new NullPointerException("Display is null");

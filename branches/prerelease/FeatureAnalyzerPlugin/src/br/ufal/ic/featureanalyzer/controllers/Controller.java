@@ -48,8 +48,7 @@ public class Controller {
 						e.printStackTrace();
 					}
 
-//					model.run(pkgExplorerController.getList());
-					model.runCommand(pkgExplorerController.getList());
+					model.run(pkgExplorerController.getList());
 					monitorUpdate(monitor, 75);
 					// Update the tree view.
 					syncWithPluginView();
