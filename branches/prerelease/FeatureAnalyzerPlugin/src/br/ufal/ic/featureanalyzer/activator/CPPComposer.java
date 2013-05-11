@@ -381,8 +381,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 */
 
 	@SuppressWarnings("unchecked")
-	private void runBuild(LinkedList<String> featureArgs,		
-			IFolder sourceFolder, IFolder buildFolder) {
+	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
+			IFolder buildFolder) {
 
 		CPPWrapper cpp = new CPPWrapper();
 
@@ -425,20 +425,23 @@ public class CPPComposer extends PPComposerExtensionClass {
 		if (display == null) {
 			throw new NullPointerException("Display is null");
 		}
-		if (typeChef.getLogs().length > 0) {
-			display.syncExec(new Runnable() {
-				public void run() {
-					PluginViewController viewController = PluginViewController
-							.getInstance();
-					viewController.showPluginView();
+
+		display.syncExec(new Runnable() {
+			public void run() {
+				PluginViewController viewController = PluginViewController
+						.getInstance();
+				viewController.showPluginView();
+				if (typeChef.getLogs().length > 0) {
 					viewController.adaptTo(typeChef.getLogs());
 					continueCompilationFlag = MessageDialog.openQuestion(
 							display.getActiveShell(),
 							"Error!",
 							"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
+				} else {
+					viewController.clear();
 				}
-			});
-		}
+			}
+		});
 	}
 
 	/**
@@ -509,9 +512,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 		list.add(new String[] {
 				"C Header File",
 				"h",
-				"#ifndef " + CLASS_NAME_PATTERN + "_H_\n"
-						+ "#define " + CLASS_NAME_PATTERN
-						+ "_H_\n\n\n" + "#endif /* " + CLASS_NAME_PATTERN + "_H_ */"  });
+				"#ifndef " + CLASS_NAME_PATTERN + "_H_\n" + "#define "
+						+ CLASS_NAME_PATTERN + "_H_\n\n\n" + "#endif /* "
+						+ CLASS_NAME_PATTERN + "_H_ */" });
 		return list;
 	}
 
@@ -565,28 +568,34 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private synchronized void verifyVariantsWithProblems() {
 		threadInExecId.remove(Thread.currentThread().getId());
 		if (threadInExecId.isEmpty()) {
-			if (!ProjectConfigurationErrorLogger.getInstance()
-					.getProjectsList().isEmpty()) {
-				final Display display = Display.getDefault();
-				if (display == null) {
-					throw new NullPointerException("Display is null");
-				}
-				display.syncExec(new Runnable() {
-					public void run() {
+			final Display display = Display.getDefault();
+			if (display == null) {
+				throw new NullPointerException("Display is null");
+			}
+			display.syncExec(new Runnable() {
+				public void run() {
+					InvalidProductViewController invalidProductViewController = InvalidProductViewController
+							.getInstance();
+					invalidProductViewController.showInvalidProduct();
+
+					if (!ProjectConfigurationErrorLogger.getInstance()
+							.getProjectsList().isEmpty()) {
 						List<InvalidProductViewLog> logs = new LinkedList<InvalidProductViewLog>();
 						for (String s : ProjectConfigurationErrorLogger
 								.getInstance().getProjectsList()) {
 							logs.add(new InvalidProductViewLog(s));
 							System.out.println(s);
 						}
-						InvalidProductViewController.getInstance().adaptTo(
-								logs.toArray(new InvalidProductViewLog[logs
-										.size()]));
+						invalidProductViewController.adaptTo(logs
+								.toArray(new InvalidProductViewLog[logs.size()]));
+					} else {
+						// Clear view
+						invalidProductViewController.clear();
 					}
 
-				});
+				}
 
-			}
+			});
 
 		}
 

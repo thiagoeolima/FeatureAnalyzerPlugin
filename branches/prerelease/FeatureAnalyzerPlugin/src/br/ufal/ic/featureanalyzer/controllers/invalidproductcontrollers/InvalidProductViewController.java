@@ -29,50 +29,41 @@ public class InvalidProductViewController {
 	private InvalidProductView view;
 	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
 	private static InvalidProductViewController INSTANCE;
-	
-	private InvalidProductViewController(){}
-	
-	
-	public static InvalidProductViewController getInstance(){
-		if(INSTANCE == null){
+
+	private InvalidProductViewController() {
+	}
+
+	public static InvalidProductViewController getInstance() {
+		if (INSTANCE == null) {
 			INSTANCE = new InvalidProductViewController();
-			INSTANCE.showInvalidProduct();
 		}
 		return INSTANCE;
 	}
-	
-
 
 	public TableViewer getViewer() {
 		return viewer;
 	}
 
-
 	public void setViewer(TableViewer viewer) {
 		this.viewer = viewer;
 	}
-
 
 	public InvalidProductView getView() {
 		return view;
 	}
 
-
 	public void setView(InvalidProductView view) {
 		this.view = view;
 	}
-
 
 	public PluginViewContentProvider getViewContentProvider() {
 		return viewContentProvider;
 	}
 
-
-	public void setViewContentProvider(PluginViewContentProvider viewContentProvider) {
+	public void setViewContentProvider(
+			PluginViewContentProvider viewContentProvider) {
 		this.viewContentProvider = viewContentProvider;
 	}
-
-
 
 	private class NameSorter extends ViewerSorter {
 
@@ -80,6 +71,11 @@ public class InvalidProductViewController {
 
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
+		viewer.refresh();
+	}
+
+	public void clear() {
+		this.viewContentProvider.setLogs(new String[] {});
 		viewer.refresh();
 	}
 
@@ -99,15 +95,7 @@ public class InvalidProductViewController {
 					if (event.button == MouseEvent.BUTTON1 && event.count == 2) {
 						Object data = clickedItem.getData();
 						if (data instanceof InvalidProductViewLog) {
-//							final InvalidProductViewLog log = (InvalidProductViewLog) data;
-//							try {
-//
-//								
-//
-//							} catch (PartInitException e) {
-//								// TODO Auto-generated catch block
-//								e.printStackTrace();
-//							}
+
 						}
 					}
 				}
@@ -127,8 +115,8 @@ public class InvalidProductViewController {
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = {"Variant Name", "Path"};
-		int[] bounds = {100, 400};
+		String[] titles = { "Variant Name", "Path" };
+		int[] bounds = { 100, 400 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);
@@ -150,8 +138,8 @@ public class InvalidProductViewController {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
-	private void showInvalidProduct() {
+
+	public void showInvalidProduct() {
 		Display.getDefault().syncExec(new Runnable() {
 			public void run() {
 				IWorkbenchWindow activeWindow;
@@ -162,8 +150,7 @@ public class InvalidProductViewController {
 					activePage = activeWindow.getActivePage();
 					if (activePage != null) {
 						try {
-							activePage
-									.showView(InvalidProductView.ID);
+							activePage.showView(InvalidProductView.ID);
 						} catch (PartInitException e) {
 							e.printStackTrace();
 						}

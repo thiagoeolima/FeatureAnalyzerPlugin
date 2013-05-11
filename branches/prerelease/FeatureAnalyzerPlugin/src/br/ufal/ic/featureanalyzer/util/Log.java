@@ -31,7 +31,7 @@ public class Log {
 	private String fileName;
 	private String path;
 	private int line;
-	private int column;
+//	private int column;
 	private ITextSelection iTextSelection;
 	
 	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
@@ -39,7 +39,7 @@ public class Log {
 	public Log(String fileName, String line, String column, String feature,
 			String severity, String message) {
 		this.line = Integer.parseInt(line.trim());
-		this.column = Integer.parseInt(column.trim());
+//		this.column = Integer.parseInt(column.trim());
 		this.feature = feature.trim();
 
 		if (severity == null) {
@@ -96,14 +96,6 @@ public class Log {
 
 	public String getFileName() {
 		return fileName;
-	}
-
-	@Override
-	public String toString() {
-		return "Log [feature=" + feature + ", severity=" + severity
-				+ ", message=" + message + ", fileName=" + fileName + ", path="
-				+ path + ", line=" + line + ", column=" + column
-				+ ", iTextSelection=" + iTextSelection + "]";
 	}
 
 	public String getPath() {

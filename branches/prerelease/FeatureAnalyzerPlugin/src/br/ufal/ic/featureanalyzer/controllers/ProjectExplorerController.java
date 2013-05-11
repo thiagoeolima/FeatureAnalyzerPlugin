@@ -44,7 +44,6 @@ public class ProjectExplorerController {
 	
 	public void addResource(IResource resource){
 		if(resource instanceof IFile){
-			
 			//remove markers
 			IFile file = (IFile) resource;
 			try {
@@ -70,7 +69,6 @@ public class ProjectExplorerController {
 
 	public void run() throws Exception {
 		listFiles.clear();
-
 		Object o = selection.getFirstElement();
 		System.out.println(o.getClass());
 		IResource aux;
@@ -80,6 +78,7 @@ public class ProjectExplorerController {
 			 aux = ((CContainer) o).getResource();
 		}else if(o instanceof ITranslationUnit){
 			 aux = ((ITranslationUnit) o).getResource();
+			 
 		}else if(o instanceof IFile){
 			aux = (IResource) o;
 		}else if(o instanceof IFolder){

@@ -21,7 +21,6 @@ public class InvalidProductView extends ViewPart {
 		controller.createPartControl(parent);
 
 	}
-
 	
 	@Override
 	public void setFocus() {

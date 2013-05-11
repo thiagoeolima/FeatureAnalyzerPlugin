@@ -59,6 +59,11 @@ public class PluginViewController {
 		// viewer.setContentProvider(this.viewContentProvider);
 	}
 
+	public void clear() {
+		this.viewContentProvider.setLogs(new String[] {});
+		viewer.refresh();
+	}
+	
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);

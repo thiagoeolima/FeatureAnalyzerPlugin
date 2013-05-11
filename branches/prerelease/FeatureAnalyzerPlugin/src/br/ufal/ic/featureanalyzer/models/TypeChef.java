@@ -1,31 +1,24 @@
 package br.ufal.ic.featureanalyzer.models;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.RandomAccessFile;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.internal.util.BundleUtility;
 import org.eclipse.ui.progress.UIJob;
 import org.prop4j.Node;
 import org.prop4j.NodeWriter;
@@ -42,18 +35,15 @@ import de.ovgu.featureide.fm.core.io.UnsupportedModelException;
 import de.ovgu.featureide.fm.core.io.xml.XmlFeatureModelReader;
 import de.ovgu.featureide.fm.ui.FMUIPlugin;
 
-@SuppressWarnings("restriction")
 public class TypeChef {
 
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
-	private CPPWrapper cppWrapper;
 	private FrontendOptions fo;
 
 	private final String outputFilePath;
 
 	public TypeChef() {
-		cppWrapper = new CPPWrapper();
 		xmlParser = new XMLParserTypeChef();
 		fo = new FrontendOptionsWithConfigFiles();
 		// saved in the' temp directory
@@ -196,8 +186,6 @@ public class TypeChef {
 			fo.getFiles().clear();
 			
 		}
-		
-		
 
 	}
 
