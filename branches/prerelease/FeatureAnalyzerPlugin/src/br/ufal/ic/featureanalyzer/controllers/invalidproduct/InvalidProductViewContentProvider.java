@@ -3,7 +3,7 @@ package br.ufal.ic.featureanalyzer.controllers.invalidproduct;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-class InvalidProductContentProvider implements IStructuredContentProvider {
+class InvalidProductViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new String[] {};
 
 	@Override

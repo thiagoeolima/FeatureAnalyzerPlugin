@@ -4,8 +4,9 @@ import java.awt.event.MouseEvent;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -19,11 +20,13 @@ import br.ufal.ic.featureanalyzer.controllers.ViewController;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
 import br.ufal.ic.featureanalyzer.views.InvalidProductView;
 
-public class InvalidProductViewController extends ViewController{
+public class InvalidProductViewController extends ViewController {
 
 	private TableViewer viewer;
 	private InvalidProductView view;
-	private InvalidProductContentProvider viewContentProvider = new InvalidProductContentProvider();
+	private InvalidProductViewContentProvider viewContentProvider = new InvalidProductViewContentProvider();
+	private InvalidProductViewSorter comparator;
+
 	private static InvalidProductViewController INSTANCE;
 
 	private InvalidProductViewController() {
@@ -53,17 +56,13 @@ public class InvalidProductViewController extends ViewController{
 		this.view = view;
 	}
 
-	public InvalidProductContentProvider getViewContentProvider() {
+	public InvalidProductViewContentProvider getViewContentProvider() {
 		return viewContentProvider;
 	}
 
 	public void setViewContentProvider(
-			InvalidProductContentProvider viewContentProvider) {
+			InvalidProductViewContentProvider viewContentProvider) {
 		this.viewContentProvider = viewContentProvider;
-	}
-
-	private class NameSorter extends ViewerSorter {
-
 	}
 
 	public void adaptTo(Object[] logs) {
@@ -79,7 +78,7 @@ public class InvalidProductViewController extends ViewController{
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);
-		createColumns(parent, viewer);
+		createColumns(parent);
 		final Table table = viewer.getTable();
 
 		table.addListener(SWT.MouseDown, new Listener() {
@@ -102,16 +101,19 @@ public class InvalidProductViewController extends ViewController{
 		viewer.setContentProvider(this.viewContentProvider);
 		viewer.setInput(this.view.getViewSite());
 		viewer.setLabelProvider(new InvalidProductViewLabelProvider());
-		viewer.setSorter(new NameSorter());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
+
+		// Set the sorter for the table
+		comparator = new InvalidProductViewSorter();
+		viewer.setComparator(comparator);
 
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "TableView.viewer");
 
 	}
 
-	public void createColumns(Composite parent, TableViewer viewer) {
+	public void createColumns(Composite parent) {
 		String[] titles = { "Variant Name", "Path" };
 		int[] bounds = { 100, 400 };
 
@@ -129,7 +131,23 @@ public class InvalidProductViewController extends ViewController{
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
+		column.addSelectionListener(getSelectionAdapter(column, colNumber));
 		return viewerColumn;
+	}
+
+	private SelectionAdapter getSelectionAdapter(final TableColumn column,
+			final int index) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				comparator.setColumn(index);
+				int dir = comparator.getDirection();
+				viewer.getTable().setSortDirection(dir);
+				viewer.getTable().setSortColumn(column);
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
 	}
 
 	public void setFocus() {

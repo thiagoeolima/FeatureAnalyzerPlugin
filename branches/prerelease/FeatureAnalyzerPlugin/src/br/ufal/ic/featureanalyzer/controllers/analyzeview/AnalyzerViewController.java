@@ -4,8 +4,9 @@ import java.awt.event.MouseEvent;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -27,6 +28,7 @@ public class AnalyzerViewController extends ViewController{
 	private TableViewer viewer;
 	private AnalyzerViewContentProvider viewContentProvider = new AnalyzerViewContentProvider();
 	private AnalyzerView typeChefPluginView;
+	private AnalyzerViewSorter comparator;
 	private static AnalyzerViewController INSTANCE;
 
 	private AnalyzerViewController() {
@@ -46,10 +48,6 @@ public class AnalyzerViewController extends ViewController{
 
 	public void setTypeChefPluginView(AnalyzerView typeChefPluginView) {
 		this.typeChefPluginView = typeChefPluginView;
-	}
-
-	private class NameSorter extends ViewerSorter {
-
 	}
 
 	public void adaptTo(Object[] logs) {
@@ -101,10 +99,13 @@ public class AnalyzerViewController extends ViewController{
 		viewer.setContentProvider(this.viewContentProvider);
 		viewer.setInput(this.typeChefPluginView.getViewSite());
 		viewer.setLabelProvider(new AnalyzerViewLabelProvider());
-		viewer.setSorter(new NameSorter());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 
+	    // Set the sorter for the table
+	    comparator = new AnalyzerViewSorter();
+	    viewer.setComparator(comparator);
+		
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "TableView.viewer");
 
@@ -128,8 +129,25 @@ public class AnalyzerViewController extends ViewController{
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-		return viewerColumn;
-	}
+	    column.addSelectionListener(getSelectionAdapter(column, colNumber));
+	    return viewerColumn;
+	  }
+
+	  private SelectionAdapter getSelectionAdapter(final TableColumn column,
+	      final int index) {
+	    SelectionAdapter selectionAdapter = new SelectionAdapter() {
+	      @Override
+	      public void widgetSelected(SelectionEvent e) {
+	        comparator.setColumn(index);
+	        int dir = comparator.getDirection();
+	        viewer.getTable().setSortDirection(dir);
+	        viewer.getTable().setSortColumn(column);
+	        viewer.refresh();
+	      }
+	    };
+	    return selectionAdapter;
+	  }
+
 
 	public void setFocus() {
 		viewer.getControl().setFocus();
