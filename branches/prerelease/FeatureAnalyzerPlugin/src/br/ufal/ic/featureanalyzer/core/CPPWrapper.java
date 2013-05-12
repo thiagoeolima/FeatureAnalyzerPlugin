@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.activator;
+package br.ufal.ic.featureanalyzer.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -18,6 +18,7 @@ import org.eclipse.ui.console.MessageConsoleStream;
 
 //import org.fusesource.jansi.Ansi.Color;
 
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
 
 public class CPPWrapper {

@@ -23,8 +23,8 @@ import org.eclipse.ui.progress.UIJob;
 import org.prop4j.Node;
 import org.prop4j.NodeWriter;
 
-import br.ufal.ic.featureanalyzer.activator.CPPWrapper;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.core.CPPWrapper;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;

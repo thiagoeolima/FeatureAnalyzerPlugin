@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers;
+package br.ufal.ic.featureanalyzer.controllers.invalidproduct;
 
 import java.awt.event.MouseEvent;
 
@@ -8,29 +8,26 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 
-import br.ufal.ic.featureanalyzer.controllers.PluginViewContentProvider;
+import br.ufal.ic.featureanalyzer.controllers.ViewController;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
 import br.ufal.ic.featureanalyzer.views.InvalidProductView;
 
-public class InvalidProductViewController {
+public class InvalidProductViewController extends ViewController{
 
 	private TableViewer viewer;
 	private InvalidProductView view;
-	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
+	private InvalidProductContentProvider viewContentProvider = new InvalidProductContentProvider();
 	private static InvalidProductViewController INSTANCE;
 
 	private InvalidProductViewController() {
+		super(InvalidProductView.ID);
 	}
 
 	public static InvalidProductViewController getInstance() {
@@ -56,12 +53,12 @@ public class InvalidProductViewController {
 		this.view = view;
 	}
 
-	public PluginViewContentProvider getViewContentProvider() {
+	public InvalidProductContentProvider getViewContentProvider() {
 		return viewContentProvider;
 	}
 
 	public void setViewContentProvider(
-			PluginViewContentProvider viewContentProvider) {
+			InvalidProductContentProvider viewContentProvider) {
 		this.viewContentProvider = viewContentProvider;
 	}
 
@@ -137,26 +134,5 @@ public class InvalidProductViewController {
 
 	public void setFocus() {
 		viewer.getControl().setFocus();
-	}
-
-	public void showInvalidProduct() {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				IWorkbenchWindow activeWindow;
-				IWorkbenchPage activePage;
-				activeWindow = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow();
-				if (activeWindow != null) {
-					activePage = activeWindow.getActivePage();
-					if (activePage != null) {
-						try {
-							activePage.showView(InvalidProductView.ID);
-						} catch (PartInitException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		});
 	}
 }

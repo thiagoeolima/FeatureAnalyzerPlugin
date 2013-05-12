@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.activator;
+package br.ufal.ic.featureanalyzer.core;
 
 import java.util.LinkedList;
 import java.util.Stack;

@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.activator;
+package br.ufal.ic.featureanalyzer.core;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,9 +28,10 @@ import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
 
-import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
-import br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers.InvalidProductViewController;
+import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
+import br.ufal.ic.featureanalyzer.controllers.invalidproduct.InvalidProductViewController;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
@@ -428,9 +429,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		display.syncExec(new Runnable() {
 			public void run() {
-				PluginViewController viewController = PluginViewController
+				AnalyzerViewController viewController = AnalyzerViewController
 						.getInstance();
-				viewController.showPluginView();
+				viewController.showView();
 				if (typeChef.getLogs().length > 0) {
 					viewController.adaptTo(typeChef.getLogs());
 					continueCompilationFlag = MessageDialog.openQuestion(
@@ -576,7 +577,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 				public void run() {
 					InvalidProductViewController invalidProductViewController = InvalidProductViewController
 							.getInstance();
-					invalidProductViewController.showInvalidProduct();
+					invalidProductViewController.showView();
 
 					if (!ProjectConfigurationErrorLogger.getInstance()
 							.getProjectsList().isEmpty()) {

@@ -4,7 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers.InvalidProductViewController;
+import br.ufal.ic.featureanalyzer.controllers.invalidproduct.InvalidProductViewController;
 
 public class InvalidProductView extends ViewPart {
 

@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.controllers;
+package br.ufal.ic.featureanalyzer.controllers.analyzeview;
 
 import java.awt.event.MouseEvent;
 
@@ -8,35 +8,34 @@ import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
+import br.ufal.ic.featureanalyzer.controllers.ViewController;
 import br.ufal.ic.featureanalyzer.util.Log;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
-public class PluginViewController {
+public class AnalyzerViewController extends ViewController{
 
 	private TableViewer viewer;
-	private PluginViewContentProvider viewContentProvider = new PluginViewContentProvider();
+	private AnalyzerViewContentProvider viewContentProvider = new AnalyzerViewContentProvider();
 	private AnalyzerView typeChefPluginView;
-	private static PluginViewController INSTANCE;
+	private static AnalyzerViewController INSTANCE;
 
-	private PluginViewController() {
+	private AnalyzerViewController() {
+		super(AnalyzerView.ID);
 	}
 
-	public static PluginViewController getInstance() {
+	public static AnalyzerViewController getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new PluginViewController();
+			INSTANCE = new AnalyzerViewController();
 		}
 		return INSTANCE;
 	}
@@ -101,7 +100,7 @@ public class PluginViewController {
 
 		viewer.setContentProvider(this.viewContentProvider);
 		viewer.setInput(this.typeChefPluginView.getViewSite());
-		viewer.setLabelProvider(new PluginViewLabelProvider());
+		viewer.setLabelProvider(new AnalyzerViewLabelProvider());
 		viewer.setSorter(new NameSorter());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
@@ -135,25 +134,5 @@ public class PluginViewController {
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-
-	public void showPluginView() {
-		Display.getDefault().syncExec(new Runnable() {
-			public void run() {
-				IWorkbenchWindow activeWindow;
-				IWorkbenchPage activePage;
-				activeWindow = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow();
-				if (activeWindow != null) {
-					activePage = activeWindow.getActivePage();
-					if (activePage != null) {
-						try {
-							activePage.showView(AnalyzerView.ID);
-						} catch (PartInitException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		});
-	}
+	
 }

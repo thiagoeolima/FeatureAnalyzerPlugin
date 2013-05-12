@@ -1,9 +1,9 @@
-package br.ufal.ic.featureanalyzer.controllers;
+package br.ufal.ic.featureanalyzer.controllers.analyzeview;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class PluginViewContentProvider implements IStructuredContentProvider {
+ class AnalyzerViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new String[] {};
 
 	@Override

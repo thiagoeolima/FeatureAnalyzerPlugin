@@ -4,15 +4,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.controllers.PluginViewController;
+import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
 
 public class AnalyzerView extends ViewPart {
 
 	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".views.AnalyzerView";
-	private PluginViewController controller;
+	private AnalyzerViewController controller;
 	
 	public AnalyzerView() {
-		controller = PluginViewController.getInstance();
+		controller = AnalyzerViewController.getInstance();
 		controller.setTypeChefPluginView(this);
 	}
 

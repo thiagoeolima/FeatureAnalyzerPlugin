@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.controllers;
+package br.ufal.ic.featureanalyzer.controllers.analyzeview;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 
 import br.ufal.ic.featureanalyzer.util.Log;
 
-class PluginViewLabelProvider extends LabelProvider implements ITableLabelProvider {
+class AnalyzerViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 	@Override
 	public String getColumnText(Object obj, int index) {
 		switch (index) {

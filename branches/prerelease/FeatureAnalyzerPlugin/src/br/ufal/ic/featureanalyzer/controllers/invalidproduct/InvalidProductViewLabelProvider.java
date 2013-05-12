@@ -1,4 +1,4 @@
-package br.ufal.ic.featureanalyzer.controllers.invalidproductcontrollers;
+package br.ufal.ic.featureanalyzer.controllers.invalidproduct;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
