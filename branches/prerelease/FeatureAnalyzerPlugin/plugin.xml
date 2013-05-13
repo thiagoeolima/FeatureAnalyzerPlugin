@@ -12,6 +12,10 @@
             id="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
             name="%command.name">
       </command>
+      <command
+            id="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear"
+            name="Clear View">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -19,6 +23,44 @@
             class="br.ufal.ic.featureanalyzer.handler.FeatureAnalyzerPluginHandler"
             commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand">
       </handler>
+      <handler
+            class="br.ufal.ic.featureanalyzer.handler.ClearAnalyzerViewHandler"
+            commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear">
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
+         <toolbar
+               id="br.ufal.ic.typechefplugin.toolbars.sampleToolbar">
+            <command
+                  commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
+                  icon="icons/featured.png"
+                  tooltip="%command.tooltip"
+                  id="br.ufal.ic.featureanalyzerplugin.toolbars.FeatureAnalyzerCommand">
+            </command>
+         </toolbar>
+      </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:br.ufal.ic.featureanalyzer.views.AnalyzerView">
+         <command
+               commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
+               icon="icons/featured_run.png"
+               label="Analyse"
+               style="push">
+         </command>
+         <separator
+               name="FeatureAnalyzerPlugin.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear"
+               icon="icons/featured_clear.png"
+               style="push">
+         </command>
+      </menuContribution>
    </extension>
 
    <extension
@@ -62,21 +104,6 @@
       <initializer
             class="br.ufal.ic.featureanalyzer.preferences.Initializer">
       </initializer>
-   </extension>
-   <extension
-         point="org.eclipse.ui.menus">
-      <menuContribution
-            locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
-         <toolbar
-               id="br.ufal.ic.typechefplugin.toolbars.sampleToolbar">
-            <command
-                  commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
-                  icon="icons/featured.png"
-                  tooltip="%command.tooltip"
-                  id="br.ufal.ic.featureanalyzerplugin.toolbars.FeatureAnalyzerCommand">
-            </command>
-         </toolbar>
-      </menuContribution>
    </extension>
    	<extension
 id="br.ufal.ic.featureanalyzer.problem"

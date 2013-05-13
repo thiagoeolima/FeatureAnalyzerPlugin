@@ -30,6 +30,7 @@ class AnalyzerViewSorter extends ViewerSorter {
 			this.propertyIndex = column;
 			direction = DESCENDING;
 		}
+		System.out.println(column);
 	}
 
 	@Override
@@ -48,7 +49,7 @@ class AnalyzerViewSorter extends ViewerSorter {
 			rc = log1.getPath().compareTo(log2.getPath());
 			break;
 		case 3:
-			log1.getFeature().compareTo(log2.getFeature());
+			rc = log1.getFeature().compareTo(log2.getFeature());
 		default:
 			rc = 0;
 		}

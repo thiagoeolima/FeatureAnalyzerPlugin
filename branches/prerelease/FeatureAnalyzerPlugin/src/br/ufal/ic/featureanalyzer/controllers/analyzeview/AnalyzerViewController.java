@@ -2,11 +2,14 @@ package br.ufal.ic.featureanalyzer.controllers.analyzeview;
 
 import java.awt.event.MouseEvent;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -14,6 +17,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -53,7 +57,6 @@ public class AnalyzerViewController extends ViewController{
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
 		viewer.refresh();
-		// viewer.setContentProvider(this.viewContentProvider);
 	}
 
 	public void clear() {
@@ -105,10 +108,9 @@ public class AnalyzerViewController extends ViewController{
 	    // Set the sorter for the table
 	    comparator = new AnalyzerViewSorter();
 	    viewer.setComparator(comparator);
-		
+	    
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "TableView.viewer");
-
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {

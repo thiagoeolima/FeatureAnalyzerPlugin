@@ -1,10 +1,12 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
@@ -30,44 +32,58 @@ public class Controller {
 	}
 
 	public void run() {
-		IRunnableContext context = window.getWorkbench().getProgressService();
-		try {
-			context.run(true, false, new IRunnableWithProgress() {
 
-				@Override
-				public void run(IProgressMonitor monitor)
-						throws InvocationTargetException, InterruptedException {
-					// this perfom a analyzes based in the user selection
-					monitor.beginTask("Analyzing selected files", 100);
+		IRunnableContext context = new ProgressMonitorDialog(window.getShell());
 
+		IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
 
-					try {
-						monitorUpdate(monitor, 25);
-						pkgExplorerController.run();
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
+			@Override
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException, InterruptedException {
+				// this perfom a analyzes based in the user selection
+				monitor.beginTask("Analyzing selected files", 100);
 
-					model.run(pkgExplorerController.getList());
-					monitorUpdate(monitor, 75);
-					// Update the tree view.
-					syncWithPluginView();
+				// no comments
+				Random generator = new Random();
+
+				try {
+					monitorUpdate(monitor, generator.nextInt(51) + 25);
+					if (monitor.isCanceled())
+						return;
+					pkgExplorerController.run();
+					if (monitor.isCanceled())
+						return;
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-				public void monitorUpdate(IProgressMonitor monitor,int value) {
-					try {
-						// Sleep a second
-						TimeUnit.SECONDS.sleep(1);
-
-						// Report that value units are done
-						monitor.worked(value);
-					} catch (InterruptedException e1) {
-						e1.printStackTrace();
-					}
-				}
-
+				monitorUpdate(monitor, generator.nextInt(20) + 1);
+				if (monitor.isCanceled())
+					return;
+				model.run(pkgExplorerController.getList());
+				if (monitor.isCanceled())
+					return;
+				monitorUpdate(monitor, generator.nextInt(50) + 1);
+				// Update the tree view.
+				syncWithPluginView();
+				monitor.done();
 			}
 
-			);
+			public void monitorUpdate(IProgressMonitor monitor, int value) {
+				try {
+					// Sleep a second
+					TimeUnit.SECONDS.sleep(1);
+
+					// Report that value units are done
+					monitor.worked(value);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+			}
+
+		};
+
+		try {
+			context.run(true, true, iRunnableWithProgress);
 		} catch (InvocationTargetException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -75,7 +91,7 @@ public class Controller {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	private void syncWithPluginView() {
