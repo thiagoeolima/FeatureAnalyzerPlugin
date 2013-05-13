@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import br.ufal.ic.featureanalyzer.util.Log;
 
 class AnalyzerViewSorter extends ViewerSorter {
-	
+
 	private int propertyIndex;
 	private static final int DESCENDING = 1;
 	private int direction = DESCENDING;
@@ -30,7 +30,6 @@ class AnalyzerViewSorter extends ViewerSorter {
 			this.propertyIndex = column;
 			direction = DESCENDING;
 		}
-		System.out.println(column);
 	}
 
 	@Override
