@@ -13,6 +13,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 				.getPreferenceStore();
 		store.setDefault("TypeChefPreference", "--typecheck");
 		store.setDefault("SystemRoot", "/");
+		store.setDefault("Includes", "/usr/include");
 		store.setDefault("FEATURE_MODEL", true);
 		store.setDefault("SystemIncludes", "/usr/include");
 	}

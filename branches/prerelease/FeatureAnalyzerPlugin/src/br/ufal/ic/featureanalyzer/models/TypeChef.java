@@ -9,6 +9,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -98,16 +99,24 @@ public class TypeChef {
 				.getBoolean("FEATURE_MODEL")) {
 			prepareFeatureModel(); // General processing options String
 		}
-		
+
 		String typeChefPreference = FeatureAnalyzer.getDefault()
 				.getPreferenceStore().getString("TypeChefPreference");
 
 		ArrayList<String> paramters = new ArrayList<String>();
 
-		paramters.add("-w");
+		String[] includes = FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("Includes").trim().split(Pattern.quote(":"));
+
+		for (int i = 0; i < includes.length; i++) {
+			paramters.add("-I");
+			paramters.add(includes[i]);
+		}
+
 		paramters.add("--systemIncludes");
 		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("SystemIncludes"));
+		paramters.add("-w");
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
 		paramters.add(typeChefPreference);
@@ -127,16 +136,17 @@ public class TypeChef {
 					.getAbsolutePath()
 					+ File.separator + "cnf.txt");
 		}
-		
+
 		fo = new FrontendOptionsWithConfigFiles();
-		
+
 		try {
 			fo.parseOptions((String[]) paramters.toArray(new String[paramters
 					.size()]));
 		} catch (Exception e) {
+			fo = new FrontendOptionsWithConfigFiles();
 			e.printStackTrace();
 		}
-		
+
 		fo.getFiles().addAll(list);
 		fo.setPrintToStdOutput(false);
 	}
@@ -144,13 +154,9 @@ public class TypeChef {
 	public void run(List<IResource> filesList) {
 		List<IResource> listAux = new LinkedList<IResource>();
 		xmlParser.clearLogList();
-		fo = new FrontendOptionsWithConfigFiles();
-		
-		CPPWrapper.gerenatePlatformHeaderLinux(
-				resourceToString(filesList),
-				FeatureAnalyzer.getDefault().getPreferenceStore()
-						.getString("SystemIncludes"));
-		
+
+		CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(filesList));
+
 		for (IResource resource : filesList) {
 			listAux.add(resource);
 			start(resourceToString(listAux));
