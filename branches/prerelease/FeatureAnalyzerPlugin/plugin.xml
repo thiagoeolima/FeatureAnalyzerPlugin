@@ -4,16 +4,16 @@
    <extension
          point="org.eclipse.ui.commands">
       <category
-            id="FeatureAnalyzerPlugin.commands.category"
-            name="%category.name">
+            id="br.ufal.ic.featureanalyzer.commands.category"
+            name="Feature Analyzer">
       </category>
       <command
-            categoryId="FeatureAnalyzerPlugin.commands.category"
-            id="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
-            name="%command.name">
+            categoryId="br.ufal.ic.featureanalyzer.commands.category"
+            id="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerCommand"
+            name="Analyzer">
       </command>
       <command
-            id="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear"
+            id="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear"
             name="Clear View">
       </command>
    </extension>
@@ -21,11 +21,11 @@
          point="org.eclipse.ui.handlers">
       <handler
             class="br.ufal.ic.featureanalyzer.handler.FeatureAnalyzerPluginHandler"
-            commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand">
+            commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerCommand">
       </handler>
       <handler
             class="br.ufal.ic.featureanalyzer.handler.ClearAnalyzerViewHandler"
-            commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear">
+            commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear">
       </handler>
    </extension>
    <extension
@@ -35,10 +35,10 @@
          <toolbar
                id="br.ufal.ic.typechefplugin.toolbars.sampleToolbar">
             <command
-                  commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
+                  commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerCommand"
                   icon="icons/featured.png"
-                  tooltip="%command.tooltip"
-                  id="br.ufal.ic.featureanalyzerplugin.toolbars.FeatureAnalyzerCommand">
+                  tooltip="Feature Analyzer"
+                  id="br.ufal.ic.featureanalyzer.toolbars.FeatureAnalyzerCommand">
             </command>
          </toolbar>
       </menuContribution>
@@ -46,17 +46,17 @@
             allPopups="false"
             locationURI="toolbar:br.ufal.ic.featureanalyzer.views.AnalyzerView">
          <command
-               commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerCommand"
+               commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerCommand"
                icon="icons/featured_run.png"
                label="Analyse"
                style="push">
          </command>
          <separator
-               name="FeatureAnalyzerPlugin.separator1"
+               name="br.ufal.ic.featureanalyzer.separator1"
                visible="true">
          </separator>
          <command
-               commandId="br.ufal.ic.featureanalyzerplugin.commands.FeatureAnalyzerViewClear"
+               commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear"
                icon="icons/featured_clear.png"
                style="push">
          </command>
@@ -66,22 +66,22 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="%category.name.0"
-            id="FeatureAnalyzerPlugin">
+            name="FeatureAnalyzer"
+            id="br.ufal.ic.featureanalyzer">
       </category>
       <view
-            name="%view.name"
+            name="Feature Analyzer"
             icon="icons/featured.png"
-            category="FeatureAnalyzerPlugin"
+            category="br.ufal.ic.featureanalyzer"
             class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
             id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
       </view>
       <view
-            category="FeatureAnalyzerPlugin"
+            category="br.ufal.ic.featureanalyzer"
             class="br.ufal.ic.featureanalyzer.views.InvalidProductView"
             icon="icons/invalidproduct.png"
             id="br.ufal.ic.featureanalyzer.views.invalideproductview"
-            name="%invalidproducview.name">
+            name="Invalid Products">
       </view>
    </extension>
  
@@ -96,7 +96,7 @@
       <page
             class="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
             id="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
-            name="%page.name">
+            name="Feature Analyzer">
       </page>
    </extension>
    <extension
@@ -107,7 +107,7 @@
    </extension>
    	<extension
 id="br.ufal.ic.featureanalyzer.problem"
-name="%view.name"
+name="Feature Analyzer"
 point="org.eclipse.core.resources.markers">
 <super type="org.eclipse.core.resources.problemmarker" />
 <persistent value="true" />
@@ -133,7 +133,7 @@ point="org.eclipse.core.resources.markers">
    </extension>
    <extension
          id="br.ufal.ic.featureanalyzer.invalidproduct"
-         name="%invalidproducview.name"
+         name="Invalid Products"
          point="org.eclipse.core.resources.markers">
       <super
             type="org.eclipse.core.resources.problemmarker">

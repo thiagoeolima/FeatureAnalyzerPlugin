@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: FeatureAnalyzerPlugin
-Bundle-SymbolicName: FeatureAnalyzerPlugin;singleton:=true
+Bundle-SymbolicName: br.ufal.ic.featureanalyzer;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-Activator: br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer
 Require-Bundle: org.eclipse.ui,
@@ -25,3 +25,30 @@ Bundle-ClassPath: .,
  lib/jdom-2.0.4.jar,
  lib/TypeChef-0.3.5.jar
 Bundle-Vendor: Ufal
+Export-Package: br.ufal.ic.featureanalyzer.activator;uses:="org.eclipse.jface.resource,de.ovgu.featureide.fm.ui,org.osgi.framework",
+ br.ufal.ic.featureanalyzer.controllers;uses:="org.eclipse.ui,org.eclipse.core.resources",
+ br.ufal.ic.featureanalyzer.controllers.analyzeview;
+  uses:="br.ufal.ic.featureanalyzer.controllers,
+   org.eclipse.swt.graphics,
+   org.eclipse.jface.viewers,
+   org.eclipse.swt.widgets,
+   br.ufal.ic.featureanalyzer.views",
+ br.ufal.ic.featureanalyzer.controllers.invalidproduct;
+  uses:="br.ufal.ic.featureanalyzer.controllers,
+   org.eclipse.swt.graphics,
+   org.eclipse.jface.viewers,
+   org.eclipse.swt.widgets,
+   br.ufal.ic.featureanalyzer.views",
+ br.ufal.ic.featureanalyzer.core;
+  uses:="de.ovgu.featureide.fm.core.configuration,
+   de.ovgu.featureide.core,
+   org.eclipse.core.resources,
+   de.ovgu.featureide.core.fstmodel.preprocessor,
+   de.ovgu.featureide.core.builder.preprocessor,
+   de.ovgu.featureide.fm.core",
+ br.ufal.ic.featureanalyzer.handler;uses:="org.eclipse.core.commands",
+ br.ufal.ic.featureanalyzer.models,
+ br.ufal.ic.featureanalyzer.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences",
+ br.ufal.ic.featureanalyzer.util;uses:="org.eclipse.jface.text,org.eclipse.core.resources",
+ br.ufal.ic.featureanalyzer.views;uses:="org.eclipse.ui.part,org.eclipse.swt.widgets",
+ de.fosd.typechef
