@@ -98,7 +98,8 @@ point="org.eclipse.core.resources.markers">
    <extension
          point="de.ovgu.featureide.fm.core.FMComposer">
       <fmComposer
-            class="br.ufal.ic.featureanalyzer.activator.CPPModelBuilder"
+            class="br.ufal.ic.featureanalyzer.activator.CppFMComposerExtension"
+            composer="br.ufal.ic.featureanalyzer.cppcomposer"
             id="br.ufal.ic.featureanalyzer.fmcppcomposer"
             name="C PreProcessor Feature Model">
       </fmComposer>

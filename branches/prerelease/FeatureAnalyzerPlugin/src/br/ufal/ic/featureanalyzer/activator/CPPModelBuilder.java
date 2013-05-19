@@ -17,7 +17,7 @@ public class CPPModelBuilder extends PPModelBuilder {
 	public static final String REGEX = "(\\s*#.\\s*" + OPERATORS + ")(%s)("
 			+ OPERATORS + ")";
 
-	public static final String COMMANDS = "if|ifdef|ifndef|elif|else|define|undef|endif";
+	public static final String COMMANDS = "if(\\s*(defined|!defined))|ifdef|ifndef|elif|else|define|undef|endif";
 	private static final String ENDIF = "\\s*#endif";
 
 	Pattern patternCommands = Pattern.compile("\\s*#("+COMMANDS+")");
