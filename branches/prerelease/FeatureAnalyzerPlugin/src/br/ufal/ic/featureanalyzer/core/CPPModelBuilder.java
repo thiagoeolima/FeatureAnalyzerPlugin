@@ -17,27 +17,29 @@ public class CPPModelBuilder extends PPModelBuilder {
 	public static final String REGEX = "(\\s*#.\\s*" + OPERATORS + ")(%s)("
 			+ OPERATORS + ")";
 
-	public static final String COMMANDS = "if|ifdef|ifndef|elif|else|define|undef|endif";
+	public static final String COMMANDS = "if(\\s*(defined|!defined))|ifdef|ifndef|elif|else|define|undef|endif";
 	private static final String ENDIF = "\\s*#endif";
 
-	Pattern patternCommands = Pattern.compile("\\s*#("+COMMANDS+")");
+	Pattern patternCommands = Pattern.compile("\\s*#(" + COMMANDS + ")");
 
 	public CPPModelBuilder(IFeatureProject featureProject) {
 		super(featureProject);
 	}
 
 	/**
-	 * returns true if the regular expression regex can be matched by a substring of text
+	 * returns true if the regular expression regex can be matched by a
+	 * substring of text
 	 */
-	protected static boolean containsRegex(String text, String regex){
+	protected static boolean containsRegex(String text, String regex) {
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(text);
 		return matcher.find();
 	}
 
 	@Override
-	public LinkedList<FSTDirective> buildModelDirectivesForFile(Vector<String> lines) {
-		//for preprocessor outline
+	public LinkedList<FSTDirective> buildModelDirectivesForFile(
+			Vector<String> lines) {
+		// for preprocessor outline
 		Stack<FSTDirective> directivesStack = new Stack<FSTDirective>();
 		LinkedList<FSTDirective> directivesList = new LinkedList<FSTDirective>();
 
@@ -45,47 +47,50 @@ public class CPPModelBuilder extends PPModelBuilder {
 			String line = lines.get(i);
 
 			// if line is preprocessor directive
-			if (containsRegex(line,"\\s*#")) {
+			if (containsRegex(line, "\\s*#")) {
 				FSTDirective directive = new FSTDirective();
 
 				FSTDirectiveCommand command = null;
 				boolean endif = false;
-				if(containsRegex(line,"\\s*#if ")){//1
+				if (containsRegex(line, "\\s*#if ")) {// 1
 					command = FSTDirectiveCommand.IF;
-				}else if(containsRegex(line,"\\s*#ifdef ")){//2
+				} else if (containsRegex(line, "\\s*#ifdef ")) {// 2
 					command = FSTDirectiveCommand.IFDEF;
-				}else if(containsRegex(line,"\\s*#ifndef ")){//3
+				} else if (containsRegex(line, "\\s*#ifndef ")) {// 3
 					command = FSTDirectiveCommand.IFNDEF;
-				}else if(containsRegex(line,"\\s*#elif ")){//4
+				} else if (containsRegex(line, "\\s*#elif ")) {// 4
 					command = FSTDirectiveCommand.ELIF;
-				}else if(containsRegex(line,"\\s*#else")){//7
+				} else if (containsRegex(line, "\\s*#else")) {// 7
 					command = FSTDirectiveCommand.ELSE;
-				}else if(containsRegex(line,"\\s*#define ")){//9
+				} else if (containsRegex(line, "\\s*#define ")) {// 9
 					command = FSTDirectiveCommand.DEFINE;
-				}else if(containsRegex(line,"\\s*#undef ")){//10
+				} else if (containsRegex(line, "\\s*#undef ")) {// 10
 					command = FSTDirectiveCommand.UNDEFINE;
-				}else if(containsRegex(line,ENDIF)){//11
+				} else if (containsRegex(line, ENDIF)) {// 11
 					endif = true;
-				}else{
+				} else {
 					continue;
 				}
 
 				if (command != null)
-					directive.setCommand(command);				
+					directive.setCommand(command);
 
-				if (command == FSTDirectiveCommand.ELIF || command == FSTDirectiveCommand.ELIFDEF ||
-						command == FSTDirectiveCommand.ELIFNDEF || command == FSTDirectiveCommand.ELSE ||
-						endif) {
+				if (command == FSTDirectiveCommand.ELIF
+						|| command == FSTDirectiveCommand.ELIFDEF
+						|| command == FSTDirectiveCommand.ELIFNDEF
+						|| command == FSTDirectiveCommand.ELSE || endif) {
 					if (!directivesStack.isEmpty()) {
 						if (i + 1 < lines.size()) {
 							directivesStack.pop().setEndLine(i + 1, 0);
 						} else if (endif) {
 
-							Pattern p  =  Pattern.compile(ENDIF);
+							Pattern p = Pattern.compile(ENDIF);
 							Matcher m = p.matcher(line);
 							int index = 0;
-							if(m.find()) index=m.start();
-							directivesStack.pop().setEndLine(i, index + ENDIF.length());
+							if (m.find())
+								index = m.start();
+							directivesStack.pop().setEndLine(i,
+									index + ENDIF.length());
 						}
 					}
 				}
@@ -99,14 +104,15 @@ public class CPPModelBuilder extends PPModelBuilder {
 				if (command == null)
 					continue;
 
-				if(!directivesStack.isEmpty()){
+				if (!directivesStack.isEmpty()) {
 					FSTDirective top = directivesStack.peek();
 					top.addChild(directive);
 				} else {
 					directivesList.add(directive);
-				}				
+				}
 
-				if (command != FSTDirectiveCommand.DEFINE && command != FSTDirectiveCommand.UNDEFINE)
+				if (command != FSTDirectiveCommand.DEFINE
+						&& command != FSTDirectiveCommand.UNDEFINE)
 					directivesStack.push(directive);
 			}
 		}
