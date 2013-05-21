@@ -30,33 +30,30 @@ public class ProjectExplorerController {
 
 	public void setWindow(IWorkbenchWindow window) {
 		selection = (IStructuredSelection) window.getSelectionService()
-			.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
-		if(selection == null){
+				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
+		if (selection == null) {
 			selection = (IStructuredSelection) window.getSelectionService()
 					.getSelection("org.eclipse.jdt.ui.PackageExplorer");
 		}
 	}
-	
+
 	public List<IResource> getList() {
 		return new LinkedList<IResource>(listFiles);
 	}
 
-	
-	public void addResource(IResource resource){
-		if(resource instanceof IFile){
-			//remove markers
+	public void addResource(IResource resource) {
+		if (resource instanceof IFile) {
+			// remove markers
 			IFile file = (IFile) resource;
 			try {
-				file.deleteMarkers(Log.MARKER_TYPE, false,
-						IResource.DEPTH_ZERO);
+				file.deleteMarkers(Log.MARKER_TYPE, false, IResource.DEPTH_ZERO);
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+//				e.printStackTrace();
 			}
 			listFiles.add(resource);
-		} else if (resource instanceof IFolder){
+		} else if (resource instanceof IFolder) {
 			try {
-				for(IResource res : ((IFolder) resource).members()){
+				for (IResource res : ((IFolder) resource).members()) {
 					addResource(res);
 				}
 			} catch (CoreException e) {
@@ -65,28 +62,27 @@ public class ProjectExplorerController {
 			}
 		}
 	}
-	
 
 	public void run() throws Exception {
 		listFiles.clear();
 		Object o = selection.getFirstElement();
-		System.out.println(o.getClass());
+
 		IResource aux;
 		if (o instanceof SourceRoot) {
-			 aux = ((SourceRoot) o).getResource() ;
-		}else if(o instanceof CContainer){
-			 aux = ((CContainer) o).getResource();
-		}else if(o instanceof ITranslationUnit){
-			 aux = ((ITranslationUnit) o).getResource();
-			 
-		}else if(o instanceof IFile){
+			aux = ((SourceRoot) o).getResource();
+		} else if (o instanceof CContainer) {
+			aux = ((CContainer) o).getResource();
+		} else if (o instanceof ITranslationUnit) {
+			aux = ((ITranslationUnit) o).getResource();
+
+		} else if (o instanceof IFile) {
 			aux = (IResource) o;
-		}else if(o instanceof IFolder){
+		} else if (o instanceof IFolder) {
 			aux = (IResource) o;
-		}else {
+		} else {
 			throw new Exception("Selecione um arquivo/diretório válido.");
 		}
-		System.out.println(aux);
+
 		addResource(aux);
 	}
 }

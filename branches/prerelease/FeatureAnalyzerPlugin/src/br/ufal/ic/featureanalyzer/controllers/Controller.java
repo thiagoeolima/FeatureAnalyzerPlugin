@@ -1,16 +1,15 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
-import java.lang.reflect.InvocationTargetException;
-
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.ProgressMonitorDialog;
-import org.eclipse.jface.operation.IRunnableContext;
-import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
@@ -40,6 +39,12 @@ public class Controller {
 		monitor.worked(value);
 	}
 
+	public static void monitorSubTask(String label) {
+		if (monitor == null)
+			return;
+		monitor.subTask(label);
+	}
+
 	public static void monitorBeginTask(String label, int value) {
 		if (monitor == null)
 			return;
@@ -48,43 +53,39 @@ public class Controller {
 
 	public void run() {
 
-		IRunnableContext context = new ProgressMonitorDialog(window.getShell());
-
-		IRunnableWithProgress iRunnableWithProgress = new IRunnableWithProgress() {
-
-			@Override
-			public void run(IProgressMonitor monitor)
-					throws InvocationTargetException, InterruptedException {
+		Job job = new Job("Analyzing files") {
+			protected IStatus run(IProgressMonitor monitor) {
 
 				Controller.monitor = monitor;
 
 				if (monitor.isCanceled())
-					return;
+					return Status.CANCEL_STATUS;
+
 				try {
 					pkgExplorerController.run();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					MessageDialog.openInformation(window.getShell(),
+							FeatureAnalyzer.PLUGIN_NAME, e.getMessage());
+					return Status.CANCEL_STATUS;
 				}
+
 				if (monitor.isCanceled())
-					return;
+					return Status.CANCEL_STATUS;
 
 				model.run(pkgExplorerController.getList());
+
+				if (monitor.isCanceled())
+					return Status.CANCEL_STATUS;
+
 				syncWithPluginView();
 				monitor.done();
 				Controller.monitor = null;
+				return Status.OK_STATUS;
 			}
 		};
 
-		try {
-			context.run(true, true, iRunnableWithProgress);
-		} catch (InvocationTargetException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		job.setUser(true);
+		job.schedule();
 
 	}
 
@@ -100,7 +101,7 @@ public class Controller {
 					TypeChefPluginView.adaptTo(logs);
 					if (logs.length <= 0) {
 						MessageDialog.openInformation(window.getShell(),
-								"TypeChef",
+								FeatureAnalyzer.PLUGIN_NAME,
 								"This file was successfully verified!");
 					}
 				}

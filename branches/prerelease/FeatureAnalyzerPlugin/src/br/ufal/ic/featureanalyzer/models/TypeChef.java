@@ -164,7 +164,10 @@ public class TypeChef {
 		CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(resourceList));
 
 		for (String file : filesList) {
+			//Monitor Update
 			Controller.monitorUpdate(1);
+			Controller.monitorSubTask(file);	
+			//end Monitor
 			if (Controller.isCanceled())
 				break;
 
