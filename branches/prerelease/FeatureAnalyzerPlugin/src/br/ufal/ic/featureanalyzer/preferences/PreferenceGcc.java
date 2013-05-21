@@ -2,7 +2,6 @@ package br.ufal.ic.featureanalyzer.preferences;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.FileFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -11,7 +10,7 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
 public class PreferenceGcc extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
-	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".preferences.PreferencePage";
+	public static final String ID = FeatureAnalyzer.PLUGIN_ID + ".preferences.PreferenceGcc";
 
 	public PreferenceGcc() {
 		super(GRID);
@@ -21,7 +20,7 @@ public class PreferenceGcc extends FieldEditorPreferencePage implements
 	@Override
 	public void createFieldEditors() {
 
-		addField(new FileFieldEditor("GCC", "Command:", getFieldEditorParent()));
+		addField(new StringFieldEditor("GCC", "Command:", getFieldEditorParent()));
 		
 		addField(new DirectoryFieldEditor("SystemRoot", "&System Root:",
 				getFieldEditorParent()));

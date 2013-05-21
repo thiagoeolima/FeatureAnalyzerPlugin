@@ -98,6 +98,12 @@
             id="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
             name="Feature Analyzer">
       </page>
+      <page
+            category="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
+            class="br.ufal.ic.featureanalyzer.preferences.PreferenceGcc"
+            id="br.ufal.ic.featureanalyzer.preferences.PreferenceGcc"
+            name="GCC C Compiler Settings">
+      </page>
    </extension>
    <extension
          point="org.eclipse.core.runtime.preferences">
