@@ -10,6 +10,7 @@ import org.jdom2.Element;
 import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
+import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.util.Log;
 
 public class XMLParserTypeChef {
@@ -23,10 +24,17 @@ public class XMLParserTypeChef {
 	}
 
 	public void setXMLFile(File xmlFile) {
-		this.xmlFile = xmlFile;
+		this.xmlFile = xmlFile != null ? xmlFile : this.xmlFile;
 	}
 
 	public void processFile() {
+		if (xmlFile == null) {
+			xmlFile = new File(FeatureAnalyzer.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ File.separator + "output.xml");
+			if (!xmlFile.exists())
+				return;
+		}
 		try {
 			Document document = builder.build(xmlFile);
 			Element rootNode = document.getRootElement();
@@ -59,8 +67,8 @@ public class XMLParserTypeChef {
 	public List<Log> getLogList() {
 		return logList;
 	}
-	
-	public void clearLogList(){
+
+	public void clearLogList() {
 		logList.clear();
 	}
 

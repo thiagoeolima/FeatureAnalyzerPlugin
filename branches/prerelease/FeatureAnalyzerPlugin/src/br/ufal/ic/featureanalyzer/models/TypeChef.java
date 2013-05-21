@@ -25,6 +25,7 @@ import org.prop4j.Node;
 import org.prop4j.NodeWriter;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.core.CPPWrapper;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
@@ -113,9 +114,9 @@ public class TypeChef {
 			paramters.add(includes[i]);
 		}
 
-		paramters.add("--systemIncludes");
-		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("SystemIncludes"));
+		// paramters.add("--systemIncludes");
+		// paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+		// .getString("SystemIncludes"));
 		paramters.add("-w");
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
@@ -151,27 +152,38 @@ public class TypeChef {
 		fo.setPrintToStdOutput(false);
 	}
 
-	public void run(List<IResource> filesList) {
-		List<IResource> listAux = new LinkedList<IResource>();
+	public void run(List<IResource> resourceList) {
+		List<String> listAux = new LinkedList<String>();
+		List<String> filesList = resourceToString(resourceList);
+
 		xmlParser.clearLogList();
 
-		CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(filesList));
+		Controller.monitorBeginTask("Analyzing selected files",
+				filesList.size());
 
-		for (IResource resource : filesList) {
-			listAux.add(resource);
-			start(resourceToString(listAux));
+		CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(resourceList));
+
+		for (String file : filesList) {
+			Controller.monitorUpdate(1);
+			if (Controller.isCanceled())
+				break;
+
+			listAux.add(file);
+			start(listAux);
 			listAux.clear();
 
 			try {
 				Frontend.processFile(fo);
-			} catch (Exception e) {
-				e.printStackTrace();
-				FeatureAnalyzer.getDefault().logError(e);
-			}
 
-			xmlParser.setXMLFile(fo.getErrorXMLFile());
-			xmlParser.processFile();
-			fo.getFiles().clear();
+				xmlParser.setXMLFile(fo.getErrorXMLFile());
+				xmlParser.processFile();
+				fo.getFiles().clear();
+
+			} catch (Exception e) {
+				openMessageBox(e);
+				FeatureAnalyzer.getDefault().logError(e);
+				break;
+			}
 
 		}
 
@@ -180,12 +192,12 @@ public class TypeChef {
 	/**
 	 * Opens a message box if TypeChef could not be executed.
 	 */
-	private void openMessageBox(final IOException e) {
+	private void openMessageBox(final Exception e) {
 		UIJob uiJob = new UIJob("") {
 			@Override
 			public IStatus runInUIThread(IProgressMonitor monitor) {
 				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
-				d.setMessage(e.getMessage().toLowerCase());
+				d.setMessage(e.getMessage());
 				d.setText("TypeChef could not be executed");
 				d.open();
 				return Status.OK_STATUS;

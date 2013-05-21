@@ -5,6 +5,7 @@ import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.PathEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
+import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -29,7 +30,10 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
 		addField(new PathEditor("Includes", "Includes:", "Choose a Path",
 				getFieldEditorParent()));
-		
+
+		addField(new StringFieldEditor("LIBS", "Libs",
+				getFieldEditorParent()));
+
 		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Feature Model",
 				getFieldEditorParent()));
 

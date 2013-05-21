@@ -1,8 +1,6 @@
 package br.ufal.ic.featureanalyzer.controllers;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,6 +18,7 @@ public class Controller {
 	private ProjectExplorerController pkgExplorerController;
 	private TypeChef model;
 	private IWorkbenchWindow window;
+	private static IProgressMonitor monitor;
 
 	public Controller() {
 		pkgExplorerController = new ProjectExplorerController();
@@ -31,6 +30,22 @@ public class Controller {
 		pkgExplorerController.setWindow(window);
 	}
 
+	public static boolean isCanceled() {
+		return monitor != null ? Controller.monitor.isCanceled() : false;
+	}
+
+	public static void monitorUpdate(int value) {
+		if (monitor == null)
+			return;
+		monitor.worked(value);
+	}
+
+	public static void monitorBeginTask(String label, int value) {
+		if (monitor == null)
+			return;
+		monitor.beginTask(label, value);
+	}
+
 	public void run() {
 
 		IRunnableContext context = new ProgressMonitorDialog(window.getShell());
@@ -40,46 +55,25 @@ public class Controller {
 			@Override
 			public void run(IProgressMonitor monitor)
 					throws InvocationTargetException, InterruptedException {
-				// this perfom a analyzes based in the user selection
-				monitor.beginTask("Analyzing selected files", 100);
 
-				// no comments
-				Random generator = new Random();
+				Controller.monitor = monitor;
 
+				if (monitor.isCanceled())
+					return;
 				try {
-					monitorUpdate(monitor, generator.nextInt(51) + 25);
-					if (monitor.isCanceled())
-						return;
 					pkgExplorerController.run();
-					if (monitor.isCanceled())
-						return;
 				} catch (Exception e) {
+					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				monitorUpdate(monitor, generator.nextInt(20) + 1);
 				if (monitor.isCanceled())
 					return;
+
 				model.run(pkgExplorerController.getList());
-				if (monitor.isCanceled())
-					return;
-				monitorUpdate(monitor, generator.nextInt(50) + 1);
-				// Update the tree view.
 				syncWithPluginView();
 				monitor.done();
+				Controller.monitor = null;
 			}
-
-			public void monitorUpdate(IProgressMonitor monitor, int value) {
-				try {
-					// Sleep a second
-					TimeUnit.SECONDS.sleep(1);
-
-					// Report that value units are done
-					monitor.worked(value);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}
-			}
-
 		};
 
 		try {

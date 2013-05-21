@@ -190,6 +190,9 @@ public class CPPWrapper {
 				"-I"
 						+ FeatureAnalyzer.getDefault().getPreferenceStore()
 								.getString("SystemIncludes"));
+		
+		list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("LIBS"));
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
 		list.add(0, "-dM");

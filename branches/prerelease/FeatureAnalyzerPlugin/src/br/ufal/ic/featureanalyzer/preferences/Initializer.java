@@ -14,8 +14,9 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("TypeChefPreference", "--typecheck");
 		store.setDefault("SystemRoot", "/");
 		store.setDefault("Includes", "/usr/include");
+		store.setDefault("LIBS", "");
 		store.setDefault("FEATURE_MODEL", true);
-		store.setDefault("SystemIncludes", "/usr/include");
+		store.setDefault("SystemIncludes", "");
 	}
 
 }
