@@ -22,6 +22,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.core.PlatformHeader;
 
 public class Log {
 
@@ -31,15 +32,15 @@ public class Log {
 	private String fileName;
 	private String path;
 	private int line;
-//	private int column;
+	// private int column;
 	private ITextSelection iTextSelection;
-	
+
 	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
-	
+
 	public Log(String fileName, String line, String column, String feature,
 			String severity, String message) {
 		this.line = Integer.parseInt(line.trim());
-//		this.column = Integer.parseInt(column.trim());
+		// this.column = Integer.parseInt(column.trim());
 		this.feature = feature.trim();
 
 		if (severity == null) {
@@ -108,9 +109,7 @@ public class Log {
 	}
 
 	public IFile getFile() {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IPath location = Path.fromOSString(this.getFullPath() + this.fileName);
-		return workspace.getRoot().getFileForLocation(location);
+		return PlatformHeader.getFile(this.getFullPath() + this.fileName);
 	}
 
 	public ITextSelection selection() {

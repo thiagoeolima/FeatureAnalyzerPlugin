@@ -1,11 +1,8 @@
 package br.ufal.ic.featureanalyzer.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
-import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
-import org.eclipse.jface.preference.PathEditor;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
-import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 
@@ -13,7 +10,8 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
 public class PreferencePage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
-	public static final String ID = "br.ufal.ic.typechefplugin.preferences.PreferencePage";
+	public static final String ID = FeatureAnalyzer.PLUGIN_ID
+			+ ".preferences.PreferencePage";
 
 	public PreferencePage() {
 		super(GRID);
@@ -22,17 +20,6 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 
 	@Override
 	public void createFieldEditors() {
-		addField(new DirectoryFieldEditor("SystemRoot", "&System Root:",
-				getFieldEditorParent()));
-
-		addField(new DirectoryFieldEditor("SystemIncludes",
-				"&System Includes:", getFieldEditorParent()));
-
-		addField(new PathEditor("Includes", "Includes:", "Choose a Path",
-				getFieldEditorParent()));
-
-		addField(new StringFieldEditor("LIBS", "Libs",
-				getFieldEditorParent()));
 
 		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Feature Model",
 				getFieldEditorParent()));

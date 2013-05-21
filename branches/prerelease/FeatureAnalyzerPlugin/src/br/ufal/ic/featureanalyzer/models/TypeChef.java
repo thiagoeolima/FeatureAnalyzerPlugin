@@ -9,8 +9,11 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IIncludeReference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -26,7 +29,7 @@ import org.prop4j.NodeWriter;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.Controller;
-import br.ufal.ic.featureanalyzer.core.CPPWrapper;
+import br.ufal.ic.featureanalyzer.core.PlatformHeader;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
@@ -106,18 +109,6 @@ public class TypeChef {
 
 		ArrayList<String> paramters = new ArrayList<String>();
 
-		String[] includes = FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("Includes").trim().split(Pattern.quote(":"));
-
-		for (int i = 0; i < includes.length; i++) {
-			paramters.add("-I");
-			paramters.add(includes[i]);
-		}
-
-		// paramters.add("--systemIncludes");
-		// paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
-		paramters.add("-w");
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
 		paramters.add(typeChefPreference);
@@ -125,10 +116,40 @@ public class TypeChef {
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ File.separator + "platform.h");
+		paramters.add("-h");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "platform2.h");
 		paramters.add("--lexOutput");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ File.separator + "lexOutput.c");
+
+		// Project C includes
+		ICProject project = CoreModel
+				.getDefault()
+				.getCModel()
+				.getCProject(
+						PlatformHeader.getFile(list.get(0)).getProject()
+								.getName());
+
+		try {
+			IIncludeReference includes[] = project.getIncludeReferences();
+			for (int i = 0; i < includes.length; i++) {
+				paramters.add("-I");
+				paramters.add(includes[i].getElementName());
+			}
+		} catch (CModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+		paramters.add("--systemIncludes");
+		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("SystemIncludes"));
+
+		paramters.add("-w");
 
 		if (FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
@@ -143,13 +164,14 @@ public class TypeChef {
 		try {
 			fo.parseOptions((String[]) paramters.toArray(new String[paramters
 					.size()]));
-		} catch (Exception e) {
-			fo = new FrontendOptionsWithConfigFiles();
-			e.printStackTrace();
-		}
 
-		fo.getFiles().addAll(list);
-		fo.setPrintToStdOutput(false);
+			fo.getFiles().addAll(list);
+			fo.setPrintToStdOutput(false);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			fo = new FrontendOptionsWithConfigFiles();
+		}
 	}
 
 	public void run(List<IResource> resourceList) {
@@ -161,13 +183,16 @@ public class TypeChef {
 		Controller.monitorBeginTask("Analyzing selected files",
 				filesList.size());
 
-		CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(resourceList));
+		// CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(resourceList));
+		PlatformHeader cPlatform = new PlatformHeader();
+
+		cPlatform.gerenate(filesList);
 
 		for (String file : filesList) {
-			//Monitor Update
+			// Monitor Update
 			Controller.monitorUpdate(1);
-			Controller.monitorSubTask(file);	
-			//end Monitor
+			Controller.monitorSubTask(file);
+			// end Monitor
 			if (Controller.isCanceled())
 				break;
 
@@ -216,13 +241,14 @@ public class TypeChef {
 		// verificado...
 		if (project == null) {
 			project = list.get(0).getProject();
-			System.err.println(project.toString());
+			// System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
 			if (resouce.getLocation().toString().trim().endsWith(".c")
 					|| resouce.getLocation().toString().trim().endsWith(".h")) {
 				resoucesAsString.add(resouce.getLocation().toString());
-				System.out.println("ADD + " + resouce.getLocation().toString());
+				// System.out.println("ADD + " +
+				// resouce.getLocation().toString());
 			}
 		}
 		return resoucesAsString;

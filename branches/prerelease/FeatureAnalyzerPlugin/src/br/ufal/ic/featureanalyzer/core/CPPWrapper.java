@@ -10,19 +10,21 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 
-//import org.fusesource.jansi.Ansi.Color;
-
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
 
+//import org.fusesource.jansi.Ansi.Color;
+
 public class CPPWrapper {
-	private final static String GCC_PATH = "gcc";
+	private final static String GCC_PATH = FeatureAnalyzer.getDefault().getPreferenceStore()
+			.getString("GCC");
 	private final static String CPP_PATH = "cpp";
 	private MessageConsole console;
 
@@ -176,7 +178,7 @@ public class CPPWrapper {
 		list.add(0, "-dM");
 		runProcess(list, GCC_PATH, false);
 	}
-
+	
 	public static void gerenatePlatformHeaderLinux(List<String> fileList) {
 		List<String> list = new ArrayList<String>(fileList);
 
@@ -190,7 +192,7 @@ public class CPPWrapper {
 				"-I"
 						+ FeatureAnalyzer.getDefault().getPreferenceStore()
 								.getString("SystemIncludes"));
-		
+
 		list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("LIBS"));
 		list.add(0, "-std=gnu99");

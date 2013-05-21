@@ -63,23 +63,31 @@ public class Controller {
 
 				try {
 					pkgExplorerController.run();
+
+					if (monitor.isCanceled())
+						return Status.CANCEL_STATUS;
+
+					model.run(pkgExplorerController.getList());
+
+					syncWithPluginView();
+
 				} catch (Exception e) {
-					MessageDialog.openInformation(window.getShell(),
-							FeatureAnalyzer.PLUGIN_NAME, e.getMessage());
+					Display.getDefault().asyncExec(new Runnable() {
+						public void run() {
+							MessageDialog.openInformation(window.getShell(),
+									FeatureAnalyzer.PLUGIN_NAME,
+									"Select a valid file or directory.");
+						}
+					});
 					return Status.CANCEL_STATUS;
+
+				} finally {
+
+					monitor.done();
+					Controller.monitor = null;
+
 				}
 
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
-
-				model.run(pkgExplorerController.getList());
-
-				if (monitor.isCanceled())
-					return Status.CANCEL_STATUS;
-
-				syncWithPluginView();
-				monitor.done();
-				Controller.monitor = null;
 				return Status.OK_STATUS;
 			}
 		};

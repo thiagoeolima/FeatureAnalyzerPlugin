@@ -80,7 +80,7 @@ public class ProjectExplorerController {
 		} else if (o instanceof IFolder) {
 			aux = (IResource) o;
 		} else {
-			throw new Exception("Selecione um arquivo/diretório válido.");
+			throw new Exception("Select a valid file or directory.");
 		}
 
 		addResource(aux);
