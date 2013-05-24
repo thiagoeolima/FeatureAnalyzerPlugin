@@ -116,10 +116,6 @@ public class TypeChef {
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ File.separator + "platform.h");
-		paramters.add("-h");
-		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ File.separator + "platform2.h");
 		paramters.add("--lexOutput");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -144,7 +140,6 @@ public class TypeChef {
 			e.printStackTrace();
 		}
 
-		
 		paramters.add("--systemIncludes");
 		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("SystemIncludes"));
@@ -182,11 +177,8 @@ public class TypeChef {
 
 		Controller.monitorBeginTask("Analyzing selected files",
 				filesList.size());
-
-		// CPPWrapper.gerenatePlatformHeaderLinux(resourceToString(resourceList));
-		PlatformHeader cPlatform = new PlatformHeader();
-
-		cPlatform.gerenate(filesList);
+		
+		PlatformHeader.gerenate(filesList);
 
 		for (String file : filesList) {
 			// Monitor Update
@@ -208,9 +200,8 @@ public class TypeChef {
 				fo.getFiles().clear();
 
 			} catch (Exception e) {
-				openMessageBox(e);
+				e.printStackTrace();
 				FeatureAnalyzer.getDefault().logError(e);
-				break;
 			}
 
 		}
