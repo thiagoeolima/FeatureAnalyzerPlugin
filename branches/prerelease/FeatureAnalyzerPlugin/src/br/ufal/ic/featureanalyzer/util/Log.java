@@ -61,15 +61,20 @@ public class Log {
 		}
 
 		// Returns only the file path.
-		temp = fileName.trim().split(Pattern.quote(" "));
-		if (temp.length > 0) {
-			IWorkspace workspace = ResourcesPlugin.getWorkspace();
-			this.path = temp[1].substring(workspace.getRoot().getLocation()
-					.toString().length(),
-					temp[1].length() - this.fileName.length());
-		} else {
-			this.path = fileName.trim();
-		}
+		// temp = fileName.trim().split(Pattern.quote(" "));
+		// if (temp.length > 0) {
+		// IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		// this.path = temp[1].substring(workspace.getRoot().getLocation()
+		// .toString().length(),
+		// temp[1].length() - this.fileName.length());
+		// } else {
+		// this.path = fileName.trim();
+		// }
+
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		this.path = fileName.substring(workspace.getRoot().getLocation()
+				.toString().length(),
+				fileName.length() - this.fileName.length());
 
 		try {
 			IMarker marker = getFile().createMarker(MARKER_TYPE);
@@ -135,31 +140,56 @@ public class Log {
 						&& (i < k); i++)
 					;
 
-				String findLine = parserFileRead.readLine();
-
-				// System.out.println(findLine);
+				String findLine1 = parserFileRead.readLine();
+				String findLine2 = parserFileRead.readLine();
 
 				BufferedReader fileReader = new BufferedReader(new FileReader(
 						file));
-				String outline = null;
 
-				while (findLine != null && notLine) {
-					findLine.trim();
-					for (correctLine = 0; (outline = fileReader.readLine()) != null; correctLine++) {
-						if (outline.contains(findLine)) {
-							notLine = false;
+				while (findLine1 != null && findLine2 != null && notLine) {
+					findLine1.trim();
+					findLine2.trim();
+					System.out.println(findLine1);
+					System.out.println(findLine2);
+
+					String outline = null;
+					String outline2 = null;
+
+					for (correctLine = 0; true; correctLine++) {
+						if (outline2 == null) {
+							outline = fileReader.readLine();
+							outline2 = fileReader.readLine();
+						} else {
+							outline = outline2;
+							outline2 = fileReader.readLine();
+						}
+
+						if (outline == null) {
 							break;
 						}
+
+						if (outline.contains(findLine1)) {
+							if (outline2 != null) {
+								if (outline2.contains(findLine2)) {
+									notLine = false;
+									break;
+								}
+							}
+						}
 					}
+
 					if (notLine) {
 						nextLineNumber++;
-						findLine = parserFileRead.readLine();
+						findLine1 = findLine2;
+						findLine2 = parserFileRead.readLine();
 						fileReader.close();
 						fileReader = new BufferedReader(new FileReader(file));
 					}
 				}
 
 				correctLine -= nextLineNumber;
+
+				System.out.println(correctLine);
 
 				parserFileRead.close();
 				fileReader.close();

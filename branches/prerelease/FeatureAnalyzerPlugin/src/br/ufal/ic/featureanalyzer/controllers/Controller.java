@@ -73,6 +73,7 @@ public class Controller {
 					syncWithPluginView();
 
 				} catch (Exception e) {
+					e.printStackTrace();
 					Display.getDefault().asyncExec(new Runnable() {
 						public void run() {
 							MessageDialog.openInformation(window.getShell(),

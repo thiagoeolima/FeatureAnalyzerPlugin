@@ -8,80 +8,89 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.dom.ast.IASTNode;
+import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
+import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
+import org.eclipse.cdt.core.index.IIndex;
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IIncludeReference;
+import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.util.FileProxy;
+import br.ufal.ic.featureanalyzer.util.statistics.CountDirectives;
 
 public class PlatformHeader {
+	// It keeps the C types.
+	private List<String> types = new ArrayList<String>();
 
-	// private ICProject project;
+	// It keeps the macros defined.
+	private List<String> macros = new ArrayList<String>();
 
-	public static void gerenate(List<String> fileList) {
+	private CountDirectives countDirectives;
+
+	private ICProject project;
+
+	public void gerenate(List<FileProxy> fileList) {
 		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ File.separator + "platform.h");
 
-		if (platform.exists())
-			return;
-		// create main file for gcc
-		File main = new File(FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ File.separator + "gcc.c");
+		List<String> list = new ArrayList<String>();
 
-		FileWriter fileW;
-		BufferedWriter buffW;
+		countDirectives = new CountDirectives();
 
-		try {
-
-			main.createNewFile();
-
-			fileW = new FileWriter(main);
-			buffW = new BufferedWriter(fileW);
-
-			buffW.write("#include<stdlib.h>\n\n");
-			buffW.write("#include<stdio.h>\n\n");
-			buffW.write("#include<string.h>\n\n");
-			buffW.write("void main() {\n");
-			buffW.write("}\n");
-
-			buffW.close();
-			fileW.close();
-
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+		for (Iterator<FileProxy> iterator = fileList.iterator(); iterator
+				.hasNext();) {
+			FileProxy fileProxy = (FileProxy) iterator.next();
+			try {
+				countDirectives.count(fileProxy.getFileReal());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			list.add(fileProxy.getFileReal());
 		}
 
-		List<String> list = new ArrayList<String>(fileList);
+		project = CoreModel
+				.getDefault()
+				.getCModel()
+				.getCProject(
+						getFile(fileList.get(0).getFileReal()).getProject()
+								.getName());
 
-		// project = CoreModel.getDefault().getCModel()
-		// .getCProject(getFile(fileList.get(0)).getProject().getName());
+		try {
+			IIncludeReference includes[] = project.getIncludeReferences();
+			for (int i = 0; i < includes.length; i++) {
+				System.out.println(includes[i].getElementName());
+				list.add(0, "-I" + includes[i].getElementName());
+			}
+		} catch (CModelException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		list.add(0,
+				"-I"
+						+ FeatureAnalyzer.getDefault().getPreferenceStore()
+								.getString("SystemIncludes"));
 
-		// try {
-		// IIncludeReference includes[] = project.getIncludeReferences();
-		// for (int i = 0; i < includes.length; i++) {
-		// System.out.println(includes[i].getElementName());
-		// list.add(0, "-I" + includes[i].getElementName());
-		// }
-		// } catch (CModelException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		// list.add(0,
-		// "-I"
-		// + FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
-		//
-		// list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("LIBS"));
-		
-		list.add(0, main.getAbsolutePath());
+		list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("LIBS"));
+
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
 		list.add(0, "-dM");
@@ -108,12 +117,23 @@ public class PlatformHeader {
 					String line;
 					try {
 
-						fileW = new FileWriter(platform);
-						buffW = new BufferedWriter(fileW);
+						FileWriter fileW = new FileWriter(platform);
+						BufferedWriter buffW = new BufferedWriter(fileW);
 
 						while ((line = input.readLine()) != null) {
-							// System.out.println(line);
-							buffW.write(line + "\n");
+							if (line.contains("#define ")) {
+								String[] temp = line.trim().split(
+										Pattern.quote(" "));
+								if (countDirectives.directives
+										.contains(temp[1])) {
+									System.out.println(line);
+								} else {
+									buffW.write(line + "\n");
+								}
+							} else {
+								// System.out.println(line);
+								buffW.write(line + "\n");
+							}
 						}
 
 						while ((line = error.readLine()) != null) {
@@ -165,12 +185,132 @@ public class PlatformHeader {
 					}
 			}
 		}
-
+		generateTypes(fileList);
 	}
 
 	public static IFile getFile(String fileName) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IPath location = Path.fromOSString(fileName);
 		return workspace.getRoot().getFileForLocation(location);
+	}
+
+	private void generateTypes(List<FileProxy> fileList) {
+
+		for (Iterator<FileProxy> iterator = fileList.iterator(); iterator
+				.hasNext();) {
+			FileProxy fileProxy = (FileProxy) iterator.next();
+
+			ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault()
+					.create(getFile(fileProxy.getFileReal()));
+			IASTTranslationUnit ast = null;
+			try {
+				IIndex index = CCorePlugin.getIndexManager().getIndex(project);
+				// The AST is ready for use..
+				ast = tu.getAST(index, ITranslationUnit.AST_PARSE_INACTIVE_CODE);
+
+				this.setTypes(ast);
+				this.setMacros(ast);
+			} catch (CoreException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		writeTypesToPlatformHeader();
+	}
+
+	// It finds probable macros in the node.
+	private void setMacros(IASTNode node) {
+		IASTPreprocessorMacroDefinition[] definitions = node
+				.getTranslationUnit().getMacroDefinitions();
+		for (IASTPreprocessorMacroDefinition definition : definitions) {
+			String macro = definition.getRawSignature();
+
+			if (!this.macros.contains(macro)) {
+				this.macros.add(macro);
+			}
+
+		}
+	}
+
+	// It finds probable types in the node.
+	private void setTypes(IASTNode node) {
+		IASTNode[] nodes = node.getChildren();
+		if (node.getClass()
+				.getCanonicalName()
+				.equals("org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier")) {
+			CASTTypedefNameSpecifier s = (CASTTypedefNameSpecifier) node;
+
+			String type = s.getRawSignature().replace("extern", "")
+					.replace("static", "").replace("const", "").trim();
+
+			if (!this.types.contains(type) && this.isValidJavaIdentifier(type)) {
+				this.types.add(type);
+			}
+		}
+		for (int i = 0; i < nodes.length; i++) {
+			this.setTypes(nodes[i]);
+		}
+	}
+
+	// All types found are defined in the platform.h header file.
+	private void writeTypesToPlatformHeader() {
+		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "platform2.h");
+
+		try {
+			FileWriter writer = new FileWriter(platform);
+			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {
+				String type = (String) i.next();
+				if (countDirectives.directives.contains(type)) {
+					System.out.println(type);
+				} else {
+					writer.write("typedef struct {} " + type + ";\n");
+				}
+			}
+
+			for (Iterator<String> i = this.macros.iterator(); i.hasNext();) {
+				String next = i.next();
+				String strToInclue = next.trim().replaceAll("\\s+", " ");
+				// System.out.println(strToInclue);
+
+				if (next.contains("#define ")) {
+					String[] temp = next.trim().split(Pattern.quote(" "));
+					if (countDirectives.directives.contains(temp[1])) {
+						System.out.println(next);
+					} else {
+						writer.write(next + "\n");
+					}
+				} else {
+					writer.write(next + "\n");
+				}
+			}
+
+			writer.flush();
+			writer.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private boolean isValidJavaIdentifier(String s) {
+		// An empty or null string cannot be a valid identifier
+		if (s == null || s.length() == 0) {
+			return false;
+		}
+
+		char[] c = s.toCharArray();
+		if (!Character.isJavaIdentifierStart(c[0])) {
+			return false;
+		}
+
+		for (int i = 1; i < c.length; i++) {
+			if (!Character.isJavaIdentifierPart(c[i])) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 }

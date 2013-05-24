@@ -30,6 +30,7 @@ import org.prop4j.NodeWriter;
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.core.PlatformHeader;
+import br.ufal.ic.featureanalyzer.util.FileProxy;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
@@ -98,7 +99,7 @@ public class TypeChef {
 		}
 	}
 
-	private void start(List<String> list) {
+	private void start(FileProxy fileProxy) {
 		if (FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
 			prepareFeatureModel(); // General processing options String
@@ -116,6 +117,10 @@ public class TypeChef {
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ File.separator + "platform.h");
+		paramters.add("-h");
+		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ File.separator + "platform2.h");
 		paramters.add("--lexOutput");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -126,8 +131,8 @@ public class TypeChef {
 				.getDefault()
 				.getCModel()
 				.getCProject(
-						PlatformHeader.getFile(list.get(0)).getProject()
-								.getName());
+						PlatformHeader.getFile(fileProxy.getFileReal())
+								.getProject().getName());
 
 		try {
 			IIncludeReference includes[] = project.getIncludeReferences();
@@ -160,7 +165,7 @@ public class TypeChef {
 			fo.parseOptions((String[]) paramters.toArray(new String[paramters
 					.size()]));
 
-			fo.getFiles().addAll(list);
+			fo.getFiles().add(fileProxy.getFileTemp());
 			fo.setPrintToStdOutput(false);
 
 		} catch (Exception e) {
@@ -170,32 +175,37 @@ public class TypeChef {
 	}
 
 	public void run(List<IResource> resourceList) {
-		List<String> listAux = new LinkedList<String>();
-		List<String> filesList = resourceToString(resourceList);
+		// List<String> listAux = new LinkedList<String>();
+		// List<String> filesList = resourceToString(resourceList);
+		List<FileProxy> fileProxies = resourceToFileProxy(resourceList);
 
 		xmlParser.clearLogList();
 
 		Controller.monitorBeginTask("Analyzing selected files",
-				filesList.size());
-		
-		PlatformHeader.gerenate(filesList);
+				fileProxies.size() + 1);
 
-		for (String file : filesList) {
+		PlatformHeader platformHeader = new PlatformHeader();
+		// Monitor Update
+		Controller.monitorUpdate(1);
+		// Controller.monitorSubTask("");
+		// end Monitor
+		platformHeader.gerenate(fileProxies);
+
+		for (FileProxy file : fileProxies) {
 			// Monitor Update
 			Controller.monitorUpdate(1);
-			Controller.monitorSubTask(file);
+			Controller.monitorSubTask(file.getFullPath());
 			// end Monitor
 			if (Controller.isCanceled())
 				break;
 
-			listAux.add(file);
-			start(listAux);
-			listAux.clear();
+			start(file);
 
 			try {
 				Frontend.processFile(fo);
 
 				xmlParser.setXMLFile(fo.getErrorXMLFile());
+				xmlParser.seFiles(fileProxies);
 				xmlParser.processFile();
 				fo.getFiles().clear();
 
@@ -237,12 +247,37 @@ public class TypeChef {
 		for (IResource resouce : list) {
 			if (resouce.getLocation().toString().trim().endsWith(".c")
 					|| resouce.getLocation().toString().trim().endsWith(".h")) {
-				resoucesAsString.add(resouce.getLocation().toString());
+				FileProxy fileProxy = new FileProxy(resouce.getLocation()
+						.toString());
+
+				// resoucesAsString.add(resouce.getLocation().toString());
 				// System.out.println("ADD + " +
 				// resouce.getLocation().toString());
 			}
 		}
 		return resoucesAsString;
+	}
+
+	private List<FileProxy> resourceToFileProxy(List<IResource> list) {
+		List<FileProxy> fileProxies = new LinkedList<FileProxy>();
+		// pega um dos arquivos para descobrir qual projeto esta sendo
+		// verificado...
+		if (project == null) {
+			project = list.get(0).getProject();
+			// System.err.println(project.toString());
+		}
+		for (IResource resouce : list) {
+			if (resouce.getLocation().toString().trim().endsWith(".c")
+					|| resouce.getLocation().toString().trim().endsWith(".h")) {
+				FileProxy fileProxy = new FileProxy(resouce.getLocation()
+						.toString());
+				fileProxies.add(fileProxy);
+				// resoucesAsString.add(resouce.getLocation().toString());
+				// System.out.println("ADD + " +
+				// resouce.getLocation().toString());
+			}
+		}
+		return fileProxies;
 	}
 
 	public Object[] getLogs() {
