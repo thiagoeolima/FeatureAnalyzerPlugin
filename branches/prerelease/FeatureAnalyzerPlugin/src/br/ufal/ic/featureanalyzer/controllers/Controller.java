@@ -21,7 +21,6 @@ public class Controller {
 
 	public Controller() {
 		pkgExplorerController = new ProjectExplorerController();
-		model = new TypeChef();
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
@@ -52,6 +51,8 @@ public class Controller {
 	}
 
 	public void run() {
+
+		model = new TypeChef();
 
 		Job job = new Job("Analyzing files") {
 			protected IStatus run(IProgressMonitor monitor) {

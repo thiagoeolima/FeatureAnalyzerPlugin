@@ -48,7 +48,7 @@ public class ProjectExplorerController {
 			try {
 				file.deleteMarkers(Log.MARKER_TYPE, false, IResource.DEPTH_ZERO);
 			} catch (CoreException e) {
-//				e.printStackTrace();
+				// e.printStackTrace();
 			}
 			listFiles.add(resource);
 		} else if (resource instanceof IFolder) {
@@ -63,7 +63,7 @@ public class ProjectExplorerController {
 		}
 	}
 
-	public void run() throws Exception {
+	private IResource start() throws Exception {
 		listFiles.clear();
 		Object o = selection.getFirstElement();
 
@@ -83,6 +83,21 @@ public class ProjectExplorerController {
 			throw new Exception("Select a valid file or directory.");
 		}
 
-		addResource(aux);
+		return aux;
+	}
+
+	public void run() throws Exception {
+		addResource(start());
+	}
+
+	public String getPath() throws Exception {
+		IResource resource = start();
+		if (resource instanceof IFile) {
+			return ((IFile) resource).getLocation().toString();
+		} else if (resource instanceof IFolder) {
+			return ((IFolder) resource).getLocation().toString();
+		} else {
+			throw new Exception("Select a valid file or directory.");
+		}
 	}
 }

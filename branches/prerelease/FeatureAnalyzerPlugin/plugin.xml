@@ -16,6 +16,10 @@
             id="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear"
             name="Clear View">
       </command>
+      <command
+            id="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerStatistics"
+            name="Statistics">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -26,6 +30,10 @@
       <handler
             class="br.ufal.ic.featureanalyzer.handler.ClearAnalyzerViewHandler"
             commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear">
+      </handler>
+      <handler
+            class="br.ufal.ic.featureanalyzer.handler.StatisticsHandler"
+            commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerStatistics">
       </handler>
    </extension>
    <extension
@@ -58,6 +66,15 @@
          <command
                commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerViewClear"
                icon="icons/featured_clear.png"
+               style="push">
+         </command>
+         <separator
+               name="br.ufal.ic.featureanalyzer.separator1"
+               visible="true">
+         </separator>
+         <command
+               commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerStatistics"
+               icon="icons/featured_chart.png"
                style="push">
          </command>
       </menuContribution>
