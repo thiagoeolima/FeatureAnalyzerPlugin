@@ -39,6 +39,9 @@ public class FeatureAnalyzer extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
+		
+		Start inicialize = new Start();
+		inicialize.SystemClear();
 	}
 
 	/*
@@ -92,7 +95,7 @@ public class FeatureAnalyzer extends AbstractUIPlugin {
 				return file;
 			}
 		}
-		file =  getStateLocation().toFile();
+		file = getStateLocation().toFile();
 		file.mkdirs();
 		return file;
 	}

@@ -107,7 +107,7 @@ public class AnalyzerViewController extends ViewController {
 		viewer.setInput(this.typeChefPluginView.getViewSite());
 		viewer.setLabelProvider(new AnalyzerViewLabelProvider());
 		table.setHeaderVisible(true);
-		table.setLinesVisible(false);
+		table.setLinesVisible(true);
 
 		// Set the sorter for the table
 		comparator = new AnalyzerViewSorter();

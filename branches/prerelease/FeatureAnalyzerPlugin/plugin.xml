@@ -87,18 +87,28 @@
             id="br.ufal.ic.featureanalyzer">
       </category>
       <view
-            name="Feature Analyzer"
-            icon="icons/featured.png"
+            allowMultiple="false"
             category="br.ufal.ic.featureanalyzer"
             class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
-            id="br.ufal.ic.featureanalyzer.views.AnalyzerView">
+            icon="icons/featured.png"
+            id="br.ufal.ic.featureanalyzer.views.AnalyzerView"
+            name="Feature Analyzer">
       </view>
       <view
+            allowMultiple="false"
             category="br.ufal.ic.featureanalyzer"
             class="br.ufal.ic.featureanalyzer.views.InvalidProductView"
             icon="icons/invalidproduct.png"
             id="br.ufal.ic.featureanalyzer.views.invalideproductview"
             name="Invalid Products">
+      </view>
+      <view
+            allowMultiple="false"
+            category="br.ufal.ic.featureanalyzer"
+            class="br.ufal.ic.featureanalyzer.views.StatisticsView"
+            icon="icons/featured_chart.png"
+            id="br.ufal.ic.featureanalyzer.views.StatisticsView"
+            name="Statistics">
       </view>
    </extension>
  
