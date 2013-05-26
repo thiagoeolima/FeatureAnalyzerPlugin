@@ -3,8 +3,6 @@ package br.ufal.ic.featureanalyzer.controllers.statistics;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.PlatformUI;
 
 import br.ufal.ic.featureanalyzer.util.Statistics;
 
@@ -27,16 +25,16 @@ public class StatisticsViewLabelProvider extends LabelProvider implements ITable
 
 	@Override
 	public Image getColumnImage(Object obj, int index) {
-		switch (index) {
-		case 0:
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_DEF_VIEW);
-		case 1:
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_ELCL_SYNCED);
-		default:
+		// switch (index) {
+		// case 0:
+		// return PlatformUI.getWorkbench().getSharedImages()
+		// .getImage(ISharedImages.IMG_DEF_VIEW);
+		// case 1:
+		// return PlatformUI.getWorkbench().getSharedImages()
+		// .getImage(ISharedImages.IMG_ELCL_SYNCED);
+		// default:
 			return null;
-		}
+	//	}
 
 	}
 }

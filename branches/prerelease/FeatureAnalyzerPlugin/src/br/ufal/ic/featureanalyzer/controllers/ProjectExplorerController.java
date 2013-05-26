@@ -58,6 +58,9 @@ public class ProjectExplorerController {
 
 	private IResource start() throws ExplorerException {
 		listFiles.clear();
+		if (selection == null) {
+			throw new ExplorerException("Select a valid file or directory.");
+		}
 		Object o = selection.getFirstElement();
 
 		IResource aux;
