@@ -3,6 +3,7 @@ package br.ufal.ic.featureanalyzer.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +33,7 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
 import br.ufal.ic.featureanalyzer.controllers.invalidproduct.InvalidProductViewController;
+import br.ufal.ic.featureanalyzer.exceptions.TypeChefException;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
 import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
@@ -181,6 +183,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		Job job = new Job("preprocessor annotation checking") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
+				System.out.println(featureProject+"---------------------");
 				annotationChecking(featureProject.getSourceFolder());
 				return Status.OK_STATUS;
 			}
@@ -345,8 +348,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 				ppExpression = new Not(ppExpression.clone());
 
 			doThreeStepExpressionCheck(ppExpression, lineNumber, res);
-		}
 
+		}
 	}
 
 	/**
@@ -417,28 +420,35 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void runTypeChefAnalyzes(IFolder folder) {
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
-		typeChef.run(prjController.getList());
-		final Display display = Display.getDefault();
-		if (display == null) {
-			throw new NullPointerException("Display is null");
-		}
+		try {
+			typeChef.run(prjController.getList());
 
-		display.syncExec(new Runnable() {
-			public void run() {
-				AnalyzerViewController viewController = AnalyzerViewController
-						.getInstance();
-				if (typeChef.getLogs().length > 0) {
-					viewController.showView();
-					viewController.adaptTo(typeChef.getLogs());
-					continueCompilationFlag = MessageDialog.openQuestion(
-							display.getActiveShell(),
-							"Error!",
-							"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
-				} else {
-					viewController.clear();
-				}
+			final Display display = Display.getDefault();
+			if (display == null) {
+				throw new NullPointerException("Display is null");
 			}
-		});
+
+			display.syncExec(new Runnable() {
+				public void run() {
+					AnalyzerViewController viewController = AnalyzerViewController
+							.getInstance();
+					if (typeChef.getLogs().length > 0) {
+						viewController.showView();
+						viewController.adaptTo(typeChef.getLogs());
+						continueCompilationFlag = MessageDialog.openQuestion(
+								display.getActiveShell(),
+								"Error!",
+								"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
+					} else {
+						viewController.clear();
+					}
+				}
+			});
+
+		} catch (TypeChefException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

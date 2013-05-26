@@ -10,13 +10,15 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.exceptions.ExplorerException;
+import br.ufal.ic.featureanalyzer.exceptions.TypeChefException;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
 public class Controller {
 	private ProjectExplorerController pkgExplorerController;
 	private TypeChef model;
-	private IWorkbenchWindow window;
+	private static IWorkbenchWindow window;
 	private static IProgressMonitor monitor;
 
 	public Controller() {
@@ -24,8 +26,12 @@ public class Controller {
 	}
 
 	public void setWindow(IWorkbenchWindow window) {
-		this.window = window;
+		Controller.window = window;
 		pkgExplorerController.setWindow(window);
+	}
+
+	public static IWorkbenchWindow getWindow() {
+		return window;
 	}
 
 	public static boolean isCanceled() {
@@ -72,17 +78,12 @@ public class Controller {
 
 					syncWithPluginView();
 
-				} catch (Exception e) {
+				} catch (TypeChefException e) {
 					e.printStackTrace();
-					Display.getDefault().asyncExec(new Runnable() {
-						public void run() {
-							MessageDialog.openInformation(window.getShell(),
-									FeatureAnalyzer.PLUGIN_NAME,
-									"Select a valid file or directory.");
-						}
-					});
 					return Status.CANCEL_STATUS;
-
+				} catch (ExplorerException e) {
+					e.printStackTrace();
+					return Status.CANCEL_STATUS;
 				} finally {
 
 					monitor.done();
@@ -107,12 +108,14 @@ public class Controller {
 						AnalyzerView.ID);
 				if (treeView instanceof AnalyzerView) {
 					final AnalyzerView TypeChefPluginView = (AnalyzerView) treeView;
-					Object[] logs = model.getLogs();
-					TypeChefPluginView.adaptTo(logs);
-					if (logs.length <= 0) {
-						MessageDialog.openInformation(window.getShell(),
-								FeatureAnalyzer.PLUGIN_NAME,
-								"This file was successfully verified!");
+					if (model.isFinish()) {
+						Object[] logs = model.getLogs();
+						TypeChefPluginView.adaptTo(logs);
+						if (logs.length <= 0) {
+							MessageDialog.openInformation(window.getShell(),
+									FeatureAnalyzer.PLUGIN_NAME,
+									"This file was successfully verified!");
+						}
 					}
 				}
 			}

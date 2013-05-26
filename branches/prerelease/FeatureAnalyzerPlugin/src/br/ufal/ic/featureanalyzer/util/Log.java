@@ -12,6 +12,7 @@ import org.eclipse.core.filebuffers.ITextFileBufferManager;
 import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -77,7 +78,7 @@ public class Log {
 				fileName.length() - this.fileName.length());
 
 		try {
-			IMarker marker = getFile().createMarker(MARKER_TYPE);
+			IMarker marker = this.getFile().createMarker(MARKER_TYPE);
 			marker.setAttribute(IMarker.MESSAGE, this.message);
 			marker.setAttribute(IMarker.SEVERITY, IMarker.SEVERITY_ERROR);
 			marker.setAttribute(IMarker.LINE_NUMBER,
@@ -149,8 +150,6 @@ public class Log {
 				while (findLine1 != null && findLine2 != null && notLine) {
 					findLine1.trim();
 					findLine2.trim();
-					System.out.println(findLine1);
-					System.out.println(findLine2);
 
 					String outline = null;
 					String outline2 = null;
@@ -188,8 +187,6 @@ public class Log {
 				}
 
 				correctLine -= nextLineNumber;
-
-				System.out.println(correctLine);
 
 				parserFileRead.close();
 				fileReader.close();
@@ -232,5 +229,15 @@ public class Log {
 		return FileBuffers.getTextFileBufferManager()
 				.getTextFileBuffer(file.getFullPath(), LocationKind.IFILE)
 				.getDocument();
+	}
+
+	public void removeMarker() {
+		// remove markers
+		try {
+			this.getFile().deleteMarkers(Log.MARKER_TYPE, false,
+					IResource.DEPTH_ZERO);
+		} catch (CoreException e) {
+			// e.printStackTrace();
+		}
 	}
 }

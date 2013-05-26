@@ -4,7 +4,7 @@ import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
  class AnalyzerViewContentProvider implements IStructuredContentProvider {
-	private Object[] logs = new String[] {};
+	private Object[] logs = new Object[]{};
 
 	@Override
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {

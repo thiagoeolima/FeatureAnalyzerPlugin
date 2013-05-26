@@ -23,7 +23,7 @@ import br.ufal.ic.featureanalyzer.controllers.ViewController;
 import br.ufal.ic.featureanalyzer.util.Log;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
-public class AnalyzerViewController extends ViewController{
+public class AnalyzerViewController extends ViewController {
 
 	private TableViewer viewer;
 	private AnalyzerViewContentProvider viewContentProvider = new AnalyzerViewContentProvider();
@@ -56,10 +56,18 @@ public class AnalyzerViewController extends ViewController{
 	}
 
 	public void clear() {
-		this.viewContentProvider.setLogs(new String[] {});
+		Object objects[] = (Object[]) this.viewContentProvider
+				.getElements(null);
+		if (objects instanceof Log[]) {
+			Log logs[] = (Log[]) objects;
+			for (int i = 0; i < logs.length; i++) {
+				logs[i].removeMarker();
+			}
+		}
+		this.viewContentProvider.setLogs(new Object[] {});
 		viewer.refresh();
 	}
-	
+
 	public void createPartControl(Composite parent) {
 		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);
@@ -101,10 +109,10 @@ public class AnalyzerViewController extends ViewController{
 		table.setHeaderVisible(true);
 		table.setLinesVisible(false);
 
-	    // Set the sorter for the table
-	    comparator = new AnalyzerViewSorter();
-	    viewer.setComparator(comparator);
-	    
+		// Set the sorter for the table
+		comparator = new AnalyzerViewSorter();
+		viewer.setComparator(comparator);
+
 		PlatformUI.getWorkbench().getHelpSystem()
 				.setHelp(viewer.getControl(), "TableView.viewer");
 	}
@@ -127,28 +135,27 @@ public class AnalyzerViewController extends ViewController{
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-	    column.addSelectionListener(getSelectionAdapter(column, colNumber));
-	    return viewerColumn;
-	  }
+		column.addSelectionListener(getSelectionAdapter(column, colNumber));
+		return viewerColumn;
+	}
 
-	  private SelectionAdapter getSelectionAdapter(final TableColumn column,
-	      final int index) {
-	    SelectionAdapter selectionAdapter = new SelectionAdapter() {
-	      @Override
-	      public void widgetSelected(SelectionEvent e) {
-	        comparator.setColumn(index);
-	        int dir = comparator.getDirection();
-	        viewer.getTable().setSortDirection(dir);
-	        viewer.getTable().setSortColumn(column);
-	        viewer.refresh();
-	      }
-	    };
-	    return selectionAdapter;
-	  }
-
+	private SelectionAdapter getSelectionAdapter(final TableColumn column,
+			final int index) {
+		SelectionAdapter selectionAdapter = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				comparator.setColumn(index);
+				int dir = comparator.getDirection();
+				viewer.getTable().setSortDirection(dir);
+				viewer.getTable().setSortColumn(column);
+				viewer.refresh();
+			}
+		};
+		return selectionAdapter;
+	}
 
 	public void setFocus() {
 		viewer.getControl().setFocus();
 	}
-	
+
 }

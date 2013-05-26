@@ -21,6 +21,7 @@ import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IIncludeReference;
+import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier;
 import org.eclipse.core.resources.IFile;
@@ -31,7 +32,8 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.util.FileProxy;
+import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
+import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
 import br.ufal.ic.featureanalyzer.util.statistics.CountDirectives;
 
 public class PlatformHeader {
@@ -45,38 +47,58 @@ public class PlatformHeader {
 
 	private ICProject project;
 
-	public void gerenate(List<FileProxy> fileList) {
+	public void gerenate(String projectName) throws PlatformException {
+
 		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "platform.h");
+				+ File.separator
+				+ "projects"
+				+ File.separator
+				+ projectName
+				+ ".h");
 
-		List<String> list = new ArrayList<String>();
+		if (platform.exists())
+			return;
 
-		countDirectives = new CountDirectives();
+		project = CoreModel.getDefault().getCModel()
+				.getCProject(projectName);
 
-		for (Iterator<FileProxy> iterator = fileList.iterator(); iterator
-				.hasNext();) {
-			FileProxy fileProxy = (FileProxy) iterator.next();
-			try {
-				countDirectives.count(fileProxy.getFileReal());
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			list.add(fileProxy.getFileReal());
+		if (project == null) {
+			throw new PlatformException("Not a valid project C");
 		}
 
-		project = CoreModel
-				.getDefault()
-				.getCModel()
-				.getCProject(
-						getFile(fileList.get(0).getFileReal()).getProject()
-								.getName());
+		List<String> listFiles = new ArrayList<String>();
+
+		try {
+
+			ISourceRoot sourceRoots[] = project.getSourceRoots();
+			for (int i = 0; i < sourceRoots.length; i++) {
+				if (!sourceRoots[i].getPath().toOSString()
+						.equals(project.getProject().getName())) {
+					ProjectExplorerController explorerController = new ProjectExplorerController();
+					explorerController
+							.addResource(sourceRoots[i].getResource());
+
+					listFiles.addAll(explorerController.getListToString());
+				}
+			}
+			if (listFiles.isEmpty()) {
+				throw new PlatformException(
+						"Your project does not have a source folder (ex.: /src).");
+			}
+		} catch (CModelException e1) {
+			throw new PlatformException(
+					"Your project does not have a source folder (ex.: /src).");
+		}
+
+		List<String> list = new ArrayList<String>(listFiles);
+
+		countDirectives = new CountDirectives();
 
 		try {
 			IIncludeReference includes[] = project.getIncludeReferences();
 			for (int i = 0; i < includes.length; i++) {
-				System.out.println(includes[i].getElementName());
+//				System.out.println(includes[i].getElementName());
 				list.add(0, "-I" + includes[i].getElementName());
 			}
 		} catch (CModelException e) {
@@ -110,14 +132,15 @@ public class PlatformHeader {
 							"UTF-8")));
 			boolean x = true;
 
-			platform.createNewFile();
-
+			File platformTemp = new File(FeatureAnalyzer.getDefault()
+					.getConfigDir().getAbsolutePath()
+					+ File.separator + "projects" + File.separator + "temp.h");
 			while (x) {
 				try {
 					String line;
 					try {
 
-						FileWriter fileW = new FileWriter(platform);
+						FileWriter fileW = new FileWriter(platformTemp);
 						BufferedWriter buffW = new BufferedWriter(fileW);
 
 						while ((line = input.readLine()) != null) {
@@ -126,7 +149,7 @@ public class PlatformHeader {
 										Pattern.quote(" "));
 								if (countDirectives.directives
 										.contains(temp[1])) {
-									System.out.println(line);
+									// System.out.println(line);
 								} else {
 									buffW.write(line + "\n");
 								}
@@ -154,7 +177,8 @@ public class PlatformHeader {
 					}
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
-						throw new IOException(
+						platform.deleteOnExit();
+						throw new PlatformException(
 								"The process doesn't finish normally (exit="
 										+ exitValue + ")!");
 					}
@@ -165,6 +189,8 @@ public class PlatformHeader {
 					FeatureAnalyzer.getDefault().logError(e);
 				}
 			}
+			platformTemp.renameTo(platform);
+
 		} catch (IOException e) {
 			System.out.println(e.toString());
 			FeatureAnalyzer.getDefault().logError(e);
@@ -185,7 +211,8 @@ public class PlatformHeader {
 					}
 			}
 		}
-		generateTypes(fileList);
+
+		generateTypes(listFiles);
 	}
 
 	public static IFile getFile(String fileName) {
@@ -194,14 +221,12 @@ public class PlatformHeader {
 		return workspace.getRoot().getFileForLocation(location);
 	}
 
-	private void generateTypes(List<FileProxy> fileList) {
+	private void generateTypes(List<String> fileList) throws PlatformException {
 
-		for (Iterator<FileProxy> iterator = fileList.iterator(); iterator
-				.hasNext();) {
-			FileProxy fileProxy = (FileProxy) iterator.next();
-
+		for (String file : fileList) {
+			
 			ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault()
-					.create(getFile(fileProxy.getFileReal()));
+					.create(getFile(file));
 			IASTTranslationUnit ast = null;
 			try {
 				IIndex index = CCorePlugin.getIndexManager().getIndex(project);
@@ -212,7 +237,8 @@ public class PlatformHeader {
 				this.setMacros(ast);
 			} catch (CoreException e1) {
 				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				throw new PlatformException(
+						"Was not possible to generate the stubs");
 			}
 		}
 		writeTypesToPlatformHeader();
@@ -233,11 +259,13 @@ public class PlatformHeader {
 	}
 
 	// It finds probable types in the node.
+	@SuppressWarnings("restriction")
 	private void setTypes(IASTNode node) {
 		IASTNode[] nodes = node.getChildren();
 		if (node.getClass()
 				.getCanonicalName()
 				.equals("org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier")) {
+
 			CASTTypedefNameSpecifier s = (CASTTypedefNameSpecifier) node;
 
 			String type = s.getRawSignature().replace("extern", "")
@@ -253,13 +281,22 @@ public class PlatformHeader {
 	}
 
 	// All types found are defined in the platform.h header file.
-	private void writeTypesToPlatformHeader() {
+	private void writeTypesToPlatformHeader() throws PlatformException {
 		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "platform2.h");
+				+ File.separator
+				+ "projects"
+				+ File.separator
+				+ project.getProject().getName() + "2.h");
 
+		if (platform.exists())
+			return;
+
+		File platformTemp = new File(FeatureAnalyzer.getDefault()
+				.getConfigDir().getAbsolutePath()
+				+ File.separator + "projects" + File.separator + "temp.h");
 		try {
-			FileWriter writer = new FileWriter(platform);
+			FileWriter writer = new FileWriter(platformTemp);
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {
 				String type = (String) i.next();
 				if (countDirectives.directives.contains(type)) {
@@ -271,7 +308,7 @@ public class PlatformHeader {
 
 			for (Iterator<String> i = this.macros.iterator(); i.hasNext();) {
 				String next = i.next();
-				String strToInclue = next.trim().replaceAll("\\s+", " ");
+				// String strToInclue = next.trim().replaceAll("\\s+", " ");
 				// System.out.println(strToInclue);
 
 				if (next.contains("#define ")) {
@@ -289,9 +326,10 @@ public class PlatformHeader {
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new PlatformException(
+					"was not possible to generate the stubs");
 		}
-
+		platformTemp.renameTo(platform);
 	}
 
 	private boolean isValidJavaIdentifier(String s) {
@@ -313,4 +351,5 @@ public class PlatformHeader {
 
 		return true;
 	}
+
 }

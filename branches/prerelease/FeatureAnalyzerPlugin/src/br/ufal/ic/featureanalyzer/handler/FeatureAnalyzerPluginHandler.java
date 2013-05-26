@@ -9,6 +9,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.featureanalyzer.controllers.Controller;
+import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
 import br.ufal.ic.featureanalyzer.views.AnalyzerView;
 
 public class FeatureAnalyzerPluginHandler extends AbstractHandler {
@@ -32,12 +33,16 @@ public class FeatureAnalyzerPluginHandler extends AbstractHandler {
 		IWorkbenchPage page = window.getActivePage();
 		try {
 			page.showView(AnalyzerView.ID);
+			AnalyzerViewController analyzerViewController = AnalyzerViewController
+					.getInstance();
+
+			analyzerViewController.clear();
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
-		 controller.run();
+		controller.run();
 
 		return null;
 	}

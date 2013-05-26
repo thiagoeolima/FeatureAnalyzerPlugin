@@ -16,20 +16,14 @@ import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IIncludeReference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.progress.UIJob;
 import org.prop4j.Node;
 import org.prop4j.NodeWriter;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.core.PlatformHeader;
+import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
+import br.ufal.ic.featureanalyzer.exceptions.TypeChefException;
 import br.ufal.ic.featureanalyzer.util.FileProxy;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
@@ -46,6 +40,7 @@ public class TypeChef {
 	private XMLParserTypeChef xmlParser;
 	private IProject project;
 	private FrontendOptions fo;
+	private boolean isFinish;
 
 	private final String outputFilePath;
 
@@ -116,11 +111,17 @@ public class TypeChef {
 		paramters.add("-h");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "platform.h");
+				+ File.separator
+				+ "projects"
+				+ File.separator
+				+ project.getProject().getName() + ".h");
 		paramters.add("-h");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "platform2.h");
+				+ File.separator
+				+ "projects"
+				+ File.separator
+				+ project.getProject().getName() + "2.h");
 		paramters.add("--lexOutput");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -174,88 +175,59 @@ public class TypeChef {
 		}
 	}
 
-	public void run(List<IResource> resourceList) {
-		// List<String> listAux = new LinkedList<String>();
-		// List<String> filesList = resourceToString(resourceList);
+	public boolean isFinish() {
+		return isFinish;
+	}
+
+	public void run(List<IResource> resourceList) throws TypeChefException {
+		this.isFinish = false;
 		List<FileProxy> fileProxies = resourceToFileProxy(resourceList);
 
 		xmlParser.clearLogList();
 
-		Controller.monitorBeginTask("Analyzing selected files",
-				fileProxies.size() + 1);
-
 		PlatformHeader platformHeader = new PlatformHeader();
-		// Monitor Update
-		Controller.monitorUpdate(1);
-		// Controller.monitorSubTask("");
-		// end Monitor
-		platformHeader.gerenate(fileProxies);
 
-		for (FileProxy file : fileProxies) {
-			// Monitor Update
-			Controller.monitorUpdate(1);
-			Controller.monitorSubTask(file.getFullPath());
-			// end Monitor
-			if (Controller.isCanceled())
-				break;
-
-			start(file);
-
-			try {
-				Frontend.processFile(fo);
-
-				xmlParser.setXMLFile(fo.getErrorXMLFile());
-				xmlParser.seFiles(fileProxies);
-				xmlParser.processFile();
-				fo.getFiles().clear();
-
-			} catch (Exception e) {
-				e.printStackTrace();
-				FeatureAnalyzer.getDefault().logError(e);
+		Controller.monitorBeginTask("Analyzing selected files",
+				fileProxies.size());
+		try {
+			if(fileProxies.isEmpty()){
+				throw new TypeChefException(
+						"Not a valid file found C");
 			}
 
-		}
+			platformHeader.gerenate(resourceList.get(0).getProject().getName());
 
-	}
+			for (FileProxy file : fileProxies) {
+				// Monitor Update
+				Controller.monitorUpdate(1);
+				Controller.monitorSubTask(file.getFullPath());
+				// end Monitor
+				if (Controller.isCanceled())
+					break;
 
-	/**
-	 * Opens a message box if TypeChef could not be executed.
-	 */
-	private void openMessageBox(final Exception e) {
-		UIJob uiJob = new UIJob("") {
-			@Override
-			public IStatus runInUIThread(IProgressMonitor monitor) {
-				MessageBox d = new MessageBox(new Shell(), SWT.ICON_ERROR);
-				d.setMessage(e.getMessage());
-				d.setText("TypeChef could not be executed");
-				d.open();
-				return Status.OK_STATUS;
+				start(file);
+
+				try {
+					Frontend.processFile(fo);
+
+					xmlParser.setXMLFile(fo.getErrorXMLFile());
+					xmlParser.seFiles(fileProxies);
+					xmlParser.processFile();
+
+					this.isFinish = true;
+				} catch (Exception e) {
+
+					throw new TypeChefException(
+							"TypeChef did not run correctly.");
+				}
+
 			}
-		};
-		uiJob.setPriority(Job.SHORT);
-		uiJob.schedule();
-	}
-
-	private List<String> resourceToString(List<IResource> list) {
-		List<String> resoucesAsString = new LinkedList<String>();
-		// pega um dos arquivos para descobrir qual projeto esta sendo
-		// verificado...
-		if (project == null) {
-			project = list.get(0).getProject();
-			// System.err.println(project.toString());
+		} catch (PlatformException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+			FeatureAnalyzer.getDefault().logError(e1);
 		}
-		for (IResource resouce : list) {
-			if (resouce.getLocation().toString().trim().endsWith(".c")
-					|| resouce.getLocation().toString().trim().endsWith(".h")) {
-				FileProxy fileProxy = new FileProxy(resouce.getLocation()
-						.toString());
 
-				// resoucesAsString.add(resouce.getLocation().toString());
-				// System.out.println("ADD + " +
-				// resouce.getLocation().toString());
-			}
-		}
-		return resoucesAsString;
 	}
 
 	private List<FileProxy> resourceToFileProxy(List<IResource> list) {

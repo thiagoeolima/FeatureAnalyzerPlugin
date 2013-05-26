@@ -15,7 +15,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.util.Log;
+import br.ufal.ic.featureanalyzer.exceptions.ExplorerException;
 
 // TODO: Put a Listener
 
@@ -43,13 +43,6 @@ public class ProjectExplorerController {
 
 	public void addResource(IResource resource) {
 		if (resource instanceof IFile) {
-			// remove markers
-			IFile file = (IFile) resource;
-			try {
-				file.deleteMarkers(Log.MARKER_TYPE, false, IResource.DEPTH_ZERO);
-			} catch (CoreException e) {
-				// e.printStackTrace();
-			}
 			listFiles.add(resource);
 		} else if (resource instanceof IFolder) {
 			try {
@@ -63,7 +56,7 @@ public class ProjectExplorerController {
 		}
 	}
 
-	private IResource start() throws Exception {
+	private IResource start() throws ExplorerException {
 		listFiles.clear();
 		Object o = selection.getFirstElement();
 
@@ -80,24 +73,35 @@ public class ProjectExplorerController {
 		} else if (o instanceof IFolder) {
 			aux = (IResource) o;
 		} else {
-			throw new Exception("Select a valid file or directory.");
+			throw new ExplorerException("Select a valid file or directory.");
 		}
 
 		return aux;
 	}
 
-	public void run() throws Exception {
+	public void run() throws ExplorerException {
 		addResource(start());
 	}
 
-	public String getPath() throws Exception {
+	public String getPath() throws ExplorerException {
 		IResource resource = start();
 		if (resource instanceof IFile) {
 			return ((IFile) resource).getLocation().toString();
 		} else if (resource instanceof IFolder) {
 			return ((IFolder) resource).getLocation().toString();
 		} else {
-			throw new Exception("Select a valid file or directory.");
+			throw new ExplorerException("Select a valid file or directory.");
 		}
+	}
+
+	public List<String> getListToString() {
+		List<String> resoucesAsString = new LinkedList<String>();
+		for (IResource resouce : listFiles) {
+			if (resouce.getLocation().toString().trim().endsWith(".c")
+					|| resouce.getLocation().toString().trim().endsWith(".h")) {
+				resoucesAsString.add(resouce.getLocation().toString());
+			}
+		}
+		return resoucesAsString;
 	}
 }
