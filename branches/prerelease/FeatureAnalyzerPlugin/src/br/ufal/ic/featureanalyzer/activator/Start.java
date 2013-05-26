@@ -14,12 +14,12 @@ public class Start {
 				.getAbsolutePath()
 				+ File.separator + "projects");
 
-		try {
-			delete(file);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+////			delete(file);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 	}
 
 	public static void delete(File file) throws IOException {

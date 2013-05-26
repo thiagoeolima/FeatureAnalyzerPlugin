@@ -60,8 +60,7 @@ public class PlatformHeader {
 		if (platform.exists())
 			return;
 
-		project = CoreModel.getDefault().getCModel()
-				.getCProject(projectName);
+		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
 		if (project == null) {
 			throw new PlatformException("Not a valid project C");
@@ -95,10 +94,22 @@ public class PlatformHeader {
 
 		countDirectives = new CountDirectives();
 
+		for (Iterator<String> iterator = listFiles.iterator(); iterator
+				.hasNext();) {
+			String file = (String) iterator.next();
+			try {
+				countDirectives.count(file);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new PlatformException("unexpected error!");
+			}
+		}
+
 		try {
 			IIncludeReference includes[] = project.getIncludeReferences();
 			for (int i = 0; i < includes.length; i++) {
-//				System.out.println(includes[i].getElementName());
+				// System.out.println(includes[i].getElementName());
 				list.add(0, "-I" + includes[i].getElementName());
 			}
 		} catch (CModelException e) {
@@ -224,7 +235,7 @@ public class PlatformHeader {
 	private void generateTypes(List<String> fileList) throws PlatformException {
 
 		for (String file : fileList) {
-			
+
 			ITranslationUnit tu = (ITranslationUnit) CoreModel.getDefault()
 					.create(getFile(file));
 			IASTTranslationUnit ast = null;
