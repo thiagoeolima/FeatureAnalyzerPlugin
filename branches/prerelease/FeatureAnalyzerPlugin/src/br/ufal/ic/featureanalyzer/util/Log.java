@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.filebuffers.FileBuffers;
@@ -141,47 +143,73 @@ public class Log {
 						&& (i < k); i++)
 					;
 
-				String findLine1 = parserFileRead.readLine();
-				String findLine2 = parserFileRead.readLine();
+				final int size = 5;
+
+				List<String> findLine = new ArrayList<String>();
+
+				for (int i = 0; i < size; i++) {
+					String temp = parserFileRead.readLine();
+					if (temp == null) {
+						break;
+					}
+					findLine.add(temp.trim());
+				}
 
 				BufferedReader fileReader = new BufferedReader(new FileReader(
 						file));
 
-				while (findLine1 != null && findLine2 != null && notLine) {
-					findLine1.trim();
-					findLine2.trim();
+				while (!findLine.isEmpty() && notLine) {
 
-					String outline = null;
-					String outline2 = null;
+					List<String> outline = new ArrayList<String>();
+
+					for (int i = 0; i < findLine.size(); i++) {
+						String temp = fileReader.readLine();
+						if (temp == null) {
+							break;
+						}
+						outline.add(temp.trim());
+					}
 
 					for (correctLine = 0; true; correctLine++) {
-						if (outline2 == null) {
-							outline = fileReader.readLine();
-							outline2 = fileReader.readLine();
+						if (compare(findLine, outline)) {
+							notLine = false;
+							break;
 						} else {
-							outline = outline2;
-							outline2 = fileReader.readLine();
+
+							for (int i = 0; i < outline.size() - 1; i++) {
+								outline.set(i, outline.get(i + 1));
+							}
+
+							String temp = fileReader.readLine();
+							if (temp == null) {
+								if (outline.size() > 0) {
+									outline.remove(outline.size() - 1);
+								}
+							} else {
+								outline.set(outline.size() - 1, temp);
+							}
 						}
 
-						if (outline == null) {
+						if (outline.isEmpty()) {
 							break;
 						}
 
-						if (outline.contains(findLine1)) {
-							if (outline2 != null) {
-								if (outline2.contains(findLine2)) {
-									notLine = false;
-									break;
-								}
-							}
-						}
 					}
 
 					if (notLine) {
 						nextLineNumber++;
-						findLine1 = findLine2;
-						findLine2 = parserFileRead.readLine();
-						fileReader.close();
+						for (int i = 0; i < findLine.size() - 1; i++) {
+							findLine.set(i, findLine.get(i + 1));
+						}
+						String temp = parserFileRead.readLine();
+						if (temp == null) {
+							if (findLine.size() > 0) {
+								findLine.remove(findLine.size() - 1);
+							}
+						} else {
+							findLine.set(findLine.size() - 1, temp);
+						}
+
 						fileReader = new BufferedReader(new FileReader(file));
 					}
 				}
@@ -215,6 +243,24 @@ public class Log {
 
 		}
 		return iTextSelection;
+	}
+
+	private boolean compare(List<String> find, List<String> strings) {
+		if (find.size() > strings.size()) {
+			return false;
+		}
+		int i;
+		int size = find.size() < strings.size() ? find.size() : strings.size();
+		for (i = 0; i < size; i++) {
+			if (!strings.get(i).contains(find.get(i))) {
+				break;
+			}
+		}
+		if (i == size) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	private IDocument getDocument(String filename) throws CoreException {
