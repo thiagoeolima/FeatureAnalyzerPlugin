@@ -11,6 +11,7 @@ import java.util.Set;
 public class CountDirectives {
 
 	public Set<String> directives = new HashSet<String>();
+	public int numberLine = 0;
 
 	public int count(String path) throws Exception {
 		listFile(new File(path));
@@ -46,7 +47,7 @@ public class CountDirectives {
 		String strLine;
 
 		while ((strLine = br.readLine()) != null) {
-
+			numberLine++;
 			strLine = strLine.trim();
 
 			if (strLine.startsWith("#if") || strLine.startsWith("#elif")) {

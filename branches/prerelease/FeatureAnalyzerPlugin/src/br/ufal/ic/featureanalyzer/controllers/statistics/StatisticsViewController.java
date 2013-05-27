@@ -1,19 +1,11 @@
 package br.ufal.ic.featureanalyzer.controllers.statistics;
 
-import java.awt.event.MouseEvent;
-
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.PlatformUI;
 
 import br.ufal.ic.featureanalyzer.controllers.ViewController;
@@ -91,8 +83,8 @@ public class StatisticsViewController extends ViewController {
 	}
 
 	public void createColumns(Composite parent) {
-		String[] titles = { " ", " " };
-		int[] bounds = { 100, 400 };
+		String[] titles = { "Statistics", "Value" };
+		int[] bounds = { 300, 400 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);

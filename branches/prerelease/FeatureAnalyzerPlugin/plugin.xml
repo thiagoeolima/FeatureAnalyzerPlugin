@@ -78,6 +78,15 @@
                style="push">
          </command>
       </menuContribution>
+      <menuContribution
+            allPopups="false"
+            locationURI="toolbar:br.ufal.ic.featureanalyzer.views.StatisticsView">
+                     <command
+               commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerStatistics"
+               icon="icons/featured_chart.png"
+               style="push">
+         </command>
+      </menuContribution>
    </extension>
 
    <extension

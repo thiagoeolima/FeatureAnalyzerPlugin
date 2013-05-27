@@ -58,8 +58,8 @@ public class PlatformHeader {
 				+ ".h");
 
 		if (platform.exists())
-			return;
-
+			return;	
+		
 		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
 		if (project == null) {

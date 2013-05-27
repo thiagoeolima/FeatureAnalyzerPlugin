@@ -183,7 +183,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 		Job job = new Job("preprocessor annotation checking") {
 			@Override
 			protected IStatus run(IProgressMonitor monitor) {
-				System.out.println(featureProject+"---------------------");
 				annotationChecking(featureProject.getSourceFolder());
 				return Status.OK_STATUS;
 			}
