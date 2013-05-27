@@ -32,6 +32,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
+import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
 import br.ufal.ic.featureanalyzer.util.statistics.CountDirectives;
@@ -56,10 +57,10 @@ public class PlatformHeader {
 				+ File.separator
 				+ projectName
 				+ ".h");
-
-		if (platform.exists())
-			return;	
 		
+		if (platform.exists())
+			return;
+
 		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
 		if (project == null) {
@@ -116,19 +117,21 @@ public class PlatformHeader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		list.add(0,
-				"-I"
-						+ FeatureAnalyzer.getDefault().getPreferenceStore()
-								.getString("SystemIncludes"));
-
-		list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
-				.getString("LIBS"));
-
+		// list.add(0,
+		// "-I"
+		// + FeatureAnalyzer.getDefault().getPreferenceStore()
+		// .getString("SystemIncludes"));
+		if (!FeatureAnalyzer.getDefault().getPreferenceStore()
+				.getString("LIBS").contentEquals("")) {
+			list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
+					.getString("LIBS"));
+		}
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
 		list.add(0, "-dM");
 		list.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getString("GCC"));
+
 		ProcessBuilder processBuilder = new ProcessBuilder(list);
 
 		BufferedReader input = null;
@@ -311,7 +314,7 @@ public class PlatformHeader {
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {
 				String type = (String) i.next();
 				if (countDirectives.directives.contains(type)) {
-					System.out.println(type);
+//					System.out.println(type);
 				} else {
 					writer.write("typedef struct {} " + type + ";\n");
 				}
@@ -325,7 +328,7 @@ public class PlatformHeader {
 				if (next.contains("#define ")) {
 					String[] temp = next.trim().split(Pattern.quote(" "));
 					if (countDirectives.directives.contains(temp[1])) {
-						System.out.println(next);
+//						System.out.println(next);
 					} else {
 						writer.write(next + "\n");
 					}

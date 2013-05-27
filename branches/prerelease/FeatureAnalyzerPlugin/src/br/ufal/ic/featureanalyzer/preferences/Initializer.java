@@ -18,7 +18,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 		store.setDefault("GCC", "gcc");
 		store.setDefault("LIBS", "");
 		store.setDefault("SystemRoot", "/");
-		store.setDefault("SystemIncludes", "");
+		store.setDefault("SystemIncludes", "/usr/include");
 	}
 
 }

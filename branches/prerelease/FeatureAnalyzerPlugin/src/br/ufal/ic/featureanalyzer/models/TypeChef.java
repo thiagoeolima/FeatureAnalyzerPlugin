@@ -14,10 +14,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.eclipse.cdt.core.model.CModelException;
-import org.eclipse.cdt.core.model.CoreModel;
-import org.eclipse.cdt.core.model.ICProject;
-import org.eclipse.cdt.core.model.IIncludeReference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
@@ -137,30 +133,30 @@ public class TypeChef {
 				.getAbsolutePath()
 				+ File.separator + "lexOutput.c");
 
-//		// Project C includes
-//		ICProject project = CoreModel
-//				.getDefault()
-//				.getCModel()
-//				.getCProject(
-//						PlatformHeader.getFile(fileProxy.getFileReal())
-//								.getProject().getName());
-//
-//		try {
-//			IIncludeReference includes[] = project.getIncludeReferences();
-//			for (int i = 0; i < includes.length; i++) {
-//				paramters.add("-I");
-//				paramters.add(includes[i].getElementName());
-//			}
-//		} catch (CModelException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//
-//		paramters.add("--systemIncludes");
-//		paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
-//				.getString("SystemIncludes"));
+		// // Project C includes
+		// ICProject project = CoreModel
+		// .getDefault()
+		// .getCModel()
+		// .getCProject(
+		// PlatformHeader.getFile(fileProxy.getFileReal())
+		// .getProject().getName());
+		//
+		// try {
+		// IIncludeReference includes[] = project.getIncludeReferences();
+		// for (int i = 0; i < includes.length; i++) {
+		// paramters.add("-I");
+		// paramters.add(includes[i].getElementName());
+		// }
+		// } catch (CModelException e) {
+		// // TODO Auto-generated catch block
+		// e.printStackTrace();
+		// }
+		//
+		// paramters.add("--systemIncludes");
+		// paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+		// .getString("SystemIncludes"));
 
-		// paramters.add("-w");
+		paramters.add("-w");
 
 		if (FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
@@ -330,9 +326,9 @@ public class TypeChef {
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
 		args.add(0, "java");
-//		for (String s : args) {
-//			System.err.print(s + " ");
-//		}
+		// for (String s : args) {
+		// System.err.print(s + " ");
+		// }
 		ProcessBuilder processBuilder = new ProcessBuilder(args);
 
 		BufferedReader input = null;
