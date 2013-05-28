@@ -1,9 +1,7 @@
 package br.ufal.ic.featureanalyzer.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -142,7 +140,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 		// IFolder buildFolder = featureProject.getBuildFolder();
 		//
 		// if (buildFolder.getName().equals("src")) {
-		// buildFolder = featureProject.getProject().getFolder(System.getProperty("file.separator") +
+		// buildFolder =
+		// featureProject.getProject().getFolder(System.getProperty("file.separator")
+		// +
 		// "build");
 		// }
 		// runTypeChefAnalyzes(featureProject.getSourceFolder());
@@ -400,7 +400,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");
 			compilerArgs.add(buildFolder.getLocation().toOSString()
-					+ System.getProperty("file.separator") + buildFolder.getName());
+					+ System.getProperty("file.separator")
+					+ buildFolder.getName());
 			cpp.runCompiler(compilerArgs);
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
@@ -431,13 +432,16 @@ public class CPPComposer extends PPComposerExtensionClass {
 				public void run() {
 					AnalyzerViewController viewController = AnalyzerViewController
 							.getInstance();
-					if (typeChef.getLogs().length > 0) {
+					if (typeChef.isFinish()) {
 						viewController.showView();
-						viewController.adaptTo(typeChef.getLogs());
-						continueCompilationFlag = MessageDialog.openQuestion(
-								display.getActiveShell(),
-								"Error!",
-								"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
+						Object[] logs = typeChef.getLogs();
+						viewController.adaptTo(logs);
+						if (logs.length > 0) {
+							continueCompilationFlag = MessageDialog.openQuestion(
+									display.getActiveShell(),
+									"Error!",
+									"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
+						}
 					} else {
 						viewController.clear();
 					}
