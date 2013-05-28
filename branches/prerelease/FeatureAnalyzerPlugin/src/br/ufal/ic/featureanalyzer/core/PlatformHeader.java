@@ -52,9 +52,9 @@ public class PlatformHeader {
 
 		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ projectName
 				+ ".h");
 		
@@ -148,7 +148,7 @@ public class PlatformHeader {
 
 			File platformTemp = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
-					+ File.separator + "projects" + File.separator + "temp.h");
+					+ System.getProperty("file.separator") + "projects" + System.getProperty("file.separator") + "temp.h");
 			while (x) {
 				try {
 					String line;
@@ -298,9 +298,9 @@ public class PlatformHeader {
 	private void writeTypesToPlatformHeader() throws PlatformException {
 		File platform = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + "2.h");
 
 		if (platform.exists())
@@ -308,7 +308,7 @@ public class PlatformHeader {
 
 		File platformTemp = new File(FeatureAnalyzer.getDefault()
 				.getConfigDir().getAbsolutePath()
-				+ File.separator + "projects" + File.separator + "temp.h");
+				+ System.getProperty("file.separator") + "projects" + System.getProperty("file.separator") + "temp.h");
 		try {
 			FileWriter writer = new FileWriter(platformTemp);
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {

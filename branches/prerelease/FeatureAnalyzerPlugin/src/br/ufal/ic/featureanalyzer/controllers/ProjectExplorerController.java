@@ -56,6 +56,10 @@ public class ProjectExplorerController {
 		}
 	}
 
+	/**
+	 * @return
+	 * @throws ExplorerException
+	 */
 	public IResource start() throws ExplorerException {
 		listFiles.clear();
 		if (selection == null) {
@@ -82,10 +86,17 @@ public class ProjectExplorerController {
 		return aux;
 	}
 
+	/**
+	 * @throws ExplorerException
+	 */
 	public void run() throws ExplorerException {
 		addResource(start());
 	}
 
+	/**
+	 * @return 
+	 * @throws ExplorerException
+	 */
 	public String getPath() throws ExplorerException {
 		IResource resource = start();
 		if (resource instanceof IFile) {
@@ -97,6 +108,9 @@ public class ProjectExplorerController {
 		}
 	}
 
+	/**
+	 * @return
+	 */
 	public List<String> getListToString() {
 		List<String> resoucesAsString = new LinkedList<String>();
 		for (IResource resouce : listFiles) {

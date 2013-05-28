@@ -142,7 +142,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		// IFolder buildFolder = featureProject.getBuildFolder();
 		//
 		// if (buildFolder.getName().equals("src")) {
-		// buildFolder = featureProject.getProject().getFolder(File.separator +
+		// buildFolder = featureProject.getProject().getFolder(System.getProperty("file.separator") +
 		// "build");
 		// }
 		// runTypeChefAnalyzes(featureProject.getSourceFolder());
@@ -400,7 +400,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 			compilerArgs.addAll(fileList);
 			compilerArgs.add("-o");
 			compilerArgs.add(buildFolder.getLocation().toOSString()
-					+ File.separator + buildFolder.getName());
+					+ System.getProperty("file.separator") + buildFolder.getName());
 			cpp.runCompiler(compilerArgs);
 		} catch (CoreException e) {
 			FeatureAnalyzer.getDefault().logError(e);
@@ -487,7 +487,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
-						+ File.separator + res.getName());
+						+ System.getProperty("file.separator") + res.getName());
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1

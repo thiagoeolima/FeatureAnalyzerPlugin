@@ -8,20 +8,25 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
+/**
+ * @author thiago
+ *
+ */
 public class FileProxy {
 	private String fileName;
 	private String path;
 
 	public FileProxy(String file) {
-		String[] temp = file.split(Pattern.quote(File.separator) + "|/");
-		fileName = temp[temp.length - 1];
+		// String[] temp = file.split(Pattern.quote(File.separator) + "|/");
+		// fileName = temp[temp.length - 1];
+
+		fileName = new File(file).getName();
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		path = file.substring(workspace.getRoot().getLocation().toString()
@@ -53,11 +58,17 @@ public class FileProxy {
 				+ path + fileName;
 	}
 
+	/**
+	 * @return
+	 */
 	public String getFileTemp() {
 		return FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
 				+ File.separator + "projects" + path + fileName;
 	}
 
+	/**
+	 * @throws IOException
+	 */
 	private void generate() throws IOException {
 		File filePath = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()

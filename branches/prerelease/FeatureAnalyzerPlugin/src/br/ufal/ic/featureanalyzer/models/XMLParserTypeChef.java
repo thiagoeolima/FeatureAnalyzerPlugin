@@ -38,7 +38,7 @@ public class XMLParserTypeChef {
 		if (xmlFile == null) {
 			xmlFile = new File(FeatureAnalyzer.getDefault().getConfigDir()
 					.getAbsolutePath()
-					+ File.separator + "output.xml");
+					+ System.getProperty("file.separator") + "output.xml");
 			if (!xmlFile.exists())
 				return;
 		}

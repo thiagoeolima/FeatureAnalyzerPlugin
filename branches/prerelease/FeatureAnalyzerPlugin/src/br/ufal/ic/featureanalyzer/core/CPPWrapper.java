@@ -108,7 +108,7 @@ public class CPPWrapper {
 							String s = packageArgs.get(packageArgs.size() - 1);
 							// let's "clean" it...
 							int lastFileSeparator = s
-									.lastIndexOf(File.separator);
+									.lastIndexOf(System.getProperty("file.separator"));
 							String variantPath = s.substring(0,
 									lastFileSeparator);
 							prjConfi.addConfigurationWithError(variantPath);
@@ -171,7 +171,7 @@ public class CPPWrapper {
 		List<String> list = new ArrayList<String>(fileList);
 		list.add("-o");
 		list.add(FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-				+ File.separator + "platform.h");
+				+ System.getProperty("file.separator") + "platform.h");
 		list.add(0, "-I" + includeDir);
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
@@ -214,7 +214,7 @@ public class CPPWrapper {
 			boolean x = true;
 			File platform = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
-					+ File.separator + "platform.h");
+					+ System.getProperty("file.separator") + "platform.h");
 
 			platform.createNewFile();
 			while (x) {

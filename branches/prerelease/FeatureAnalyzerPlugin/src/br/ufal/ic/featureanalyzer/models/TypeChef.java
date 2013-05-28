@@ -53,7 +53,7 @@ public class TypeChef {
 		// saved in the' temp directory
 		outputFilePath = FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "output";
+				+ System.getProperty("file.separator") + "output";
 		try {
 			RandomAccessFile arq = new RandomAccessFile(outputFilePath, "rw");
 			arq.close();
@@ -65,13 +65,15 @@ public class TypeChef {
 
 	}
 
-	// TODO tratar melhor as exceptions!
+	/**
+	 * 
+	 */
 	private void prepareFeatureModel() {
 		File inputFile = new File(project.getLocation().toOSString()
-				+ File.separator + "model.xml");
+				+ System.getProperty("file.separator") + "model.xml");
 		File outputFile = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "cnf.txt");
+				+ System.getProperty("file.separator") + "cnf.txt");
 		BufferedWriter print = null;
 		try {
 			print = new BufferedWriter(new FileWriter(outputFile));
@@ -100,6 +102,10 @@ public class TypeChef {
 		}
 	}
 
+	/**
+	 * @param fileProxy
+	 * @throws OptionException
+	 */
 	private void start(FileProxy fileProxy) throws OptionException {
 		if (FeatureAnalyzer.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
@@ -117,21 +123,21 @@ public class TypeChef {
 		paramters.add("-h");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + ".h");
 		paramters.add("-h");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + "2.h");
 		paramters.add("--lexOutput");
 		paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "lexOutput.c");
+				+ System.getProperty("file.separator") + "lexOutput.c");
 
 		// // Project C includes
 		// ICProject project = CoreModel
@@ -163,7 +169,7 @@ public class TypeChef {
 			paramters.add("--featureModelFExpr");
 			paramters.add(FeatureAnalyzer.getDefault().getConfigDir()
 					.getAbsolutePath()
-					+ File.separator + "cnf.txt");
+					+ System.getProperty("file.separator") + "cnf.txt");
 		}
 
 		fo = new FrontendOptionsWithConfigFiles();
@@ -177,10 +183,17 @@ public class TypeChef {
 
 	}
 
+	/**
+	 * @return
+	 */
 	public boolean isFinish() {
 		return isFinish;
 	}
 
+	/**
+	 * @param resourceList
+	 * @throws TypeChefException
+	 */
 	public void run(List<IResource> resourceList) throws TypeChefException {
 		this.isFinish = false;
 		List<FileProxy> fileProxies = resourceToFileProxy(resourceList);
@@ -241,6 +254,10 @@ public class TypeChef {
 
 	}
 
+	/**
+	 * @param list
+	 * @return
+	 */
 	private List<FileProxy> resourceToFileProxy(List<IResource> list) {
 		List<FileProxy> fileProxies = new LinkedList<FileProxy>();
 		// pega um dos arquivos para descobrir qual projeto esta sendo
@@ -263,10 +280,17 @@ public class TypeChef {
 		return fileProxies;
 	}
 
+	/**
+	 * @return
+	 */
 	public Object[] getLogs() {
 		return xmlParser.getLogs();
 	}
 
+	/**
+	 * @param fileProxy
+	 * @throws TypeChefException
+	 */
 	private void startCommandLineMode(FileProxy fileProxy)
 			throws TypeChefException {
 
@@ -299,28 +323,28 @@ public class TypeChef {
 				.getBoolean("FEATURE_MODEL")) {
 			args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
 					.getAbsolutePath()
-					+ File.separator + "cnf.txt");
+					+ System.getProperty("file.separator") + "cnf.txt");
 			args.add(0, "--featureModelFExpr");
 		}
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + "2.h");
 		args.add(0, "-h");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ "projects"
-				+ File.separator
+				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + ".h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath + ".xml");
 		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "lexOutput.c");
+				+ System.getProperty("file.separator") + "lexOutput.c");
 		args.add(0, "--lexOutput");
 		args.add(0, "-w");
 		args.add(0, pathToTypeChef.toOSString());
