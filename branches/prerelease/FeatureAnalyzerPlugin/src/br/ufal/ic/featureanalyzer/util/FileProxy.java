@@ -20,7 +20,7 @@ public class FileProxy {
 	private String path;
 
 	public FileProxy(String file) {
-		String[] temp = file.split(Pattern.quote(File.separator));
+		String[] temp = file.split(Pattern.quote(File.separator) + "|/");
 		fileName = temp[temp.length - 1];
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
