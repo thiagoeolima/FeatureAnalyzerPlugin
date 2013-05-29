@@ -202,8 +202,8 @@ public class TypeChef {
 
 		PlatformHeader platformHeader = new PlatformHeader();
 //
-//		Controller.monitorBeginTask("Analyzing selected files",
-//				fileProxies.size());
+		Controller.monitorBeginTask("Analyzing selected files",
+				fileProxies.size());
 		try {
 			if (fileProxies.isEmpty()) {
 				throw new TypeChefException("Not a valid file found C");
@@ -215,13 +215,13 @@ public class TypeChef {
 
 			for (FileProxy file : fileProxies) {
 				// Monitor Update
-//				Controller.monitorUpdate(1);
-//				Controller.monitorSubTask(file.getFullPath());
-//				// end Monitor
-//				if (Controller.isCanceled()) {
-//					this.isFinish = true;
-//					break;
-//				}
+				Controller.monitorUpdate(1);
+				Controller.monitorSubTask(file.getFullPath());
+				// end Monitor
+				if (Controller.isCanceled()) {
+					this.isFinish = true;
+					break;
+				}
 
 				try {
 

@@ -56,6 +56,9 @@ public class Controller {
 		monitor.beginTask(label, value);
 	}
 
+	/**
+	 * 
+	 */
 	public void run() {
 
 		model = new TypeChef();
@@ -100,6 +103,9 @@ public class Controller {
 
 	}
 
+	/**
+	 * 
+	 */
 	private void syncWithPluginView() {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {

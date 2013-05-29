@@ -62,7 +62,7 @@ public class XMLParserTypeChef {
 
 		for (int i = 0; i < list.size(); i++) {
 			Element node = list.get(i);
-			String file = node.getChild("position").getChildText("file");
+			String file = node.getChild("position").getChildText("file").trim();
 			for (Iterator<FileProxy> iterator = fileProxies.iterator(); iterator
 					.hasNext();) {
 				FileProxy fileProxy = (FileProxy) iterator.next();

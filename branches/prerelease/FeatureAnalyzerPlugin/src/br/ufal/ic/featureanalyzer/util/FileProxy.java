@@ -16,15 +16,13 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
 /**
  * @author thiago
- *
+ * 
  */
 public class FileProxy {
 	private String fileName;
 	private String path;
 
 	public FileProxy(String file) {
-		// String[] temp = file.split(Pattern.quote(File.separator) + "|/");
-		// fileName = temp[temp.length - 1];
 
 		fileName = new File(file).getName();
 
@@ -32,6 +30,11 @@ public class FileProxy {
 		path = file.substring(workspace.getRoot().getLocation().toString()
 				.length(), file.length() - fileName.length());
 
+		//Windows
+		if (System.getProperty("file.separator").equals("\\")) {
+			path = path.replace("/", "\\");
+		}
+		
 		try {
 			generate();
 		} catch (IOException e) {
@@ -63,7 +66,8 @@ public class FileProxy {
 	 */
 	public String getFileTemp() {
 		return FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-				+ File.separator + "projects" + path + fileName;
+				+ System.getProperty("file.separator") + "projects" + path
+				+ fileName;
 	}
 
 	/**
@@ -72,13 +76,15 @@ public class FileProxy {
 	private void generate() throws IOException {
 		File filePath = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "projects" + getPath());
+				+ System.getProperty("file.separator") + "projects" + getPath());
 
 		filePath.mkdirs();
 
 		FileWriter fstreamout = new FileWriter(FeatureAnalyzer.getDefault()
 				.getConfigDir().getAbsolutePath()
-				+ File.separator + "projects" + File.separator + "temp.c");
+				+ System.getProperty("file.separator")
+				+ "projects"
+				+ System.getProperty("file.separator") + "temp.c");
 		BufferedWriter out = new BufferedWriter(fstreamout);
 
 		FileInputStream fstream = new FileInputStream(getFileReal());
@@ -102,7 +108,8 @@ public class FileProxy {
 		out.close();
 
 		new File(FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-				+ File.separator + "projects" + File.separator + "temp.c")
+				+ System.getProperty("file.separator") + "projects"
+				+ System.getProperty("file.separator") + "temp.c")
 				.renameTo(new File(getFileTemp()));
 	}
 

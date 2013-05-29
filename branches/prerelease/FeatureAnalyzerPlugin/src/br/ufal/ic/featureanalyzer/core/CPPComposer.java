@@ -56,7 +56,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private CPPModelBuilder cppModelBuilder;
 
-	private TypeChef typeChef;
+//	private TypeChef typeChef;
 
 	private static boolean continueCompilationFlag = true;
 	private static Set<Long> threadInExecId = new HashSet<Long>();
@@ -72,7 +72,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		// Start typeChef
 		// Setup the controller
-		typeChef = new TypeChef();
+//		typeChef = new TypeChef();
 		prepareFullBuild(null);
 		annotationChecking();
 
@@ -420,6 +420,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void runTypeChefAnalyzes(IFolder folder) {
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
+		System.out.println("akkkkkkk");
+		final TypeChef  typeChef = new TypeChef();
 		try {
 			typeChef.run(prjController.getList());
 
