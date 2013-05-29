@@ -100,9 +100,9 @@ public class ProjectExplorerController {
 	public String getPath() throws ExplorerException {
 		IResource resource = start();
 		if (resource instanceof IFile) {
-			return ((IFile) resource).getLocation().toString();
+			return ((IFile) resource).getLocation().toOSString();
 		} else if (resource instanceof IFolder) {
-			return ((IFolder) resource).getLocation().toString();
+			return ((IFolder) resource).getLocation().toOSString();
 		} else {
 			throw new ExplorerException("Select a valid file or directory.");
 		}
@@ -114,9 +114,9 @@ public class ProjectExplorerController {
 	public List<String> getListToString() {
 		List<String> resoucesAsString = new LinkedList<String>();
 		for (IResource resouce : listFiles) {
-			if (resouce.getLocation().toString().trim().endsWith(".c")
-					|| resouce.getLocation().toString().trim().endsWith(".h")) {
-				resoucesAsString.add(resouce.getLocation().toString());
+			if (resouce.getLocation().toOSString().trim().endsWith(".c")
+					|| resouce.getLocation().toOSString().trim().endsWith(".h")) {
+				resoucesAsString.add(resouce.getLocation().toOSString());
 			}
 		}
 		return resoucesAsString;

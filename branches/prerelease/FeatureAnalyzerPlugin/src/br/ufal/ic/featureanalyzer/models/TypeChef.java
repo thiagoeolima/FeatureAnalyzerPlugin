@@ -267,10 +267,10 @@ public class TypeChef {
 			// System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
-			if (resouce.getLocation().toString().trim().endsWith(".c")
+			if (resouce.getLocation().toOSString().trim().endsWith(".c")
 					|| resouce.getLocation().toString().trim().endsWith(".h")) {
 				FileProxy fileProxy = new FileProxy(resouce.getLocation()
-						.toString());
+						.toOSString());
 				fileProxies.add(fileProxy);
 				// resoucesAsString.add(resouce.getLocation().toString());
 				// System.out.println("ADD + " +

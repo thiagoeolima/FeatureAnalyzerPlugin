@@ -1,6 +1,5 @@
 package br.ufal.ic.featureanalyzer.core;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -11,7 +10,6 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -483,7 +481,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		LinkedList<String> preProcessorArgs;
 		for (final IResource res : sourceFolder.members()) {
 			if (res instanceof IFolder) {
-				buildFolder = featureProject.getProject().getFolder(buildFolder.getProjectRelativePath() + File.separator +  res.getName());
+				buildFolder = featureProject.getProject().getFolder(buildFolder.getProjectRelativePath() + System.getProperty("file.separator") +  res.getName());
 				createFolder(buildFolder);
 				prepareFilesConfiguration(featureArgs, fileList, (IFolder) res,
 						buildFolder, cpp);
@@ -497,8 +495,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
+				//String[] fileName = res.getName().split(".");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
-						+ System.getProperty("file.separator") +res.getName()+"_preprocessed");
+						+ System.getProperty("file.separator") +res.getName()+"_preprocessed." +res.getFileExtension());
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1

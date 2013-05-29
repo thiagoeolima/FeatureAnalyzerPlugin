@@ -1,6 +1,5 @@
 package br.ufal.ic.featureanalyzer.util;
 
-import java.io.File;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.resources.IFolder;
@@ -22,8 +21,8 @@ public class InvalidProductViewLog {
 		String pattern = Pattern.quote(System.getProperty("file.separator"));
 		String[] relativePath = path.split(pattern);
 		this.relativePath = relativePath[relativePath.length - 3]
-				+ File.separator + relativePath[relativePath.length - 2]
-				+ File.separator + relativePath[relativePath.length - 1];
+				+ System.getProperty("file.separator") + relativePath[relativePath.length - 2]
+				+ System.getProperty("file.separator") + relativePath[relativePath.length - 1];
 		this.productName = relativePath[relativePath.length - 1];
 
 		try {

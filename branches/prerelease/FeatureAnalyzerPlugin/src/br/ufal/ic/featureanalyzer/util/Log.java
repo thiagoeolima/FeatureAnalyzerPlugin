@@ -55,7 +55,7 @@ public class Log {
 		this.message = message.trim();
 
 		// Returns only the file name.
-		String[] temp = fileName.trim().split(Pattern.quote(File.separator));
+		String[] temp = fileName.trim().split(Pattern.quote(System.getProperty("file.separator")));
 
 		if (temp.length > 0) {
 			this.fileName = temp[temp.length - 1];
@@ -113,7 +113,7 @@ public class Log {
 
 	public String getFullPath() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		return workspace.getRoot().getLocation().toString() + path;
+		return workspace.getRoot().getLocation().toOSString() + path;
 	}
 
 	public IFile getFile() {
@@ -131,7 +131,7 @@ public class Log {
 
 			File parserFile = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
-					+ File.separator + "lexOutput.c");
+					+ System.getProperty("file.separator") + "lexOutput.c");
 
 			File file = new File(this.getFullPath() + this.fileName);
 			try {

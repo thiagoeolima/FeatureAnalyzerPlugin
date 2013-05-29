@@ -12,7 +12,7 @@ public class Start {
 	public void SystemClear() {
 		File file = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
-				+ File.separator + "projects");
+				+ System.getProperty("file.separator") + "projects");
 //		try {
 ////			delete(file);
 //		} catch (IOException e) {

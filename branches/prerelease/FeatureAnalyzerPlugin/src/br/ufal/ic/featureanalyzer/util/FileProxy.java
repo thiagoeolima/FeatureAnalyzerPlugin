@@ -27,9 +27,10 @@ public class FileProxy {
 		fileName = new File(file).getName();
 
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		path = file.substring(workspace.getRoot().getLocation().toString()
+		path = file.substring(workspace.getRoot().getLocation().toOSString()
 				.length(), file.length() - fileName.length());
 
+		System.err.println("MyFile" + path.toString());
 		//Windows
 		if (System.getProperty("file.separator").equals("\\")) {
 			path = path.replace("/", "\\");
@@ -57,7 +58,7 @@ public class FileProxy {
 
 	public String getFileReal() {
 		return ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toString()
+				.toOSString()
 				+ path + fileName;
 	}
 
