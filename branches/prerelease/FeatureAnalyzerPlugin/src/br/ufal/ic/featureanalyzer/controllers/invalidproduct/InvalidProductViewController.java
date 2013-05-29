@@ -71,7 +71,9 @@ public class InvalidProductViewController extends ViewController {
 	}
 
 	public void clear() {
-		this.viewContentProvider.setLogs(new String[] {});
+		this.viewContentProvider.setLogs(new Object[] {});
+		if (viewer == null)
+			return;
 		viewer.refresh();
 	}
 
