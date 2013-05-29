@@ -1,5 +1,6 @@
 package br.ufal.ic.featureanalyzer.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -10,6 +11,7 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -386,7 +388,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		LinkedList<String> compilerArgs = new LinkedList<String>(featureArgs);
 		LinkedList<String> fileList = new LinkedList<String>();
 		try {
-			createBuildFolder(buildFolder);
+			createFolder(buildFolder);
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
 
@@ -476,12 +478,15 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
 			LinkedList<String> fileList, IFolder sourceFolder,
 			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
+		
 		String fullFilePath = null;
 		LinkedList<String> preProcessorArgs;
 		for (final IResource res : sourceFolder.members()) {
 			if (res instanceof IFolder) {
+				buildFolder = featureProject.getProject().getFolder(buildFolder.getProjectRelativePath() + File.separator +  res.getName());
+				createFolder(buildFolder);
 				prepareFilesConfiguration(featureArgs, fileList, (IFolder) res,
-						buildFolder.getFolder(res.getName()), cpp);
+						buildFolder, cpp);
 			} else if (res instanceof IFile) {
 				if (!res.getFileExtension().equals("c")
 						&& !res.getFileExtension().equals("h")) {
@@ -493,7 +498,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
-						+ System.getProperty("file.separator") + res.getName());
+						+ System.getProperty("file.separator") +res.getName()+"_preprocessed");
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1
@@ -503,11 +508,11 @@ public class CPPComposer extends PPComposerExtensionClass {
 		}
 	}
 
-	private void createBuildFolder(IFolder buildFolder) throws CoreException {
-		if (!buildFolder.exists()) {
-			buildFolder.create(true, true, null);
+	private void createFolder(IFolder folder) throws CoreException {
+		if (!folder.exists()) {
+			folder.create(true, true, null);
 		}
-		buildFolder.refreshLocal(IResource.DEPTH_ZERO, null);
+		folder.refreshLocal(IResource.DEPTH_ZERO, null);
 	}
 
 	@Override

@@ -3,14 +3,17 @@ package br.ufal.ic.featureanalyzer.core;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -23,8 +26,8 @@ import br.ufal.ic.featureanalyzer.util.ProjectConfigurationErrorLogger;
 //import org.fusesource.jansi.Ansi.Color;
 
 public class CPPWrapper {
-	private final static String GCC_PATH = FeatureAnalyzer.getDefault().getPreferenceStore()
-			.getString("GCC");
+	private final static String GCC_PATH = FeatureAnalyzer.getDefault()
+			.getPreferenceStore().getString("GCC");
 	private final static String CPP_PATH = "cpp";
 	private MessageConsole console;
 
@@ -52,18 +55,19 @@ public class CPPWrapper {
 	}
 
 	public void runCompiler(List<String> packageArgs) {
-		System.out.println();
 		for (String s : packageArgs) {
 			System.out.print(" " + s);
 		}
 		runProcess(packageArgs, GCC_PATH, true);
 	}
 
+
 	public void runPreProcessor(List<String> packageArgs) {
 		packageArgs.add(0, "-C"); // do not discard comments
 		packageArgs.add(0, "-P"); // do not generate linemarkers
 		packageArgs.add(0, "-w"); // Suppress all warning
 		packageArgs.add(0, "-no-integrated-cpp");
+		//packageArgs.add(0, "-nostdinc");
 		packageArgs.add(0, "-E"); // do not discard comments
 		runProcess(packageArgs, CPP_PATH, false);
 	}
@@ -107,8 +111,8 @@ public class CPPWrapper {
 							// executable
 							String s = packageArgs.get(packageArgs.size() - 1);
 							// let's "clean" it...
-							int lastFileSeparator = s
-									.lastIndexOf(System.getProperty("file.separator"));
+							int lastFileSeparator = s.lastIndexOf(System
+									.getProperty("file.separator"));
 							String variantPath = s.substring(0,
 									lastFileSeparator);
 							prjConfi.addConfigurationWithError(variantPath);
@@ -178,7 +182,7 @@ public class CPPWrapper {
 		list.add(0, "-dM");
 		runProcess(list, GCC_PATH, false);
 	}
-	
+
 	public static void gerenatePlatformHeaderLinux(List<String> fileList) {
 		List<String> list = new ArrayList<String>(fileList);
 
