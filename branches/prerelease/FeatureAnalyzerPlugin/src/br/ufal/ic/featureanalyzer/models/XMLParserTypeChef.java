@@ -18,7 +18,6 @@ import br.ufal.ic.featureanalyzer.util.Log;
 public class XMLParserTypeChef {
 	private SAXBuilder builder;
 	private File xmlFile;
-	private List<FileProxy> fileProxies;
 	private FileProxy fileProxie;
 	private List<Log> logList;
 
@@ -30,10 +29,6 @@ public class XMLParserTypeChef {
 	public void setFile(FileProxy fileProxie) {
 		this.fileProxie = fileProxie;
 	}
-
-//	public void seFiles(List<FileProxy> fileProxies) {
-//		this.fileProxies = fileProxies;
-//	}
 
 	public void setXMLFile(File xmlFile) {
 		this.xmlFile = xmlFile != null ? xmlFile : this.xmlFile;
@@ -75,7 +70,7 @@ public class XMLParserTypeChef {
 			// FileProxy fileProxy = (FileProxy) iterator.next();
 			// if (file.contains(fileProxy.getFileTemp())) {
 			// file = fileProxy.getFileReal();
-			logList.add(new Log(fileProxie.getFileReal(), node.getChild(
+			logList.add(new Log(fileProxie, node.getChild(
 					"position").getChildText("line"), node.getChild("position")
 					.getChildText("col"), node.getChildText("featurestr"), node
 					.getChildText("severity"), node.getChildText("msg")));

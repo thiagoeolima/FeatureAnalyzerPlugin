@@ -7,7 +7,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import org.eclipse.core.filebuffers.FileBuffers;
 import org.eclipse.core.filebuffers.ITextFileBufferManager;
@@ -15,33 +14,29 @@ import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.core.PlatformHeader;
 
 public class Log {
 
 	private String feature;
 	private String severity;
 	private String message;
-	private String fileName;
-	private String path;
+	private FileProxy fileProxy;
 	private int line;
 	// private int column;
 	private ITextSelection iTextSelection;
 
 	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
 
-	public Log(String fileName, String line, String column, String feature,
+	public Log(FileProxy fileProxy, String line, String column, String feature,
 			String severity, String message) {
+		this.fileProxy = fileProxy;
+
 		this.line = Integer.parseInt(line.trim());
 		// this.column = Integer.parseInt(column.trim());
 		this.feature = feature.trim();
@@ -53,31 +48,6 @@ public class Log {
 		}
 
 		this.message = message.trim();
-
-		// Returns only the file name.
-		String[] temp = fileName.trim().split(Pattern.quote(File.separator));
-
-		if (temp.length > 0) {
-			this.fileName = temp[temp.length - 1];
-		} else {
-			this.fileName = fileName.trim();
-		}
-
-		// Returns only the file path.
-		// temp = fileName.trim().split(Pattern.quote(" "));
-		// if (temp.length > 0) {
-		// IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		// this.path = temp[1].substring(workspace.getRoot().getLocation()
-		// .toString().length(),
-		// temp[1].length() - this.fileName.length());
-		// } else {
-		// this.path = fileName.trim();
-		// }
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		this.path = fileName.substring(workspace.getRoot().getLocation()
-				.toString().length(),
-				fileName.length() - this.fileName.length());
 
 		try {
 			IMarker marker = this.getFile().createMarker(MARKER_TYPE);
@@ -104,20 +74,19 @@ public class Log {
 	}
 
 	public String getFileName() {
-		return fileName;
+		return fileProxy.getFileName();
 	}
 
 	public String getPath() {
-		return path;
+		return fileProxy.getPath();
 	}
 
 	public String getFullPath() {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		return workspace.getRoot().getLocation().toString() + path;
+		return fileProxy.getFullPath();
 	}
 
 	public IFile getFile() {
-		return PlatformHeader.getFile(this.getFullPath() + this.fileName);
+		return (IFile) fileProxy.getFileIResource();
 	}
 
 	public ITextSelection selection() {
@@ -131,9 +100,9 @@ public class Log {
 
 			File parserFile = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
-					+ File.separator + "lexOutput.c");
+					+  System.getProperty("file.separator") + "lexOutput.c");
 
-			File file = new File(this.getFullPath() + this.fileName);
+			File file = new File(fileProxy.getFileReal());
 			try {
 
 				BufferedReader parserFileRead = new BufferedReader(
@@ -219,20 +188,17 @@ public class Log {
 				parserFileRead.close();
 				fileReader.close();
 
-				IDocument document = getDocument(getFullPath() + getFileName());
-
+				IDocument document = this.getDocument();
+				
 				offset = document.getLineOffset(correctLine);
 				correctColunm = document.getLineLength(correctLine);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (CoreException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (BadLocationException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -263,17 +229,11 @@ public class Log {
 		}
 	}
 
-	private IDocument getDocument(String filename) throws CoreException {
-		IPath path = new Path(filename);
-
-		IFile file = ResourcesPlugin.getWorkspace().getRoot()
-				.getFileForLocation(path);
-
-		// XXX Does the method disconnect need to be called? When?
-		ITextFileBufferManager.DEFAULT.connect(file.getFullPath(),
+	private IDocument getDocument() throws CoreException {
+		ITextFileBufferManager.DEFAULT.connect(this.getFile().getFullPath(),
 				LocationKind.IFILE, null);
 		return FileBuffers.getTextFileBufferManager()
-				.getTextFileBuffer(file.getFullPath(), LocationKind.IFILE)
+				.getTextFileBuffer(this.getFile().getFullPath(), LocationKind.IFILE)
 				.getDocument();
 	}
 

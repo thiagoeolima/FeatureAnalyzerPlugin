@@ -9,8 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.IResource;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 
@@ -19,22 +18,20 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
  * 
  */
 public class FileProxy {
-	private String fileName;
 	private String path;
+	private IResource fileIResource;
 
-	public FileProxy(String file) {
+	public FileProxy(IResource fileIResource) {
+		this.fileIResource = fileIResource;
 
-		fileName = new File(file).getName();
-
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		path = file.substring(workspace.getRoot().getLocation().toString()
-				.length(), file.length() - fileName.length());
-
-		//Windows
+		path = getFullPath().substring(0,
+				getFullPath().length() - getFileName().length());
+		// System.err.println(file);
+		// Windows
 		if (System.getProperty("file.separator").equals("\\")) {
 			path = path.replace("/", "\\");
 		}
-		
+
 		try {
 			generate();
 		} catch (IOException e) {
@@ -44,7 +41,7 @@ public class FileProxy {
 	}
 
 	public String getFileName() {
-		return fileName;
+		return fileIResource.getName();
 	}
 
 	public String getPath() {
@@ -52,13 +49,15 @@ public class FileProxy {
 	}
 
 	public String getFullPath() {
-		return path + fileName;
+		return fileIResource.getFullPath().toOSString();
 	}
 
 	public String getFileReal() {
-		return ResourcesPlugin.getWorkspace().getRoot().getLocation()
-				.toString()
-				+ path + fileName;
+		return fileIResource.getLocation().toString();
+	}
+
+	public IResource getFileIResource() {
+		return fileIResource;
 	}
 
 	/**
@@ -67,18 +66,26 @@ public class FileProxy {
 	public String getFileTemp() {
 		return FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects" + path
-				+ fileName;
+				+ getFileName();
 	}
 
 	/**
 	 * @throws IOException
 	 */
 	private void generate() throws IOException {
+
 		File filePath = new File(FeatureAnalyzer.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects" + getPath());
 
 		filePath.mkdirs();
+
+		File temp = new File(FeatureAnalyzer.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ System.getProperty("file.separator")
+				+ "projects"
+				+ System.getProperty("file.separator") + "temp.c");
+		temp.createNewFile();
 
 		FileWriter fstreamout = new FileWriter(FeatureAnalyzer.getDefault()
 				.getConfigDir().getAbsolutePath()

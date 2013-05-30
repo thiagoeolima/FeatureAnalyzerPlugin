@@ -13,7 +13,7 @@ public class Initializer extends AbstractPreferenceInitializer {
 				.getPreferenceStore();
 		
 		store.setDefault("FEATURE_MODEL", true);
-		store.setDefault("TypeChefPreference", "--typecheck");
+		store.setDefault("TypeChefPreference", "--parse");
 
 		store.setDefault("GCC", "gcc");
 		store.setDefault("LIBS", "");

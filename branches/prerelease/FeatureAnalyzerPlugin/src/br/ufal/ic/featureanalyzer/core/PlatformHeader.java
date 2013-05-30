@@ -380,7 +380,6 @@ public class PlatformHeader {
 			if (file.getAbsolutePath().endsWith(".c")
 					|| file.getAbsolutePath().endsWith(".h")) {
 				listFilesCDT.add(file.getAbsolutePath());
-				System.out.println(file.getAbsolutePath());
 			}
 		} else if (file.isDirectory()) {
 			for (File files : file.listFiles()) {
