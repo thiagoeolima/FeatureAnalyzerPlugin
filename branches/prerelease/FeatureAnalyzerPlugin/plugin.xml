@@ -45,7 +45,7 @@
             <command
                   commandId="br.ufal.ic.featureanalyzer.commands.FeatureAnalyzerCommand"
                   icon="icons/featured.png"
-                  tooltip="Feature Analyzer"
+                  tooltip="Colligens"
                   id="br.ufal.ic.featureanalyzer.toolbars.FeatureAnalyzerCommand">
             </command>
          </toolbar>
@@ -92,7 +92,7 @@
    <extension
          point="org.eclipse.ui.views">
       <category
-            name="FeatureAnalyzer"
+            name="Colligens"
             id="br.ufal.ic.featureanalyzer">
       </category>
       <view

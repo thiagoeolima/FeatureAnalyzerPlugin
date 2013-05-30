@@ -19,6 +19,7 @@ public class XMLParserTypeChef {
 	private SAXBuilder builder;
 	private File xmlFile;
 	private List<FileProxy> fileProxies;
+	private FileProxy fileProxie;
 	private List<Log> logList;
 
 	public XMLParserTypeChef() {
@@ -26,9 +27,13 @@ public class XMLParserTypeChef {
 		logList = new ArrayList<Log>();
 	}
 
-	public void seFiles(List<FileProxy> fileProxies) {
-		this.fileProxies = fileProxies;
+	public void setFile(FileProxy fileProxie) {
+		this.fileProxie = fileProxie;
 	}
+
+//	public void seFiles(List<FileProxy> fileProxies) {
+//		this.fileProxies = fileProxies;
+//	}
 
 	public void setXMLFile(File xmlFile) {
 		this.xmlFile = xmlFile != null ? xmlFile : this.xmlFile;
@@ -62,20 +67,21 @@ public class XMLParserTypeChef {
 
 		for (int i = 0; i < list.size(); i++) {
 			Element node = list.get(i);
-			String file = node.getChild("position").getChildText("file").trim();
-			for (Iterator<FileProxy> iterator = fileProxies.iterator(); iterator
-					.hasNext();) {
-				FileProxy fileProxy = (FileProxy) iterator.next();
-				if (file.contains(fileProxy.getFileTemp())) {
-					file = fileProxy.getFileReal();
-					logList.add(new Log(file, node.getChild("position")
-							.getChildText("line"), node.getChild("position")
-							.getChildText("col"), node
-							.getChildText("featurestr"), node
-							.getChildText("severity"), node.getChildText("msg")));
-					break;
-				}
-			}
+			// String file =
+			// node.getChild("position").getChildText("file").trim();
+			// for (Iterator<FileProxy> iterator = fileProxies.iterator();
+			// iterator
+			// .hasNext();) {
+			// FileProxy fileProxy = (FileProxy) iterator.next();
+			// if (file.contains(fileProxy.getFileTemp())) {
+			// file = fileProxy.getFileReal();
+			logList.add(new Log(fileProxie.getFileReal(), node.getChild(
+					"position").getChildText("line"), node.getChild("position")
+					.getChildText("col"), node.getChildText("featurestr"), node
+					.getChildText("severity"), node.getChildText("msg")));
+			// break;
+			// }
+			// }
 		}
 
 	}

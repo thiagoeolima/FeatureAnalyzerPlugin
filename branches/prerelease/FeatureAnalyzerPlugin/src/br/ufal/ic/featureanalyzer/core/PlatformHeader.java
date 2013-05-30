@@ -32,7 +32,6 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
-import br.ufal.ic.featureanalyzer.controllers.Controller;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
 import br.ufal.ic.featureanalyzer.util.statistics.CountDirectives;
@@ -46,6 +45,8 @@ public class PlatformHeader {
 
 	private CountDirectives countDirectives;
 
+	List<String> listFilesCDT = new ArrayList<String>();
+
 	private ICProject project;
 
 	public void gerenate(String projectName) throws PlatformException {
@@ -54,10 +55,8 @@ public class PlatformHeader {
 				.getAbsolutePath()
 				+ System.getProperty("file.separator")
 				+ "projects"
-				+ System.getProperty("file.separator")
-				+ projectName
-				+ ".h");
-		
+				+ System.getProperty("file.separator") + projectName + ".h");
+
 		if (platform.exists())
 			return;
 
@@ -148,7 +147,9 @@ public class PlatformHeader {
 
 			File platformTemp = new File(FeatureAnalyzer.getDefault()
 					.getConfigDir().getAbsolutePath()
-					+ System.getProperty("file.separator") + "projects" + System.getProperty("file.separator") + "temp.h");
+					+ System.getProperty("file.separator")
+					+ "projects"
+					+ System.getProperty("file.separator") + "temp.h");
 			while (x) {
 				try {
 					String line;
@@ -225,6 +226,12 @@ public class PlatformHeader {
 					}
 			}
 		}
+		
+		this.listFilesCDT.clear();
+		
+		addFiles(new File(ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation().toString()
+				+ System.getProperty("file.separator") + projectName));
 
 		generateTypes(listFiles);
 	}
@@ -308,13 +315,15 @@ public class PlatformHeader {
 
 		File platformTemp = new File(FeatureAnalyzer.getDefault()
 				.getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects" + System.getProperty("file.separator") + "temp.h");
+				+ System.getProperty("file.separator")
+				+ "projects"
+				+ System.getProperty("file.separator") + "temp.h");
 		try {
 			FileWriter writer = new FileWriter(platformTemp);
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {
 				String type = (String) i.next();
 				if (countDirectives.directives.contains(type)) {
-//					System.out.println(type);
+					// System.out.println(type);
 				} else {
 					writer.write("typedef struct {} " + type + ";\n");
 				}
@@ -328,7 +337,7 @@ public class PlatformHeader {
 				if (next.contains("#define ")) {
 					String[] temp = next.trim().split(Pattern.quote(" "));
 					if (countDirectives.directives.contains(temp[1])) {
-//						System.out.println(next);
+						// System.out.println(next);
 					} else {
 						writer.write(next + "\n");
 					}
@@ -366,4 +375,18 @@ public class PlatformHeader {
 		return true;
 	}
 
+	private void addFiles(File file) {
+		if (file.isFile()) {
+			if (file.getAbsolutePath().endsWith(".c")
+					|| file.getAbsolutePath().endsWith(".h")) {
+				listFilesCDT.add(file.getAbsolutePath());
+				System.out.println(file.getAbsolutePath());
+			}
+		} else if (file.isDirectory()) {
+			for (File files : file.listFiles()) {
+				addFiles(files);
+			}
+
+		}
+	}
 }

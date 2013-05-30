@@ -229,7 +229,7 @@ public class TypeChef {
 					Frontend.processFile(fo);
 
 					xmlParser.setXMLFile(fo.getErrorXMLFile());
-					xmlParser.seFiles(fileProxies);
+					xmlParser.setFile(file);
 					xmlParser.processFile();
 					//
 					this.isFinish = true;
@@ -239,7 +239,7 @@ public class TypeChef {
 
 				if (error) {
 					startCommandLineMode(file);
-					xmlParser.seFiles(fileProxies);
+					xmlParser.setFile(file);
 					xmlParser.processFile();
 					error = false;
 					this.isFinish = true;
