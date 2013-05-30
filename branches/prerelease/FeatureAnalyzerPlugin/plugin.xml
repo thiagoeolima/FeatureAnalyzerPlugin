@@ -5,7 +5,7 @@
          point="org.eclipse.ui.commands">
       <category
             id="br.ufal.ic.featureanalyzer.commands.category"
-            name="Feature Analyzer">
+            name="Colligens">
       </category>
       <command
             categoryId="br.ufal.ic.featureanalyzer.commands.category"
@@ -101,7 +101,7 @@
             class="br.ufal.ic.featureanalyzer.views.AnalyzerView"
             icon="icons/featured.png"
             id="br.ufal.ic.featureanalyzer.views.AnalyzerView"
-            name="Feature Analyzer">
+            name="Invalid Configuration">
       </view>
       <view
             allowMultiple="false"
@@ -132,7 +132,7 @@
       <page
             class="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
             id="br.ufal.ic.featureanalyzer.preferences.PreferencePage"
-            name="Feature Analyzer">
+            name="Colligens">
       </page>
       <page
             category="br.ufal.ic.featureanalyzer.preferences.PreferencePage"

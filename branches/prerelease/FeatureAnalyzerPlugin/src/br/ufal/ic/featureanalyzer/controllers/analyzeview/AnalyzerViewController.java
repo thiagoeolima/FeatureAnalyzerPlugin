@@ -118,8 +118,8 @@ public class AnalyzerViewController extends ViewController {
 	}
 
 	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = { "Message", "File", "Path", "Feature", "Severity" };
-		int[] bounds = { 300, 100, 100, 100, 100 };
+		String[] titles = { "Message", "File", "Path", "Feature configuration", "Severity" };
+		int[] bounds = { 300, 100, 100, 300, 100 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);

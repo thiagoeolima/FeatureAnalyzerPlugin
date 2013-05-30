@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Feature Analyzer Plugin
+Bundle-Name: Colligens
 Bundle-SymbolicName: br.ufal.ic.featureanalyzer;singleton:=true
 Bundle-Version: 1.1.4.qualifier
 Bundle-Activator: br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer
