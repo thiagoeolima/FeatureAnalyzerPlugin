@@ -210,7 +210,7 @@ public class TypeChef {
 				platformHeader.gerenate(fileProxies.get(0).getFileIResource().getProject()
 						.getName());
 			} else {
-//				throw new TypeChefException("Not a valid file found C");
+				throw new TypeChefException("Not a valid file found C");
 			}
 			boolean error = false;
 
@@ -278,6 +278,7 @@ public class TypeChef {
 				// resouce.getLocation().toString());
 			}
 		}
+		
 		return fileProxies;
 	}
 
@@ -349,9 +350,9 @@ public class TypeChef {
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
 		args.add(0, "java");
-		// for (String s : args) {
-		// System.err.print(s + " ");
-		// }
+//		 for (String s : args) {
+//		 System.err.print(s + " ");
+//		 }
 		ProcessBuilder processBuilder = new ProcessBuilder(args);
 
 		BufferedReader input = null;

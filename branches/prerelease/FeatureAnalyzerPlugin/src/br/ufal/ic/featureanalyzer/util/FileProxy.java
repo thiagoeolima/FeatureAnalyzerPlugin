@@ -37,6 +37,7 @@ public class FileProxy {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+//		System.out.println(getFileTemp());
 	}
 
 	public String getFileName() {
@@ -101,8 +102,8 @@ public class FileProxy {
 		// Read File Line By Line
 		while ((strLine = br.readLine()) != null) {
 
-			if ((strLine.contains("include") && strLine.contains("#") && strLine.startsWith("#"))
-					|| strLine.contains("#erro")) {
+			if ((strLine.contains("include") && strLine.contains("#") && strLine
+					.startsWith("#"))) {
 				out.write("//" + strLine + "\n");
 			} else {
 				out.write(strLine + "\n");
@@ -113,10 +114,15 @@ public class FileProxy {
 		in.close();
 		out.close();
 
-		new File(FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects"
-				+ System.getProperty("file.separator") + "temp.c")
-				.renameTo(new File(getFileTemp()));
-	}
+		File tempFile = new File(getFileTemp());
 
+		tempFile.deleteOnExit();
+
+		if(tempFile.exists()){
+			tempFile.delete();
+
+		}
+		temp.renameTo(tempFile);
+
+	}
 }
