@@ -26,7 +26,6 @@ public class FileProxy {
 
 		path = getFullPath().substring(0,
 				getFullPath().length() - getFileName().length());
-		// System.err.println(file);
 		// Windows
 		if (System.getProperty("file.separator").equals("\\")) {
 			path = path.replace("/", "\\");
@@ -101,8 +100,8 @@ public class FileProxy {
 		String strLine;
 		// Read File Line By Line
 		while ((strLine = br.readLine()) != null) {
-			// Print the content on the console
-			if ((strLine.contains("include") && strLine.contains("#"))
+
+			if ((strLine.contains("include") && strLine.contains("#") && strLine.startsWith("#"))
 					|| strLine.contains("#erro")) {
 				out.write("//" + strLine + "\n");
 			} else {

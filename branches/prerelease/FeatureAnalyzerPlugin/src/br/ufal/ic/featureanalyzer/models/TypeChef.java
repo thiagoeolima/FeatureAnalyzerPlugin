@@ -201,16 +201,17 @@ public class TypeChef {
 		xmlParser.clearLogList();
 
 		PlatformHeader platformHeader = new PlatformHeader();
-//
+		//
 		Controller.monitorBeginTask("Analyzing selected files",
 				fileProxies.size());
 		try {
-			if (fileProxies.isEmpty()) {
-				throw new TypeChefException("Not a valid file found C");
+			if (!fileProxies.isEmpty()) {
+				//FilesProxies is not empty 
+				platformHeader.gerenate(fileProxies.get(0).getFileIResource().getProject()
+						.getName());
+			} else {
+//				throw new TypeChefException("Not a valid file found C");
 			}
-
-			platformHeader.gerenate(resourceList.get(0).getProject().getName());
-
 			boolean error = false;
 
 			for (FileProxy file : fileProxies) {
@@ -262,11 +263,12 @@ public class TypeChef {
 		List<FileProxy> fileProxies = new LinkedList<FileProxy>();
 		// pega um dos arquivos para descobrir qual projeto esta sendo
 		// verificado...
-		if (project == null) {
+		if (project == null && !list.isEmpty()) {
 			project = list.get(0).getProject();
 			// System.err.println(project.toString());
 		}
 		for (IResource resouce : list) {
+			System.out.println("ADD + " + resouce.getLocation().toString());
 			if (resouce.getLocation().toString().trim().endsWith(".c")
 					|| resouce.getLocation().toString().trim().endsWith(".h")) {
 				FileProxy fileProxy = new FileProxy(resouce);
@@ -325,19 +327,17 @@ public class TypeChef {
 					+ System.getProperty("file.separator") + "cnf.txt");
 			args.add(0, "--featureModelFExpr");
 		}
-		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ System.getProperty("file.separator")
-				+ "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "2.h");
+		args.add(0,
+				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
+						+ System.getProperty("file.separator") + "projects"
+						+ System.getProperty("file.separator")
+						+ project.getProject().getName() + "2.h");
 		args.add(0, "-h");
-		args.add(0, FeatureAnalyzer.getDefault().getConfigDir()
-				.getAbsolutePath()
-				+ System.getProperty("file.separator")
-				+ "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + ".h");
+		args.add(0,
+				FeatureAnalyzer.getDefault().getConfigDir().getAbsolutePath()
+						+ System.getProperty("file.separator") + "projects"
+						+ System.getProperty("file.separator")
+						+ project.getProject().getName() + ".h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath + ".xml");

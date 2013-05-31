@@ -117,7 +117,7 @@ public class InvalidProductViewController extends ViewController {
 
 	public void createColumns(Composite parent) {
 		String[] titles = { "Variant Name", "Path" };
-		int[] bounds = { 100, 400 };
+		int[] bounds = { 200, 400 };
 
 		for (int i = 0; i < bounds.length; i++) {
 			createTableViewerColumn(titles[i], bounds[i], i);

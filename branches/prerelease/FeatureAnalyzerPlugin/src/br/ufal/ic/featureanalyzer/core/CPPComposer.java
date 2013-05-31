@@ -11,6 +11,11 @@ import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IIncludeReference;
+import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -33,6 +38,7 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
 import br.ufal.ic.featureanalyzer.controllers.invalidproduct.InvalidProductViewController;
+import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
 import br.ufal.ic.featureanalyzer.exceptions.TypeChefException;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
@@ -58,7 +64,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private CPPModelBuilder cppModelBuilder;
 
-//	private TypeChef typeChef;
+	// private TypeChef typeChef;
 
 	private static boolean continueCompilationFlag = true;
 	private static Set<Long> threadInExecId = new HashSet<Long>();
@@ -74,7 +80,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		// Start typeChef
 		// Setup the controller
-//		typeChef = new TypeChef();
+		// typeChef = new TypeChef();
 		prepareFullBuild(null);
 		annotationChecking();
 
@@ -382,11 +388,31 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 */
 	private void runBuild(LinkedList<String> featureArgs, IFolder sourceFolder,
 			IFolder buildFolder) {
-
 		CPPWrapper cpp = new CPPWrapper();
 
 		LinkedList<String> compilerArgs = new LinkedList<String>(featureArgs);
 		LinkedList<String> fileList = new LinkedList<String>();
+
+		// find includes
+		String projectName = sourceFolder.getProject().getName();
+		System.out.println(projectName);
+		ICProject project = CoreModel.getDefault().getCModel()
+				.getCProject(projectName);
+		try {
+			IIncludeReference includes[] = project.getIncludeReferences();
+			for (int i = 0; i < includes.length; i++) {
+				// System.out.println(includes[i].getElementName());
+				compilerArgs.add("-I" + includes[i].getElementName());
+			}
+			if (!FeatureAnalyzer.getDefault().getPreferenceStore()
+					.getString("LIBS").contentEquals("")) {
+				compilerArgs.add(FeatureAnalyzer.getDefault().getPreferenceStore()
+						.getString("LIBS"));
+			}
+		} catch (CModelException e) {
+			e.printStackTrace();
+		}
+
 		try {
 			createFolder(buildFolder);
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
@@ -422,8 +448,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void runTypeChefAnalyzes(IFolder folder) {
 		ProjectExplorerController prjController = new ProjectExplorerController();
 		prjController.addResource(folder);
-		System.out.println("akkkkkkk");
-		final TypeChef  typeChef = new TypeChef();
+
+		final TypeChef typeChef = new TypeChef();
 		try {
 			typeChef.run(prjController.getList());
 
@@ -478,12 +504,14 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
 			LinkedList<String> fileList, IFolder sourceFolder,
 			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
-		
+
 		String fullFilePath = null;
 		LinkedList<String> preProcessorArgs;
 		for (final IResource res : sourceFolder.members()) {
 			if (res instanceof IFolder) {
-				buildFolder = featureProject.getProject().getFolder(buildFolder.getProjectRelativePath() + File.separator +  res.getName());
+				buildFolder = featureProject.getProject().getFolder(
+						buildFolder.getProjectRelativePath() + File.separator
+								+ res.getName());
 				createFolder(buildFolder);
 				prepareFilesConfiguration(featureArgs, fileList, (IFolder) res,
 						buildFolder, cpp);
@@ -498,7 +526,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
-						+ System.getProperty("file.separator") +res.getName()+"_preprocessed");
+						+ System.getProperty("file.separator") + res.getName()
+						+ "_preprocessed");
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1
