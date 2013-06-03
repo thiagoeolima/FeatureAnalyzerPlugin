@@ -160,7 +160,7 @@ point="org.eclipse.core.resources.markers">
             class="br.ufal.ic.featureanalyzer.core.CPPComposer"
             description="C composer to FeatureIDE"
             id="br.ufal.ic.featureanalyzer.cppcomposer"
-            name="C PreProcessors "
+            name="Colligens"
             nature="FeatureIDE_Cnature">
       </composer>
    </extension>
@@ -170,7 +170,7 @@ point="org.eclipse.core.resources.markers">
             class="br.ufal.ic.featureanalyzer.core.CppFMComposerExtension"
             composer="br.ufal.ic.featureanalyzer.cppcomposer"
             id="br.ufal.ic.featureanalyzer.fmcppcomposer"
-            name="C PreProcessor Feature Model">
+            name="Colligens Feature Model">
       </fmComposer>
    </extension>
    <extension

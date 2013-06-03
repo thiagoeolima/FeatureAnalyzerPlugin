@@ -525,9 +525,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
+				String[] name = res.getName().split("\\.");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
-						+ System.getProperty("file.separator") + res.getName()
-						+ "_preprocessed");
+						+ System.getProperty("file.separator") + name[0]
+						+ "_preprocessed." + res.getFileExtension());
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1
