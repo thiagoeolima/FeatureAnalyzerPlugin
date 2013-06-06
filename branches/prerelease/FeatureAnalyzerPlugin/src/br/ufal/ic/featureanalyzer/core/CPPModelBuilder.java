@@ -11,6 +11,15 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirective;
 import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirectiveCommand;
 import de.ovgu.featureide.core.fstmodel.preprocessor.PPModelBuilder;
 
+/**
+ * Build the FSTModel for C projects.
+ * @author Francisco Dalton
+ * thanks to:
+ * @author Christoph Giesel
+ * @author Marcus Kamieth
+ * @author Sebastian Krieter
+ *
+ */
 public class CPPModelBuilder extends PPModelBuilder {
 
 	public static final String OPERATORS = "[\\s!=<>\",;&\\^\\|\\(\\)]";
@@ -123,7 +132,6 @@ public class CPPModelBuilder extends PPModelBuilder {
 
 	@Override
 	protected String getFeatureName(String expression) {
-		// expression = expression.replaceAll("defined", "");
 		return expression.replaceAll("[()]|defined", "").trim();
 	}
 

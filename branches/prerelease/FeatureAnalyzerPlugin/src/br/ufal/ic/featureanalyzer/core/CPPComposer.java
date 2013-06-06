@@ -15,8 +15,6 @@ import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IIncludeReference;
-import org.eclipse.cdt.core.model.ISourceRoot;
-import org.eclipse.core.internal.resources.Folder;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -38,7 +36,6 @@ import br.ufal.ic.featureanalyzer.activator.FeatureAnalyzer;
 import br.ufal.ic.featureanalyzer.controllers.ProjectExplorerController;
 import br.ufal.ic.featureanalyzer.controllers.analyzeview.AnalyzerViewController;
 import br.ufal.ic.featureanalyzer.controllers.invalidproduct.InvalidProductViewController;
-import br.ufal.ic.featureanalyzer.exceptions.PlatformException;
 import br.ufal.ic.featureanalyzer.exceptions.TypeChefException;
 import br.ufal.ic.featureanalyzer.models.TypeChef;
 import br.ufal.ic.featureanalyzer.util.InvalidProductViewLog;
@@ -50,6 +47,12 @@ import de.ovgu.featureide.core.fstmodel.preprocessor.FSTDirective;
 import de.ovgu.featureide.fm.core.Feature;
 import de.ovgu.featureide.fm.core.configuration.Configuration;
 
+/**
+ * A featureIDE composer to compose C files.
+ * @author Dalton
+ * thanks to Tom Brosch, Jens Meinicke, Christoph Giesel,Marcus Kamieth
+ *
+ */
 public class CPPComposer extends PPComposerExtensionClass {
 
 	private static final String PLUGIN_CDT_ID = "org.eclipse.cdt";
@@ -64,7 +67,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private CPPModelBuilder cppModelBuilder;
 
-	// private TypeChef typeChef;
 
 	private static boolean continueCompilationFlag = true;
 	private static Set<Long> threadInExecId = new HashSet<Long>();
@@ -133,10 +135,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public void performFullBuild(IFile config) {
 
-		// if (!isPluginInstalled(PLUGIN_CDT_ID)) {
-		// generateWarning(PLUGIN_WARNING);
-		// }
-		//
+		 if (!isPluginInstalled(PLUGIN_CDT_ID)) {
+		 generateWarning(PLUGIN_WARNING);
+		 }
+		
 		if (!prepareFullBuild(config))
 			return;
 		//

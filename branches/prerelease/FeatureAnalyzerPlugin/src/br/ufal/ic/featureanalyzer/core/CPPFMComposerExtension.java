@@ -23,11 +23,12 @@ import de.ovgu.featureide.fm.core.FMCorePlugin;
 /**
  * CPP featureModel extensions copied from Antenna specific feature model
  * extensions.
- * 
+ * @author Francisco Dalton
+ * thanks to:
  * @author Christoph Giesel
  * @author Marcus Kamieth
  */
-public class CppFMComposerExtension extends FMComposerExtension {
+public class CPPFMComposerExtension extends FMComposerExtension {
 
 	private static String ORDER_PAGE_MESSAGE = "FeatureIDE projects based on preprocessors such as CPPs do not\n"
 			+ "need an order, as the order is given directly at the source code.";
