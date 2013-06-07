@@ -1,0 +1,50 @@
+package br.ufal.ic.colligens.handler;
+
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.HandlerUtil;
+
+import br.ufal.ic.colligens.controllers.Controller;
+import br.ufal.ic.colligens.controllers.analyzeview.AnalyzerViewController;
+import br.ufal.ic.colligens.views.AnalyzerView;
+
+public class ColligensPluginHandler extends AbstractHandler {
+	private IWorkbenchWindow window;
+	private Controller controller;
+
+	/**
+	 * the command has been executed, so extract extract the needed information
+	 * from the application context.
+	 */
+	@Override
+	public Object execute(ExecutionEvent event) throws ExecutionException {
+		this.window = HandlerUtil.getActiveWorkbenchWindow(event);
+
+		if (controller == null) {
+			controller = new Controller();
+		}
+
+		controller.setWindow(window);
+		// Open and active the Analyzer view
+		IWorkbenchPage page = window.getActivePage();
+		try {
+			page.showView(AnalyzerView.ID);
+			AnalyzerViewController analyzerViewController = AnalyzerViewController
+					.getInstance();
+
+			analyzerViewController.clear();
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		controller.run();
+
+		return null;
+	}
+
+}

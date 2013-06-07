@@ -5,5 +5,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/jdom-2.0.4.jar"/>
 	<classpathentry kind="lib" path="lib/TypeChef-0.3.5.jar"/>
+	<classpathentry kind="lib" path="/home/thiago/Ufal/Projeto-de-pesquisa/eclipse/plugins/org.eclipse.cdt.core_5.4.1.201302132326.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
