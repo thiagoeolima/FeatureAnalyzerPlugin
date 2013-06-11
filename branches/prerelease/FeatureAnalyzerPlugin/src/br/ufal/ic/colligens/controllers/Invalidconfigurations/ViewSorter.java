@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.analyzeview;
+package br.ufal.ic.colligens.controllers.Invalidconfigurations;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -6,13 +6,13 @@ import org.eclipse.swt.SWT;
 
 import br.ufal.ic.colligens.util.Log;
 
-class AnalyzerViewSorter extends ViewerSorter {
+class ViewSorter extends ViewerSorter {
 
 	private int propertyIndex;
 	private static final int DESCENDING = 1;
 	private int direction = DESCENDING;
 
-	public AnalyzerViewSorter() {
+	public ViewSorter() {
 		this.propertyIndex = 0;
 		direction = DESCENDING;
 	}

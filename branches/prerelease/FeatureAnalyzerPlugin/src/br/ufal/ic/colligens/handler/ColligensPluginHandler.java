@@ -9,8 +9,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.colligens.controllers.CoreController;
-import br.ufal.ic.colligens.controllers.analyzeview.AnalyzerViewController;
-import br.ufal.ic.colligens.views.AnalyzerView;
+import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
 public class ColligensPluginHandler extends AbstractHandler {
 	private IWorkbenchWindow window;
@@ -32,8 +32,8 @@ public class ColligensPluginHandler extends AbstractHandler {
 		// Open and active the Analyzer view
 		IWorkbenchPage page = window.getActivePage();
 		try {
-			page.showView(AnalyzerView.ID);
-			AnalyzerViewController analyzerViewController = AnalyzerViewController
+			page.showView(InvalidConfigurationsView.ID);
+			InvalidConfigurationsViewController analyzerViewController = InvalidConfigurationsViewController
 					.getInstance();
 
 			analyzerViewController.clear();

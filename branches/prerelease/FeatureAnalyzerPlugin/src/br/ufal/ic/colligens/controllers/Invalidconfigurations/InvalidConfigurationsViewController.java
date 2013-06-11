@@ -1,6 +1,8 @@
-package br.ufal.ic.colligens.controllers.analyzeview;
+package br.ufal.ic.colligens.controllers.Invalidconfigurations;
 
 import java.awt.event.MouseEvent;
+
+import javax.xml.ws.FaultAction;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -21,65 +23,67 @@ import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.colligens.controllers.ViewController;
 import br.ufal.ic.colligens.util.Log;
-import br.ufal.ic.colligens.views.AnalyzerView;
+import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
-public class AnalyzerViewController extends ViewController {
+/**
+ * @author Thiago Emmanuel
+ * 
+ */
+public class InvalidConfigurationsViewController extends ViewController {
 
-	private TableViewer viewer;
-	private AnalyzerViewContentProvider viewContentProvider = new AnalyzerViewContentProvider();
-	private AnalyzerView typeChefPluginView;
-	private AnalyzerViewSorter comparator;
-	private static AnalyzerViewController INSTANCE;
+	private TableViewer tableViewer;
+	private ViewContentProvider viewContentProvider = new ViewContentProvider();
+	private ViewSorter comparator;
+	private static InvalidConfigurationsViewController INSTANCE;
 
-	private AnalyzerViewController() {
-		super(AnalyzerView.ID);
+	private InvalidConfigurationsViewController() {
+		super(InvalidConfigurationsView.ID);
 	}
 
-	public static AnalyzerViewController getInstance() {
+	public static InvalidConfigurationsViewController getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new AnalyzerViewController();
+			INSTANCE = new InvalidConfigurationsViewController();
 		}
 		return INSTANCE;
 	}
 
-	public AnalyzerView getTypeChefPluginView() {
-		return typeChefPluginView;
-	}
-
-	public void setTypeChefPluginView(AnalyzerView typeChefPluginView) {
-		this.typeChefPluginView = typeChefPluginView;
-	}
-
+	/**
+	 * Update view 
+	 * @param logs
+	 */
 	public void adaptTo(Object[] logs) {
 		this.viewContentProvider.setLogs(logs);
-		viewer.refresh();
+		tableViewer.refresh();
 	}
 
 	public void clear() {
-		Object objects[] = (Object[]) this.viewContentProvider
-				.getElements(null);
-		if (objects instanceof Log[]) {
-			Log logs[] = (Log[]) objects;
-			for (int i = 0; i < logs.length; i++) {
-				logs[i].removeMarker();
-			}
-		}
 		this.viewContentProvider.setLogs(new Object[] {});
-		viewer.refresh();
+		tableViewer.refresh();
 	}
 
+	public void setFocus() {
+		tableViewer.getControl().setFocus();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.part.WorkbenchPartn#createPartControl(Composite)
+	 */
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
+		tableViewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);
-		createColumns(parent, viewer);
-		final Table table = viewer.getTable();
+		
+		createColumns(parent, tableViewer);
+		
+		final Table table = tableViewer.getTable();
 
 		table.addListener(SWT.MouseDown, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
 				Point point = new Point(event.x, event.y);
-				TableItem clickedItem = viewer.getTable().getItem(point);
+				TableItem clickedItem = tableViewer.getTable().getItem(point);
 				if (clickedItem != null) {
 					if (event.button == MouseEvent.BUTTON1 && event.count == 2) {
 						Object data = clickedItem.getData();
@@ -87,9 +91,8 @@ public class AnalyzerViewController extends ViewController {
 							final Log log = (Log) data;
 							try {
 
-								IEditorPart editor = IDE.openEditor(
-										typeChefPluginView.getSite().getPage(),
-										log.getFile());
+								IEditorPart editor = IDE.openEditor(getView()
+										.getSite().getPage(), log.getFile());
 								editor.getSite().getSelectionProvider()
 										.setSelection(log.selection());
 
@@ -103,39 +106,40 @@ public class AnalyzerViewController extends ViewController {
 			}
 		});
 
-		viewer.setContentProvider(this.viewContentProvider);
-		viewer.setInput(this.typeChefPluginView.getViewSite());
-		viewer.setLabelProvider(new AnalyzerViewLabelProvider());
+		tableViewer.setContentProvider(this.viewContentProvider);
+		tableViewer.setInput(getView().getViewSite());
+		tableViewer.setLabelProvider(new ViewLabelProvider());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
 		// Set the sorter for the table
-		comparator = new AnalyzerViewSorter();
-		viewer.setComparator(comparator);
+		comparator = new ViewSorter();
+		tableViewer.setComparator(comparator);
 
 		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "TableView.viewer");
+				.setHelp(tableViewer.getControl(), "TableView.viewer");
 	}
 
-	public void createColumns(Composite parent, TableViewer viewer) {
-		String[] titles = { "Message", "File", "Path", "Feature configuration", "Severity" };
+	public void createColumns(Composite parent, TableViewer tableViewer) {
+		String[] titles = { "Description", "Resource", "Path", "Feature configuration",
+				"Severity" };
 		int[] bounds = { 300, 100, 100, 300, 100 };
 
 		for (int i = 0; i < bounds.length; i++) {
-			createTableViewerColumn(titles[i], bounds[i], i);
+			this.createTableViewerColumn(titles[i], bounds[i], i);
 		}
 	}
 
-	public TableViewerColumn createTableViewerColumn(String title, int bound,
+	private TableViewerColumn createTableViewerColumn(String title, int bound,
 			final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
-				SWT.LEFT);
+		final TableViewerColumn viewerColumn = new TableViewerColumn(
+				tableViewer, SWT.LEFT);
 		final TableColumn column = viewerColumn.getColumn();
 		column.setText(title);
 		column.setWidth(bound);
 		column.setResizable(true);
 		column.setMoveable(true);
-		column.addSelectionListener(getSelectionAdapter(column, colNumber));
+		column.addSelectionListener(this.getSelectionAdapter(column, colNumber));
 		return viewerColumn;
 	}
 
@@ -146,16 +150,12 @@ public class AnalyzerViewController extends ViewController {
 			public void widgetSelected(SelectionEvent e) {
 				comparator.setColumn(index);
 				int dir = comparator.getDirection();
-				viewer.getTable().setSortDirection(dir);
-				viewer.getTable().setSortColumn(column);
-				viewer.refresh();
+				tableViewer.getTable().setSortDirection(dir);
+				tableViewer.getTable().setSortColumn(column);
+				tableViewer.refresh();
 			}
 		};
 		return selectionAdapter;
-	}
-
-	public void setFocus() {
-		viewer.getControl().setFocus();
 	}
 
 }

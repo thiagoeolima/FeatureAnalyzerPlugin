@@ -97,9 +97,9 @@
       </category>
       <view
             category="br.ufal.ic.colligens"
-            class="br.ufal.ic.colligens.views.AnalyzerView"
+            class="br.ufal.ic.colligens.views.InvalidConfigurationsView"
             icon="icons/featured.png"
-            id="br.ufal.ic.colligens.views.AnalyzerView"
+            id="br.ufal.ic.colligens.views.InvalidConfigurationsView"
             name="Invalid Configurations">
       </view>
       <view

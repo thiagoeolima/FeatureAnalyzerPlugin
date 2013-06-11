@@ -1,9 +1,9 @@
-package br.ufal.ic.colligens.controllers.analyzeview;
+package br.ufal.ic.colligens.controllers.Invalidconfigurations;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
- class AnalyzerViewContentProvider implements IStructuredContentProvider {
+ class ViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new Object[]{};
 
 	@Override

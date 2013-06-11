@@ -1,8 +1,9 @@
 package br.ufal.ic.colligens.controllers;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.internal.core.model.CContainer;
@@ -18,16 +19,15 @@ import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 
 /**
- * @author thiago
- * 
+ * @author Thiago Emmanuel
  */
 @SuppressWarnings("restriction")
 public class ProjectExplorerController {
 	private IStructuredSelection selection;
-	private List<IResource> iResources;
+	private Set<IResource> iResources;
 
 	public ProjectExplorerController() {
-		iResources = new ArrayList<IResource>();
+		iResources = new HashSet<IResource>();
 	}
 
 	/**
@@ -50,7 +50,11 @@ public class ProjectExplorerController {
 
 	public void addResource(IResource iResource) {
 		if (iResource instanceof IFile) {
-			iResources.add(iResource);
+			// adds .c and .h files only
+			if (iResource.getLocation().toString().trim().endsWith(".c")
+					|| iResource.getLocation().toString().trim().endsWith(".h")) {
+				iResources.add(iResource);
+			}
 		} else if (iResource instanceof IFolder) {
 			try {
 				for (IResource res : ((IFolder) iResource).members()) {
@@ -68,13 +72,16 @@ public class ProjectExplorerController {
 	 * @throws ExplorerException
 	 */
 	public List<IResource> start() throws ExplorerException {
+		
 		iResources.clear();
+		
 		if (selection == null) {
 			throw new ExplorerException("Select a valid file or directory.");
 		}
 
 		List<IResource> iResources = new LinkedList<IResource>();
 
+		@SuppressWarnings("unchecked")
 		List<Object> list = selection.toList();
 
 		for (Object object : list) {
@@ -113,14 +120,11 @@ public class ProjectExplorerController {
 	 * @return list containing the file paths
 	 */
 	public List<String> getListToString() {
-		List<String> resoucesAsString = new LinkedList<String>();
-		for (IResource resouce : iResources) {
+		List<String> resourcesAsString = new LinkedList<String>();
+		for (IResource resource : iResources) {
 			// adds .c and .h files only
-			if (resouce.getLocation().toString().trim().endsWith(".c")
-					|| resouce.getLocation().toString().trim().endsWith(".h")) {
-				resoucesAsString.add(resouce.getLocation().toString());
-			}
+				resourcesAsString.add(resource.getLocation().toString());
 		}
-		return resoucesAsString;
+		return resourcesAsString;
 	}
 }

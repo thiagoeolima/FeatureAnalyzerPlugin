@@ -4,14 +4,14 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
-import br.ufal.ic.colligens.controllers.analyzeview.AnalyzerViewController;
+import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
 
 public class ClearAnalyzerViewHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {
 
-		AnalyzerViewController analyzerViewController = AnalyzerViewController
+		InvalidConfigurationsViewController analyzerViewController = InvalidConfigurationsViewController
 				.getInstance();
 
 		analyzerViewController.clear();

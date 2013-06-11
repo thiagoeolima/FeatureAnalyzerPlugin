@@ -34,7 +34,7 @@ import org.prop4j.Not;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.ProjectExplorerController;
-import br.ufal.ic.colligens.controllers.analyzeview.AnalyzerViewController;
+import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
 import br.ufal.ic.colligens.controllers.invalidproduct.InvalidProductViewController;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.TypeChef;
@@ -462,7 +462,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 			display.syncExec(new Runnable() {
 				public void run() {
-					AnalyzerViewController viewController = AnalyzerViewController
+					InvalidConfigurationsViewController viewController = InvalidConfigurationsViewController
 							.getInstance();
 					if (typeChef.isFinish()) {
 						viewController.showView();

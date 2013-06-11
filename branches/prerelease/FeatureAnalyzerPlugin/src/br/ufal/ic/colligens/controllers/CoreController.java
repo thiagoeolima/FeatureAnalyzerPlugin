@@ -13,11 +13,11 @@ import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.TypeChef;
-import br.ufal.ic.colligens.views.AnalyzerView;
+import br.ufal.ic.colligens.views.InvalidConfigurationsView;
+
 
 /**
- * @author thiago
- * 
+ * @author Thiago Emmanuel
  */
 public class CoreController {
 	private ProjectExplorerController projectExplorerController;
@@ -98,9 +98,9 @@ public class CoreController {
 			public void run() {
 
 				IViewPart view = window.getActivePage().findView(
-						AnalyzerView.ID);
-				if (view instanceof AnalyzerView) {
-					final AnalyzerView analyzerView = (AnalyzerView) view;
+						InvalidConfigurationsView.ID);
+				if (view instanceof InvalidConfigurationsView) {
+					final InvalidConfigurationsView analyzerView = (InvalidConfigurationsView) view;
 
 					// Typechef checks performed at least one analysis
 					if (typeChef.isFinish()) {
