@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.controllers.Controller;
+import br.ufal.ic.colligens.controllers.CoreController;
 
 public class PluginException extends Exception {
 	/**
@@ -18,8 +18,8 @@ public class PluginException extends Exception {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				Shell shell;
-				if (Controller.getWindow() != null) {
-					shell = Controller.getWindow().getShell();
+				if (CoreController.getWindow() != null) {
+					shell = CoreController.getWindow().getShell();
 				} else {
 					shell = new Shell();
 				}

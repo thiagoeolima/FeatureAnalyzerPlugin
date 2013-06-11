@@ -17,36 +17,43 @@ import org.eclipse.ui.IWorkbenchWindow;
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 
-// TODO: Put a Listener
-
+/**
+ * @author thiago
+ * 
+ */
 @SuppressWarnings("restriction")
 public class ProjectExplorerController {
 	private IStructuredSelection selection;
-	private List<IResource> listFiles;
+	private List<IResource> iResources;
 
 	public ProjectExplorerController() {
-		listFiles = new ArrayList<IResource>();
+		iResources = new ArrayList<IResource>();
 	}
 
+	/**
+	 * @param window
+	 */
 	public void setWindow(IWorkbenchWindow window) {
-		selection = (IStructuredSelection) window.getSelectionService()
+		//
+		this.selection = (IStructuredSelection) window.getSelectionService()
 				.getSelection("org.eclipse.ui.navigator.ProjectExplorer");
-		if (selection == null) {
-			selection = (IStructuredSelection) window.getSelectionService()
-					.getSelection("org.eclipse.jdt.ui.PackageExplorer");
+		if (this.selection == null) {
+			this.selection = (IStructuredSelection) window
+					.getSelectionService().getSelection(
+							"org.eclipse.jdt.ui.PackageExplorer");
 		}
 	}
 
 	public List<IResource> getList() {
-		return new LinkedList<IResource>(listFiles);
+		return new LinkedList<IResource>(iResources);
 	}
 
-	public void addResource(IResource resource) {
-		if (resource instanceof IFile) {
-			listFiles.add(resource);
-		} else if (resource instanceof IFolder) {
+	public void addResource(IResource iResource) {
+		if (iResource instanceof IFile) {
+			iResources.add(iResource);
+		} else if (iResource instanceof IFolder) {
 			try {
-				for (IResource res : ((IFolder) resource).members()) {
+				for (IResource res : ((IFolder) iResource).members()) {
 					addResource(res);
 				}
 			} catch (CoreException e) {
@@ -60,60 +67,55 @@ public class ProjectExplorerController {
 	 * @return
 	 * @throws ExplorerException
 	 */
-	public IResource start() throws ExplorerException {
-		listFiles.clear();
+	public List<IResource> start() throws ExplorerException {
+		iResources.clear();
 		if (selection == null) {
 			throw new ExplorerException("Select a valid file or directory.");
 		}
-		Object o = selection.getFirstElement();
 
-		IResource aux;
-		if (o instanceof SourceRoot) {
-			aux = ((SourceRoot) o).getResource();
-		} else if (o instanceof CContainer) {
-			aux = ((CContainer) o).getResource();
-		} else if (o instanceof ITranslationUnit) {
-			aux = ((ITranslationUnit) o).getResource();
+		List<IResource> iResources = new LinkedList<IResource>();
 
-		} else if (o instanceof IFile) {
-			aux = (IResource) o;
-		} else if (o instanceof IFolder) {
-			aux = (IResource) o;
-		} else {
+		List<Object> list = selection.toList();
+
+		for (Object object : list) {
+			if (object instanceof SourceRoot) {
+				iResources.add(((SourceRoot) object).getResource());
+			} else if (object instanceof CContainer) {
+				iResources.add(((CContainer) object).getResource());
+			} else if (object instanceof ITranslationUnit) {
+				iResources.add(((ITranslationUnit) object).getResource());
+			} else if (object instanceof IFile) {
+				iResources.add((IResource) object);
+			} else if (object instanceof IFolder) {
+				iResources.add((IResource) object);
+			}
+		}
+
+		if (iResources.isEmpty()) {
 			throw new ExplorerException("Select a valid file or directory.");
 		}
 
-		return aux;
+		return iResources;
 	}
 
 	/**
 	 * @throws ExplorerException
 	 */
 	public void run() throws ExplorerException {
-		addResource(start());
-	}
+		List<IResource> list = start();
 
-	/**
-	 * @return 
-	 * @throws ExplorerException
-	 */
-	public String getPath() throws ExplorerException {
-		IResource resource = start();
-		if (resource instanceof IFile) {
-			return ((IFile) resource).getLocation().toString();
-		} else if (resource instanceof IFolder) {
-			return ((IFolder) resource).getLocation().toString();
-		} else {
-			throw new ExplorerException("Select a valid file or directory.");
+		for (IResource iResource : list) {
+			addResource(iResource);
 		}
 	}
 
 	/**
-	 * @return
+	 * @return list containing the file paths
 	 */
 	public List<String> getListToString() {
 		List<String> resoucesAsString = new LinkedList<String>();
-		for (IResource resouce : listFiles) {
+		for (IResource resouce : iResources) {
+			// adds .c and .h files only
 			if (resouce.getLocation().toString().trim().endsWith(".c")
 					|| resouce.getLocation().toString().trim().endsWith(".h")) {
 				resoucesAsString.add(resouce.getLocation().toString());

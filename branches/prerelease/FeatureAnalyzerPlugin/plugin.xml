@@ -96,15 +96,13 @@
             id="br.ufal.ic.colligens">
       </category>
       <view
-            allowMultiple="false"
             category="br.ufal.ic.colligens"
             class="br.ufal.ic.colligens.views.AnalyzerView"
             icon="icons/featured.png"
             id="br.ufal.ic.colligens.views.AnalyzerView"
-            name="Invalid Configuration">
+            name="Invalid Configurations">
       </view>
       <view
-            allowMultiple="false"
             category="br.ufal.ic.colligens"
             class="br.ufal.ic.colligens.views.InvalidProductView"
             icon="icons/invalidproduct.png"
@@ -112,7 +110,6 @@
             name="Invalid Products">
       </view>
       <view
-            allowMultiple="false"
             category="br.ufal.ic.colligens"
             class="br.ufal.ic.colligens.views.StatisticsView"
             icon="icons/featured_chart.png"

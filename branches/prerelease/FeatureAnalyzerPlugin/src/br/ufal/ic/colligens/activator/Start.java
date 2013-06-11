@@ -3,12 +3,15 @@ package br.ufal.ic.colligens.activator;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * @author thiago
+ * 
+ */
 public class Start {
 
-	public Start() {
-
-	}
-
+	/**
+	 * Clear the cache files
+	 */
 	public void SystemClear() {
 		File file = new File(Colligens.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -29,8 +32,6 @@ public class Start {
 			if (file.list().length == 0) {
 
 				file.delete();
-				// System.out.println("Directory is deleted : "
-				// + file.getAbsolutePath());
 
 			} else {
 
@@ -48,16 +49,12 @@ public class Start {
 				// check the directory again, if empty then delete it
 				if (file.list().length == 0) {
 					file.delete();
-					// System.out.println("Directory is deleted : "
-					// + file.getAbsolutePath());
 				}
 			}
 
 		} else {
 			// if file, then delete it
 			file.delete();
-			// System.out.println("File is deleted : " +
-			// file.getAbsolutePath());
 		}
 	}
 }

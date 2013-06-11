@@ -8,13 +8,13 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
-import br.ufal.ic.colligens.controllers.Controller;
+import br.ufal.ic.colligens.controllers.CoreController;
 import br.ufal.ic.colligens.controllers.analyzeview.AnalyzerViewController;
 import br.ufal.ic.colligens.views.AnalyzerView;
 
 public class ColligensPluginHandler extends AbstractHandler {
 	private IWorkbenchWindow window;
-	private Controller controller;
+	private CoreController controller;
 
 	/**
 	 * the command has been executed, so extract extract the needed information
@@ -25,7 +25,7 @@ public class ColligensPluginHandler extends AbstractHandler {
 		this.window = HandlerUtil.getActiveWorkbenchWindow(event);
 
 		if (controller == null) {
-			controller = new Controller();
+			controller = new CoreController();
 		}
 
 		controller.setWindow(window);

@@ -22,12 +22,6 @@ public class Colligens extends AbstractUIPlugin {
 	// The shared instance
 	private static Colligens plugin;
 
-	/**
-	 * The constructor
-	 */
-	public Colligens() {
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -39,9 +33,9 @@ public class Colligens extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		plugin = this;
-		
+
 		Start inicialize = new Start();
-		inicialize.SystemClear();
+//		inicialize.SystemClear();
 	}
 
 	/*
@@ -84,6 +78,12 @@ public class Colligens extends AbstractUIPlugin {
 		return PLUGIN_ID;
 	}
 
+	/**
+	 * Returns the configuration directory
+	 * 
+	 * 
+	 * @return directory configuration
+	 */
 	public File getConfigDir() {
 		Location location = Platform.getConfigurationLocation();
 		File file = null;

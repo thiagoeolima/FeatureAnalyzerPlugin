@@ -23,7 +23,7 @@ import org.prop4j.Node;
 import org.prop4j.NodeWriter;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.controllers.Controller;
+import br.ufal.ic.colligens.controllers.CoreController;
 import br.ufal.ic.colligens.core.PlatformHeader;
 import br.ufal.ic.colligens.exceptions.PlatformException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
@@ -202,7 +202,7 @@ public class TypeChef {
 
 		PlatformHeader platformHeader = new PlatformHeader();
 		//
-		Controller.monitorBeginTask("Analyzing selected files",
+		CoreController.monitorBeginTask("Analyzing selected files",
 				fileProxies.size());
 		try {
 			if (!fileProxies.isEmpty()) {
@@ -216,10 +216,10 @@ public class TypeChef {
 
 			for (FileProxy file : fileProxies) {
 				// Monitor Update
-				Controller.monitorUpdate(1);
-				Controller.monitorSubTask(file.getFullPath());
+				CoreController.monitorWorked(1);
+				CoreController.monitorSubTask(file.getFullPath());
 				// end Monitor
-				if (Controller.isCanceled()) {
+				if (CoreController.isCanceled()) {
 					this.isFinish = true;
 					break;
 				}
