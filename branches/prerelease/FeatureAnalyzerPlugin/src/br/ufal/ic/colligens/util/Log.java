@@ -13,7 +13,6 @@ import org.eclipse.core.filebuffers.ITextFileBufferManager;
 import org.eclipse.core.filebuffers.LocationKind;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.IDocument;
@@ -21,6 +20,10 @@ import org.eclipse.jface.text.ITextSelection;
 
 import br.ufal.ic.colligens.activator.Colligens;
 
+/**
+ * @author Thiago Emmanuel
+ *
+ */
 public class Log {
 
 	private String feature;
@@ -28,17 +31,16 @@ public class Log {
 	private String message;
 	private FileProxy fileProxy;
 	private int line;
-	// private int column;
 	private ITextSelection iTextSelection;
 
-	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.problem";
+	public static final String MARKER_TYPE = Colligens.PLUGIN_ID + ".problem";
 
-	public Log(FileProxy fileProxy, String line, String column, String feature,
+	public Log(FileProxy fileProxy, String line, String feature,
 			String severity, String message) {
 		this.fileProxy = fileProxy;
 
 		this.line = Integer.parseInt(line.trim());
-		// this.column = Integer.parseInt(column.trim());
+		
 		this.feature = feature.trim();
 
 		if (severity == null) {
@@ -89,6 +91,10 @@ public class Log {
 		return (IFile) fileProxy.getFileIResource();
 	}
 
+	public FileProxy getFileProxy() {
+		return fileProxy;
+	}
+
 	public ITextSelection selection() {
 
 		if (iTextSelection == null) {
@@ -98,9 +104,9 @@ public class Log {
 			int nextLineNumber = 0;
 			boolean notLine = true;
 
-			File parserFile = new File(Colligens.getDefault()
-					.getConfigDir().getAbsolutePath()
-					+  System.getProperty("file.separator") + "lexOutput.c");
+			File parserFile = new File(Colligens.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ System.getProperty("file.separator") + "lexOutput.c");
 
 			File file = new File(fileProxy.getFileReal());
 			try {
@@ -189,7 +195,7 @@ public class Log {
 				fileReader.close();
 
 				IDocument document = this.getDocument();
-				
+
 				offset = document.getLineOffset(correctLine);
 				correctColunm = document.getLineLength(correctLine);
 			} catch (FileNotFoundException e) {
@@ -232,18 +238,9 @@ public class Log {
 	private IDocument getDocument() throws CoreException {
 		ITextFileBufferManager.DEFAULT.connect(this.getFile().getFullPath(),
 				LocationKind.IFILE, null);
-		return FileBuffers.getTextFileBufferManager()
-				.getTextFileBuffer(this.getFile().getFullPath(), LocationKind.IFILE)
-				.getDocument();
-	}
-
-	public void removeMarker() {
-		// remove markers
-		try {
-			this.getFile().deleteMarkers(Log.MARKER_TYPE, false,
-					IResource.DEPTH_ZERO);
-		} catch (CoreException e) {
-			// e.printStackTrace();
-		}
+		return FileBuffers
+				.getTextFileBufferManager()
+				.getTextFileBuffer(this.getFile().getFullPath(),
+						LocationKind.IFILE).getDocument();
 	}
 }

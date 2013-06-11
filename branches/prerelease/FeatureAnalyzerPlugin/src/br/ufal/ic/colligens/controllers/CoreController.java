@@ -1,5 +1,7 @@
 package br.ufal.ic.colligens.controllers;
 
+import java.util.List;
+
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -13,6 +15,7 @@ import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.TypeChef;
+import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
 
@@ -105,12 +108,14 @@ public class CoreController {
 					// Typechef checks performed at least one analysis
 					if (typeChef.isFinish()) {
 						// get list of error logs
-						Object[] logs;
-						logs = typeChef.getLogs();
+//						Object[] logs;
+//						logs = typeChef.getLogs();
+						List<FileProxy> logs;
+						logs = typeChef.getFilesLog();
 						// returns the list to view
-						analyzerView.adaptTo(logs);
+						analyzerView.setInput(logs);
 						//
-						if (logs.length <= 0) {
+						if (logs.isEmpty()) {
 							MessageDialog.openInformation(window.getShell(),
 									Colligens.PLUGIN_NAME,
 									"This file was successfully verified!");

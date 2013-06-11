@@ -4,6 +4,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 
+import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 class ViewSorter extends ViewerSorter {
@@ -34,24 +35,40 @@ class ViewSorter extends ViewerSorter {
 
 	@Override
 	public int compare(Viewer viewer, Object e1, Object e2) {
-		Log log1 = (Log) e1;
-		Log log2 = (Log) e2;
 		int rc = 0;
+
 		switch (propertyIndex) {
 		case 0:
-			rc = log1.getMessage().compareTo(log2.getMessage());
+			if (e1 instanceof FileProxy && e2 instanceof FileProxy) {
+				rc = ((FileProxy) e1).getFileName().compareTo(
+						((FileProxy) e2).getFileName());
+			}
+			if (e1 instanceof Log && e2 instanceof Log) {
+				rc = ((Log) e1).getMessage().compareTo(
+						((Log) e2).getMessage());
+			}
 			break;
 		case 1:
-			rc = log1.getFileName().compareTo(log2.getFileName());
+			if (e1 instanceof Log && e2 instanceof Log) {
+				rc = ((Log) e1).getFileName().compareTo(
+						((Log) e2).getFileName());
+			}
 			break;
 		case 2:
-			rc = log1.getPath().compareTo(log2.getPath());
+			if (e1 instanceof Log && e2 instanceof Log) {
+				rc = ((Log) e1).getPath().compareTo(
+						((Log) e2).getPath());
+			}
 			break;
 		case 3:
-			rc = log1.getFeature().compareTo(log2.getFeature());
+			if (e1 instanceof Log && e2 instanceof Log) {
+				rc = ((Log) e1).getFeature().compareTo(
+						((Log) e2).getFeature());
+			}
 		default:
 			rc = 0;
 		}
+
 		// If descending order, flip the direction
 		if (direction == DESCENDING) {
 			rc = -rc;

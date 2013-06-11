@@ -1,10 +1,13 @@
 package br.ufal.ic.colligens.views;
 
+import java.util.List;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.util.FileProxy;
 
 public class InvalidConfigurationsView extends ViewPart {
 
@@ -14,6 +17,7 @@ public class InvalidConfigurationsView extends ViewPart {
 	public InvalidConfigurationsView() {
 		viewController = InvalidConfigurationsViewController.getInstance();
 		viewController.setView(this);
+		this.setTitleToolTip("Invalid Configurations - Colligens");
 	}
 
 	@Override
@@ -21,8 +25,8 @@ public class InvalidConfigurationsView extends ViewPart {
 		viewController.createPartControl(parent);
 	}
 	
-	public void adaptTo(Object[] logs) {
-		viewController.adaptTo(logs);
+	public void setInput(List<FileProxy> logs) {
+		viewController.setInput(logs);
 	}
 	
 	@Override

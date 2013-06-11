@@ -1,10 +1,14 @@
 package br.ufal.ic.colligens.controllers.Invalidconfigurations;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
+import java.util.List;
+
+import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
- class ViewContentProvider implements IStructuredContentProvider {
-	private Object[] logs = new Object[]{};
+import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.util.Log;
+
+class ViewContentProvider implements ITreeContentProvider {
 
 	@Override
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -14,12 +18,37 @@ import org.eclipse.jface.viewers.Viewer;
 	public void dispose() {
 	}
 
-	public void setLogs(Object[] logs) {
-		this.logs = logs;
+	@Override
+	public Object[] getElements(Object files) {
+		return getChildren(files);
 	}
 
 	@Override
-	public Object[] getElements(Object parent) {
-		return logs;
+	public Object[] getChildren(Object parentElement) {
+		if (parentElement instanceof List)
+			return ((List<?>) parentElement).toArray();
+		if (parentElement instanceof FileProxy) {
+			List<Log> logs = ((FileProxy) parentElement).getLogs();
+			return logs.toArray();
+		}
+		return new Object[0];
+	}
+
+	@Override
+	public Object getParent(Object element) {
+		if (element instanceof Log) {
+			return ((Log) element).getFileProxy();
+		}
+		return null;
+	}
+
+	@Override
+	public boolean hasChildren(Object element) {
+		if (element instanceof List)
+			return ((List<?>) element).size() > 0;
+		if (element instanceof FileProxy) {
+			return (!((FileProxy) element).getLogs().isEmpty());
+		}
+		return false;
 	}
 }

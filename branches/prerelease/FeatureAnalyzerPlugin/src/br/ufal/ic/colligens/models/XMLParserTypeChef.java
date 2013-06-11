@@ -2,8 +2,6 @@ package br.ufal.ic.colligens.models;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.jdom2.Document;
@@ -15,21 +13,29 @@ import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
+/**
+ * @author Thiago Emmanuel
+ * 
+ */
 public class XMLParserTypeChef {
 	private SAXBuilder builder;
 	private File xmlFile;
 	private FileProxy fileProxie;
-	private List<Log> logList;
 
 	public XMLParserTypeChef() {
 		builder = new SAXBuilder();
-		logList = new ArrayList<Log>();
 	}
 
+	/**
+	 * @param fileProxie
+	 */
 	public void setFile(FileProxy fileProxie) {
 		this.fileProxie = fileProxie;
 	}
 
+	/**
+	 * @param xmlFile
+	 */
 	public void setXMLFile(File xmlFile) {
 		this.xmlFile = xmlFile != null ? xmlFile : this.xmlFile;
 	}
@@ -62,34 +68,12 @@ public class XMLParserTypeChef {
 
 		for (int i = 0; i < list.size(); i++) {
 			Element node = list.get(i);
-			// String file =
-			// node.getChild("position").getChildText("file").trim();
-			// for (Iterator<FileProxy> iterator = fileProxies.iterator();
-			// iterator
-			// .hasNext();) {
-			// FileProxy fileProxy = (FileProxy) iterator.next();
-			// if (file.contains(fileProxy.getFileTemp())) {
-			// file = fileProxy.getFileReal();
-			logList.add(new Log(fileProxie, node.getChild(
-					"position").getChildText("line"), node.getChild("position")
-					.getChildText("col"), node.getChildText("featurestr"), node
-					.getChildText("severity"), node.getChildText("msg")));
-			// break;
-			// }
-			// }
+			Log log = new Log(fileProxie, node.getChild("position")
+					.getChildText("line"), node.getChildText("featurestr"),
+					node.getChildText("severity"), node.getChildText("msg"));
+			fileProxie.getLogs().add(log);
 		}
 
 	}
 
-	public List<Log> getLogList() {
-		return logList;
-	}
-
-	public void clearLogList() {
-		logList.clear();
-	}
-
-	public Object[] getLogs() {
-		return logList.toArray(new Log[logList.size()]);
-	}
 }

@@ -38,6 +38,7 @@ import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurati
 import br.ufal.ic.colligens.controllers.invalidproduct.InvalidProductViewController;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.TypeChef;
+import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
 import br.ufal.ic.colligens.util.ProjectConfigurationErrorLogger;
 import de.ovgu.featureide.core.CorePlugin;
@@ -466,9 +467,11 @@ public class CPPComposer extends PPComposerExtensionClass {
 							.getInstance();
 					if (typeChef.isFinish()) {
 						viewController.showView();
-						Object[] logs = typeChef.getLogs();
-						viewController.adaptTo(logs);
-						if (logs.length > 0) {
+//						Object[] logs = typeChef.getLogs();
+//						viewController.adaptTo(logs);
+						List<FileProxy> logs = typeChef.getFilesLog();
+						viewController.setInput(logs);
+						if (!logs.isEmpty()) {
 							continueCompilationFlag = MessageDialog.openQuestion(
 									display.getActiveShell(),
 									"Error!",

@@ -8,18 +8,22 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 
 import br.ufal.ic.colligens.activator.Colligens;
 
 /**
- * @author thiago
+ * @author Thiago Emmanuel
  * 
  */
 public class FileProxy {
 	private String path;
 	private IResource fileIResource;
+	private List<Log> logs;
 
 	public FileProxy(IResource fileIResource) {
 		this.fileIResource = fileIResource;
@@ -37,7 +41,8 @@ public class FileProxy {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		System.out.println(getFileTemp());
+
+		this.logs = new LinkedList<Log>();
 	}
 
 	public String getFileName() {
@@ -58,6 +63,10 @@ public class FileProxy {
 
 	public IResource getFileIResource() {
 		return fileIResource;
+	}
+
+	public List<Log> getLogs() {
+		return logs;
 	}
 
 	/**
@@ -118,11 +127,23 @@ public class FileProxy {
 
 		tempFile.deleteOnExit();
 
-		if(tempFile.exists()){
+		if (tempFile.exists()) {
 			tempFile.delete();
 
 		}
 		temp.renameTo(tempFile);
 
+		this.deleteMarkers();
+
+	}
+
+	public void deleteMarkers() {
+		// remove markers
+		try {
+			this.getFileIResource().deleteMarkers(Log.MARKER_TYPE, false,
+					IResource.DEPTH_ZERO);
+		} catch (CoreException e) {
+			// e.printStackTrace();
+		}
 	}
 }

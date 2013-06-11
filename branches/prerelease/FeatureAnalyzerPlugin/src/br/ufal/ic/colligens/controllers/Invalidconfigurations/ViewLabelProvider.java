@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
+import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
@@ -13,6 +14,13 @@ class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 	public String getColumnText(Object obj, int index) {
 		switch (index) {
 		case 0:
+			if (obj instanceof FileProxy)
+				return ((FileProxy) obj).getFileName()
+						+ " ("
+						+ ((FileProxy) obj).getLogs().size()
+						+ " error"
+						+ ((((FileProxy) obj).getLogs().size() == 1) ? "" : "s")
+						+ ")";
 			if (obj instanceof Log)
 				return ((Log) obj).getMessage();
 		case 1:
@@ -36,14 +44,16 @@ class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 	public Image getColumnImage(Object obj, int index) {
 		switch (index) {
 		case 0:
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
+				return PlatformUI.getWorkbench().getSharedImages()
+						.getImage(ISharedImages.IMG_OBJS_ERROR_TSK);
 		case 1:
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_FILE);
+			if (obj instanceof Log)
+				return PlatformUI.getWorkbench().getSharedImages()
+						.getImage(ISharedImages.IMG_OBJ_FILE);
 		case 2:
-			return PlatformUI.getWorkbench().getSharedImages()
-					.getImage(ISharedImages.IMG_OBJ_FOLDER);
+			if (obj instanceof Log)
+				return PlatformUI.getWorkbench().getSharedImages()
+						.getImage(ISharedImages.IMG_OBJ_FOLDER);
 		default:
 			return null;
 		}
