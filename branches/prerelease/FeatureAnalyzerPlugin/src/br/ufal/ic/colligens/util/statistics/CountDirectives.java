@@ -47,13 +47,14 @@ public class CountDirectives {
 		String strLine;
 
 		while ((strLine = br.readLine()) != null) {
-			numberLine++;
-			strLine = strLine.trim();
+			strLine = strLine.replaceAll(
+					"(?:(/)?\\*(?:[^*]|(?:\\*+[^*/]))*(\\*+/)*)|(?://.*)", "");
+			if(!strLine.trim().isEmpty()){
+				numberLine++;
+			}
+			
 
 			if (strLine.startsWith("#if") || strLine.startsWith("#elif")) {
-
-				strLine = strLine.replaceAll(
-						"(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)", "");
 
 				String directive = strLine.replace("#ifdef", "")
 						.replace("#ifndef", "").replace("#if", "");

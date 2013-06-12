@@ -59,7 +59,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private static final String PLUGIN_CDT_ID = "org.eclipse.cdt";
 	private static final String PLUGIN_WARNING = "The required bundle "
 			+ PLUGIN_CDT_ID + " is not installed.";
-	public static final String COMPOSER_ID = "br.ufal.ic.featureanalyzer.cppcomposer";
+    public static final String COMPOSER_ID = Colligens.PLUGIN_ID + ".cppcomposer";
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
 	public static final String CC_NATURE = "org.eclipse.cdt.core.ccnature";
 
@@ -509,6 +509,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
 			LinkedList<String> fileList, IFolder sourceFolder,
 			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
+		
+		System.out.println("Aqui!");
 
 		String fullFilePath = null;
 		LinkedList<String> preProcessorArgs;
