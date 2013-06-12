@@ -532,12 +532,20 @@ public class CPPComposer extends PPComposerExtensionClass {
 						&& !res.getFileExtension().equals("h")) {
 					continue;
 				}
+				String[] name = res.getName().split("\\.");
+				/**
+				 * 
+				 * 
+				 * PRECISO DA LISTA DE TODOS OS ARQUIVOS AQUI!
+				 * 
+				 * 
+				 * 
+				 */
 				fullFilePath = res.getLocation().toOSString();
 				fileList.add(fullFilePath);
 				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
 				preProcessorArgs.add(fullFilePath);
 				preProcessorArgs.add("-o");
-				String[] name = res.getName().split("\\.");
 				preProcessorArgs.add(buildFolder.getLocation().toOSString()
 						+ System.getProperty("file.separator") + name[0]
 						+ "_preprocessed." + res.getFileExtension());

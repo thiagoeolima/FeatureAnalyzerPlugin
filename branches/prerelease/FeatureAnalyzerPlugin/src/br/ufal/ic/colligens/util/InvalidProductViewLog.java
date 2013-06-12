@@ -11,9 +11,11 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
+import br.ufal.ic.colligens.activator.Colligens;
+
 public class InvalidProductViewLog {
 
-	public static final String MARKER_TYPE = "br.ufal.ic.featureanalyzer.invalidproduct";
+	public static final String MARKER_TYPE = Colligens.PLUGIN_ID + ".invalidproduct";
 
 	private String productName;
 	private String relativePath;
