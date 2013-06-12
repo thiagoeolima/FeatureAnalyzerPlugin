@@ -15,6 +15,7 @@ import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IIncludeReference;
+import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -50,20 +51,21 @@ import de.ovgu.featureide.fm.core.configuration.Configuration;
 
 /**
  * A featureIDE composer to compose C files.
- * @author Dalton
- * thanks to
- * @author Tom Brosch 
- * @author Jens Meinicke 
+ * 
+ * @author Dalton thanks to
+ * @author Tom Brosch
+ * @author Jens Meinicke
  * @author Christoph Giesel
  * @author Marcus Kamieth
- *
+ * 
  */
 public class CPPComposer extends PPComposerExtensionClass {
 
 	private static final String PLUGIN_CDT_ID = "org.eclipse.cdt";
 	private static final String PLUGIN_WARNING = "The required bundle "
 			+ PLUGIN_CDT_ID + " is not installed.";
-    public static final String COMPOSER_ID = Colligens.PLUGIN_ID + ".cppcomposer";
+	public static final String COMPOSER_ID = Colligens.PLUGIN_ID
+			+ ".cppcomposer";
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
 	public static final String CC_NATURE = "org.eclipse.cdt.core.ccnature";
 
@@ -72,8 +74,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 	private CPPModelBuilder cppModelBuilder;
 
-	/* If the user runs the compileAllProducs and the typechef warn about errors in the project
-	 * the user needs to choose if want to continue with the compilation
+	/*
+	 * If the user runs the compileAllProducs and the typechef warn about errors
+	 * in the project the user needs to choose if want to continue with the
+	 * compilation
 	 */
 	private static boolean continueCompilationFlag = true;
 	/* manage the compilation execution */
@@ -143,10 +147,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	@Override
 	public void performFullBuild(IFile config) {
 
-		 if (!isPluginInstalled(PLUGIN_CDT_ID)) {
-		 generateWarning(PLUGIN_WARNING);
-		 }
-		
+		if (!isPluginInstalled(PLUGIN_CDT_ID)) {
+			generateWarning(PLUGIN_WARNING);
+		}
+
 		if (!prepareFullBuild(config))
 			return;
 		//
@@ -370,8 +374,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	}
 
 	/**
-	 * Prepare the directives to C PreProcessor
-	 * adding -D arg for each feature
+	 * Prepare the directives to C PreProcessor adding -D arg for each feature
 	 * 
 	 * @param myActivatedFeatures
 	 *            list of all activated features for one build
@@ -415,8 +418,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 				// System.out.println(includes[i].getElementName());
 				compilerArgs.add("-I" + includes[i].getElementName());
 			}
-			if (!Colligens.getDefault().getPreferenceStore()
-					.getString("LIBS").contentEquals("")) {
+			if (!Colligens.getDefault().getPreferenceStore().getString("LIBS")
+					.contentEquals("")) {
 				compilerArgs.add(Colligens.getDefault().getPreferenceStore()
 						.getString("LIBS"));
 			}
@@ -429,9 +432,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
 
-
-			//if the user don't want to continue the compilation
-			//only the preprocessment occurs
+			// if the user don't want to continue the compilation
+			// only the preprocessment occurs
 			if (!continueCompilationFlag) {
 				return;
 			}
@@ -474,8 +476,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 							.getInstance();
 					if (typeChef.isFinish()) {
 						viewController.showView();
-//						Object[] logs = typeChef.getLogs();
-//						viewController.adaptTo(logs);
+						// Object[] logs = typeChef.getLogs();
+						// viewController.adaptTo(logs);
 						List<FileProxy> logs = typeChef.getFilesLog();
 						viewController.setInput(logs);
 						if (!logs.isEmpty()) {
@@ -541,6 +543,40 @@ public class CPPComposer extends PPComposerExtensionClass {
 				 * 
 				 * 
 				 */
+				//
+				String projectName = res.getProject().getName();
+				
+				ICProject project = CoreModel.getDefault().getCModel().getCProject(projectName);
+
+				if (project == null) {
+//					throw new PlatformException("Not a valid project C");
+				}
+
+				List<String> listFiles = new ArrayList<String>();
+
+				try {
+
+					ISourceRoot sourceRoots[] = project.getSourceRoots();
+					for (int i = 0; i < sourceRoots.length; i++) {
+						if (!sourceRoots[i].getPath().toOSString()
+								.equals(project.getProject().getName())) {
+							ProjectExplorerController explorerController = new ProjectExplorerController();
+							explorerController
+									.addResource(sourceRoots[i].getResource());
+
+							listFiles.addAll(explorerController.getListToString());
+						}
+					}
+					if (listFiles.isEmpty()) {
+//						throw new PlatformException(
+//								"Your project does not have a source folder (ex.: /src).");
+					}
+				} catch (CModelException e1) {
+//					throw new PlatformException(
+//							"Your project does not have a source folder (ex.: /src).");
+				}
+				// fim
+
 				fullFilePath = res.getLocation().toOSString();
 				fileList.add(fullFilePath);
 				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
@@ -672,8 +708,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
-		
-		//do the typeChef analysis before the products compilation
+
+		// do the typeChef analysis before the products compilation
 		syncTypeChefAnalyzes();
 
 		List<String> myActivatedFeatures = new LinkedList<String>();
@@ -685,7 +721,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		runBuild(getActivatedFeatureArgs(myActivatedFeatures),
 				featureProject.getSourceFolder(), folder);
 
-		//displays the products with errors
+		// displays the products with errors
 		verifyVariantsWithProblems();
 
 	}

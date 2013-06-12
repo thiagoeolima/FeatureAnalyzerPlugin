@@ -51,8 +51,8 @@ public class ProjectExplorerController {
 	public void addResource(IResource iResource) {
 		if (iResource instanceof IFile) {
 			// adds .c and .h files only
-			if (iResource.getLocation().toString().trim().endsWith(".c")
-					|| iResource.getLocation().toString().trim().endsWith(".h")) {
+			if (iResource.getFileExtension().equals("c")
+					|| iResource.getFileExtension().equals("h")) {
 				iResources.add(iResource);
 			}
 		} else if (iResource instanceof IFolder) {

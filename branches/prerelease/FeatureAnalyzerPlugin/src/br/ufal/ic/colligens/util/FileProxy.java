@@ -70,7 +70,7 @@ public class FileProxy {
 	}
 
 	/**
-	 * @return
+	 * @return full path of the temporary file
 	 */
 	public String getFileTemp() {
 		return Colligens.getDefault().getConfigDir().getAbsolutePath()
