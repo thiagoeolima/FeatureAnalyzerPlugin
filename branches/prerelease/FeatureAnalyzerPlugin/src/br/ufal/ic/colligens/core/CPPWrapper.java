@@ -17,7 +17,7 @@ import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.util.ProjectConfigurationErrorLogger;
 
 /**
- * provisional class until we can use the CDT internal builder
+ * provisional class until we change to the CDT internal builder
  * @author Francisco Dalton
  * @author Thiago Emmanuel
  *

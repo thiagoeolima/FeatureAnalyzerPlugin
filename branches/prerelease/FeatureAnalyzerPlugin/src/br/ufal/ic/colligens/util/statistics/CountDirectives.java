@@ -49,7 +49,8 @@ public class CountDirectives {
 		while ((strLine = br.readLine()) != null) {
 			strLine = strLine.replaceAll(
 					"(?:(/)?\\*(?:[^*]|(?:\\*+[^*/]))*(\\*+/)*)|(?://.*)", "");
-			if(!strLine.trim().isEmpty()){
+			strLine = strLine.trim();
+			if(!strLine.isEmpty()){
 				numberLine++;
 			}
 			

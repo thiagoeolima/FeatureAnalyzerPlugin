@@ -34,16 +34,6 @@ public class CPPModelBuilder extends PPModelBuilder {
 		super(featureProject);
 	}
 
-	/**
-	 * returns true if the regular expression regex can be matched by a
-	 * substring of text
-	 */
-	protected static boolean containsRegex(String text, String regex) {
-		Pattern pattern = Pattern.compile(regex);
-		Matcher matcher = pattern.matcher(text);
-		return matcher.find();
-	}
-
 	@Override
 	public LinkedList<FSTDirective> buildModelDirectivesForFile(
 			Vector<String> lines) {
@@ -56,24 +46,24 @@ public class CPPModelBuilder extends PPModelBuilder {
 			String line = lines.get(i);
 
 			// if line is preprocessor directive
-			if (containsRegex(line, "\\s*#")) {
+			if (line.matches("\\s*#")) {
 				FSTDirectiveCommand command = null;
 
-				if (containsRegex(line, "\\s*#if[ (]")) {// 1
+				if (line.matches("\\s*#if[ (]")) {// 1
 					command = FSTDirectiveCommand.IF;
-				} else if (containsRegex(line, "\\s*#ifdef[ (]")) {// 2
+				} else if (line.matches("\\s*#ifdef[ (]")) {// 2
 					command = FSTDirectiveCommand.IFDEF;
-				} else if (containsRegex(line, "\\s*#ifndef[ (]")) {// 3
+				} else if (line.matches("\\s*#ifndef[ (]")) {// 3
 					command = FSTDirectiveCommand.IFNDEF;
-				} else if (containsRegex(line, "\\s*#elif[ (]")) {// 4
+				} else if (line.matches("\\s*#elif[ (]")) {// 4
 					command = FSTDirectiveCommand.ELIF;
-				} else if (containsRegex(line, "\\s*#else")) {// 7
+				} else if (line.matches("\\s*#else")) {// 7
 					command = FSTDirectiveCommand.ELSE;
-				} else if (containsRegex(line, "\\s*#define[ (]")) {// 9
+				} else if (line.matches("\\s*#define[ (]")) {// 9
 					command = FSTDirectiveCommand.DEFINE;
-				} else if (containsRegex(line, "//\\s*#undef[ (]")) {// 10
+				} else if (line.matches("//\\s*#undef[ (]")) {// 10
 					command = FSTDirectiveCommand.UNDEFINE;
-				} else if (!containsRegex(line, "//\\s*#endif")) {// 11
+				} else if (!line.matches("//\\s*#endif")) {// 11
 					continue;
 				}
 

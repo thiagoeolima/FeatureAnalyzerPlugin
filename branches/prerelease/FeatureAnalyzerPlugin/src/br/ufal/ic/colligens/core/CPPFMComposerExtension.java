@@ -21,8 +21,7 @@ import de.ovgu.featureide.fm.core.FMComposerExtension;
 import de.ovgu.featureide.fm.core.FMCorePlugin;
 
 /**
- * CPP featureModel extensions copied from Antenna specific feature model
- * extensions.
+ * CPP specific feature model extensions.
  * @author Francisco Dalton
  * thanks to:
  * @author Christoph Giesel

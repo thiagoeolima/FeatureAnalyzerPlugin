@@ -51,7 +51,11 @@ import de.ovgu.featureide.fm.core.configuration.Configuration;
 /**
  * A featureIDE composer to compose C files.
  * @author Dalton
- * thanks to Tom Brosch, Jens Meinicke, Christoph Giesel,Marcus Kamieth
+ * thanks to
+ * @author Tom Brosch 
+ * @author Jens Meinicke 
+ * @author Christoph Giesel
+ * @author Marcus Kamieth
  *
  */
 public class CPPComposer extends PPComposerExtensionClass {
@@ -63,13 +67,16 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public static final String C_NATURE = "org.eclipse.cdt.core.cnature";
 	public static final String CC_NATURE = "org.eclipse.cdt.core.ccnature";
 
-	/** pattern for replacing preprocessor commands like "//#if" */
+	/* pattern for replacing preprocessor commands like "//#if" */
 	static final Pattern replaceCommandPattern = Pattern.compile("#(.+?)\\s");
 
 	private CPPModelBuilder cppModelBuilder;
 
-
+	/* If the user runs the compileAllProducs and the typechef warn about errors in the project
+	 * the user needs to choose if want to continue with the compilation
+	 */
 	private static boolean continueCompilationFlag = true;
+	/* manage the compilation execution */
 	private static Set<Long> threadInExecId = new HashSet<Long>();
 
 	public CPPComposer() {
@@ -363,7 +370,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	}
 
 	/**
-	 * Add -D arg for each feature
+	 * Prepare the directives to C PreProcessor
+	 * adding -D arg for each feature
 	 * 
 	 * @param myActivatedFeatures
 	 *            list of all activated features for one build
@@ -421,10 +429,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 			prepareFilesConfiguration(featureArgs, fileList, sourceFolder,
 					buildFolder, cpp);
 
-			// If the typeChefAnalyzes conclude that the user don't want to
-			// proceeed the compilation in case of error or the user only
-			// wants preprocess files, return without
-			// doing it.
+
+			//if the user don't want to continue the compilation
+			//only the preprocessment occurs
 			if (!continueCompilationFlag) {
 				return;
 			}
@@ -496,9 +503,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 * @param featureArgs
 	 *            arguments to CPP preprocessor and compiler
 	 * @param fileList
-	 *            list of all files found in all folders and subfolders
+	 *            list of all files found in folders and subfolders
 	 * @param sourceFolder
-	 *            the origem of files
+	 *            the origin of files
 	 * @param buildFolder
 	 *            the destination of the compilation/preprocessment
 	 * @param cpp
@@ -509,8 +516,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
 			LinkedList<String> fileList, IFolder sourceFolder,
 			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
-		
-		System.out.println("Aqui!");
 
 		String fullFilePath = null;
 		LinkedList<String> preProcessorArgs;
@@ -603,7 +608,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	}
 
 	/**
-	 * Lock the execution of all threads until the user decide what do if the
+	 * Lock the execution of all threads until the user decide what to do if the
 	 * project has errors
 	 */
 	private synchronized void syncTypeChefAnalyzes() {
@@ -639,7 +644,6 @@ public class CPPComposer extends PPComposerExtensionClass {
 						for (String s : ProjectConfigurationErrorLogger
 								.getInstance().getProjectsList()) {
 							logs.add(new InvalidProductViewLog(s));
-							System.out.println(s);
 						}
 						invalidProductViewController.adaptTo(logs
 								.toArray(new InvalidProductViewLog[logs.size()]));
@@ -660,13 +664,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 	public void buildConfiguration(IFolder folder, Configuration configuration,
 			String congurationName) {
 		super.buildConfiguration(folder, configuration, congurationName);
-
+		
+		//do the typeChef analysis before the products compilation
 		syncTypeChefAnalyzes();
 
-		/**
-		 * synchronized method above are causing some errors... To solve that,
-		 * use my own feature list
-		 */
 		List<String> myActivatedFeatures = new LinkedList<String>();
 
 		for (Feature feature : configuration.getSelectedFeatures()) {
@@ -676,6 +677,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 		runBuild(getActivatedFeatureArgs(myActivatedFeatures),
 				featureProject.getSourceFolder(), folder);
 
+		//displays the products with errors
 		verifyVariantsWithProblems();
 
 	}
