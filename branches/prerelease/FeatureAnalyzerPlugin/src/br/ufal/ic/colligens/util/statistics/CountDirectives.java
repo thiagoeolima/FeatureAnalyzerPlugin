@@ -7,7 +7,12 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+/**
+ * @author Thiago Emmanuel
+ * @author Francisco Dalton
+ */
 public class CountDirectives {
 
 	public Set<String> directives = new HashSet<String>();
@@ -47,15 +52,33 @@ public class CountDirectives {
 		String strLine;
 
 		while ((strLine = br.readLine()) != null) {
-			
-			//FIXME if the line starts with * it assumes that is a comment
-			strLine = strLine.replaceAll(
-					"(?:(/)?\\*(?:[^*]|(?:\\*+[^*/]))*(\\*+/)*)|(?://.*)", "");
+
+			// removes // style comments
+			strLine = strLine.replaceAll("//.*", "");
+			// removes comments
+			if (Pattern.matches(".*/\\*.*", strLine)) {
+				if (Pattern.matches(".*/\\*.*\\*/.*", strLine)) {
+					strLine = strLine.replaceAll("/\\*.*\\*/", "");
+				} else {
+					strLine = "";
+					while ((strLine = br.readLine()) != null) {
+						if (Pattern.matches(".*\\*/.*", strLine)) {
+							strLine = strLine.replaceAll(".*\\*/", "");
+							break;
+						} else {
+							strLine = "";
+						}
+					}
+				}
+			}
+
+			// strLine =
+			// strLine.replaceAll("(?:(/)?\\*(?:[^*]|(?:\\*+[^*/]))*(\\*+/)*)|(?://.*)",
+			// "");
 			strLine = strLine.trim();
-			if(!strLine.isEmpty()){
+			if (!strLine.isEmpty()) {
 				numberLine++;
 			}
-			
 
 			if (strLine.startsWith("#if") || strLine.startsWith("#elif")) {
 

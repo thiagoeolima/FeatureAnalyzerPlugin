@@ -13,6 +13,14 @@ import de.ovgu.featureide.fm.ui.AbstractUIPlugin;
 /**
  * The activator class controls the plug-in life cycle
  */
+/** fzddaeaeae
+ * 
+ * @author Dalton
+ *
+ *
+ */
+ /**/
+
 public class Colligens extends AbstractUIPlugin {
 
 	// The plug-in ID
