@@ -176,7 +176,7 @@ public class TypeChef {
 		fo.parseOptions((String[]) paramters.toArray(new String[paramters
 				.size()]));
 
-		fo.getFiles().add(fileProxy.getFileTemp());
+		fo.getFiles().add(fileProxy.getFileToAnalyse());
 		fo.setPrintToStdOutput(false);
 
 	}
@@ -300,7 +300,7 @@ public class TypeChef {
 		}
 
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(fileProxy.getFileTemp());
+		args.add(fileProxy.getFileToAnalyse());
 
 		String typeChefPreference = Colligens.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");

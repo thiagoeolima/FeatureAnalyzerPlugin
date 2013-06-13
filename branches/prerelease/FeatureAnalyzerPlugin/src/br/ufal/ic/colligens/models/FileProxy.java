@@ -73,9 +73,9 @@ public class FileProxy {
 	}
 
 	/**
-	 * @return full path of the temporary file
+	 * @return full path of the file to analysis
 	 */
-	public String getFileTemp() {
+	public String getFileToAnalyse() {
 		if (Colligens.getDefault().getPreferenceStore()
 				.getBoolean("GLOBAL_ANALYZE")) {
 			return getFileReal();
@@ -130,7 +130,7 @@ public class FileProxy {
 		in.close();
 		out.close();
 
-		File tempFile = new File(getFileTemp());
+		File tempFile = new File(getFileToAnalyse());
 
 		tempFile.deleteOnExit();
 

@@ -68,7 +68,7 @@ public class XMLParserTypeChef {
 		for (int i = 0; i < list.size(); i++) {
 			Element node = list.get(i);
 			String file = node.getChild("position").getChildText("file").trim();
-			if (file.contains(fileProxie.getFileTemp())) {
+			if (file.contains(fileProxie.getFileToAnalyse())) {
 				Log log = new Log(fileProxie, node.getChild("position")
 						.getChildText("line"), node.getChildText("featurestr"),
 						node.getChildText("severity"), node.getChildText("msg"));
