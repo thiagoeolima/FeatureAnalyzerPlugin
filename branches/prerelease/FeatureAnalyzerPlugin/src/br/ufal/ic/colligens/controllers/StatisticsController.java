@@ -19,9 +19,6 @@ public class StatisticsController {
 		pkgExplorerController = new ProjectExplorerController();
 	}
 
-	/**
-	 * @param window
-	 */
 	public void setWindow(IWorkbenchWindow window) {
 		pkgExplorerController.setWindow(window);
 	}

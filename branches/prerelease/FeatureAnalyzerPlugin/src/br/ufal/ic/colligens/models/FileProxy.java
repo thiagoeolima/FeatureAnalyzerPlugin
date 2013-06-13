@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.util;
+package br.ufal.ic.colligens.models;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -15,6 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 
 import br.ufal.ic.colligens.activator.Colligens;
+import br.ufal.ic.colligens.util.Log;
 
 /**
  * @author Thiago Emmanuel
@@ -22,11 +23,11 @@ import br.ufal.ic.colligens.activator.Colligens;
  */
 public class FileProxy {
 	private String path;
-	private IResource fileIResource;
+	private IResource iResource;
 	private List<Log> logs;
 
-	public FileProxy(IResource fileIResource) {
-		this.fileIResource = fileIResource;
+	public FileProxy(IResource iResource) {
+		this.iResource = iResource;
 
 		path = getFullPath().substring(0,
 				getFullPath().length() - getFileName().length());
@@ -35,18 +36,20 @@ public class FileProxy {
 			path = path.replace("/", "\\");
 		}
 
-		try {
-			generate();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (!Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			try {
+				generate();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-
 		this.logs = new LinkedList<Log>();
 	}
 
 	public String getFileName() {
-		return fileIResource.getName();
+		return iResource.getName();
 	}
 
 	public String getPath() {
@@ -54,15 +57,15 @@ public class FileProxy {
 	}
 
 	public String getFullPath() {
-		return fileIResource.getFullPath().toOSString();
+		return iResource.getFullPath().toOSString();
 	}
 
 	public String getFileReal() {
-		return fileIResource.getLocation().toString();
+		return iResource.getLocation().toString();
 	}
 
 	public IResource getFileIResource() {
-		return fileIResource;
+		return iResource;
 	}
 
 	public List<Log> getLogs() {
@@ -73,6 +76,10 @@ public class FileProxy {
 	 * @return full path of the temporary file
 	 */
 	public String getFileTemp() {
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			return getFileReal();
+		}
 		return Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects" + path
 				+ getFileName();

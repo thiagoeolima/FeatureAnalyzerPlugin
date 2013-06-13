@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {

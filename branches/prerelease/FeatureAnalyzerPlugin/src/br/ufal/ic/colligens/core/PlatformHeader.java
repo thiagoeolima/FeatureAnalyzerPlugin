@@ -59,6 +59,9 @@ public class PlatformHeader {
 
 		if (platform.exists())
 			return;
+		
+		new File(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "projects").mkdirs();
 
 		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
@@ -120,10 +123,12 @@ public class PlatformHeader {
 		// "-I"
 		// + FeatureAnalyzer.getDefault().getPreferenceStore()
 		// .getString("SystemIncludes"));
-		if (!Colligens.getDefault().getPreferenceStore()
-				.getString("LIBS").contentEquals("")) {
-			list.add(0, Colligens.getDefault().getPreferenceStore()
-					.getString("LIBS"));
+		if (!Colligens.getDefault().getPreferenceStore().getString("LIBS")
+				.contentEquals("")) {
+			list.add(
+					0,
+					Colligens.getDefault().getPreferenceStore()
+							.getString("LIBS"));
 		}
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
@@ -145,8 +150,8 @@ public class PlatformHeader {
 							"UTF-8")));
 			boolean x = true;
 
-			File platformTemp = new File(Colligens.getDefault()
-					.getConfigDir().getAbsolutePath()
+			File platformTemp = new File(Colligens.getDefault().getConfigDir()
+					.getAbsolutePath()
 					+ System.getProperty("file.separator")
 					+ "projects"
 					+ System.getProperty("file.separator") + "temp.h");
@@ -226,9 +231,9 @@ public class PlatformHeader {
 					}
 			}
 		}
-		
+
 		this.listFilesCDT.clear();
-		
+
 		addFiles(new File(ResourcesPlugin.getWorkspace().getRoot()
 				.getLocation().toString()
 				+ System.getProperty("file.separator") + projectName));
@@ -308,16 +313,17 @@ public class PlatformHeader {
 				+ System.getProperty("file.separator")
 				+ "projects"
 				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "2.h");
+				+ project.getProject().getName() + "_CDT.h");
 
 		if (platform.exists())
 			return;
 
-		File platformTemp = new File(Colligens.getDefault()
-				.getConfigDir().getAbsolutePath()
+		File platformTemp = new File(Colligens.getDefault().getConfigDir()
+				.getAbsolutePath()
 				+ System.getProperty("file.separator")
 				+ "projects"
 				+ System.getProperty("file.separator") + "temp.h");
+
 		try {
 			FileWriter writer = new FileWriter(platformTemp);
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {

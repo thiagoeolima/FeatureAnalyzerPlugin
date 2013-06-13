@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IIncludeReference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
@@ -27,7 +31,6 @@ import br.ufal.ic.colligens.controllers.CoreController;
 import br.ufal.ic.colligens.core.PlatformHeader;
 import br.ufal.ic.colligens.exceptions.PlatformException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
-import br.ufal.ic.colligens.util.FileProxy;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
@@ -120,43 +123,42 @@ public class TypeChef {
 
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
+		paramters.add("--lexOutput");
+		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "lexOutput.c");
 		paramters.add(typeChefPreference);
 		paramters.add("-h");
 		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects"
 				+ System.getProperty("file.separator")
 				+ project.getProject().getName() + ".h");
+
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			// // Project C includes
+			ICProject project = CoreModel
+					.getDefault()
+					.getCModel()
+					.getCProject(
+							PlatformHeader.getFile(fileProxy.getFileReal())
+									.getProject().getName());
+
+			try {
+				IIncludeReference includes[] = project.getIncludeReferences();
+				for (int i = 0; i < includes.length; i++) {
+					paramters.add("-I");
+					paramters.add(includes[i].getElementName());
+				}
+			} catch (CModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		paramters.add("-h");
 		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects"
 				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "2.h");
-		paramters.add("--lexOutput");
-		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "lexOutput.c");
-
-		// // Project C includes
-		// ICProject project = CoreModel
-		// .getDefault()
-		// .getCModel()
-		// .getCProject(
-		// PlatformHeader.getFile(fileProxy.getFileReal())
-		// .getProject().getName());
-		//
-		// try {
-		// IIncludeReference includes[] = project.getIncludeReferences();
-		// for (int i = 0; i < includes.length; i++) {
-		// paramters.add("-I");
-		// paramters.add(includes[i].getElementName());
-		// }
-		// } catch (CModelException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// paramters.add("--systemIncludes");
-		// paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
+				+ project.getProject().getName() + "_CDT.h");
 
 		paramters.add("-w");
 
@@ -323,12 +325,35 @@ public class TypeChef {
 					+ System.getProperty("file.separator") + "cnf.txt");
 			args.add(0, "--featureModelFExpr");
 		}
+
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			// // Project C includes
+			ICProject project = CoreModel
+					.getDefault()
+					.getCModel()
+					.getCProject(
+							PlatformHeader.getFile(fileProxy.getFileReal())
+									.getProject().getName());
+
+			try {
+				IIncludeReference includes[] = project.getIncludeReferences();
+				for (int i = 0; i < includes.length; i++) {
+					args.add(0, includes[i].getElementName());
+					args.add(0, "-I");
+				}
+			} catch (CModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		args.add(0,
 				Colligens.getDefault().getConfigDir().getAbsolutePath()
 						+ System.getProperty("file.separator") + "projects"
 						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + "2.h");
+						+ project.getProject().getName() + "_CDT.h");
 		args.add(0, "-h");
+
 		args.add(0,
 				Colligens.getDefault().getConfigDir().getAbsolutePath()
 						+ System.getProperty("file.separator") + "projects"
