@@ -516,11 +516,12 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 */
 	@SuppressWarnings("unchecked")
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
-			LinkedList<String> fileList, IFolder sourceFolder,
+			List<String> fileList, IFolder sourceFolder,
 			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
 
 		String fullFilePath = null;
-		LinkedList<String> preProcessorArgs;
+		List<String> preProcessorInput;
+		String preProcessorOutput;
 		for (final IResource res : sourceFolder.members()) {
 			if (res instanceof IFolder) {
 				buildFolder = featureProject.getProject().getFolder(
@@ -535,60 +536,17 @@ public class CPPComposer extends PPComposerExtensionClass {
 					continue;
 				}
 				String[] name = res.getName().split("\\.");
-				/**
-				 * 
-				 * 
-				 * PRECISO DA LISTA DE TODOS OS ARQUIVOS AQUI!
-				 * 
-				 * 
-				 * 
-				 */
-				//
-				String projectName = res.getProject().getName();
-				
-				ICProject project = CoreModel.getDefault().getCModel().getCProject(projectName);
-
-				if (project == null) {
-//					throw new PlatformException("Not a valid project C");
-				}
-
-				List<String> listFiles = new ArrayList<String>();
-
-				try {
-
-					ISourceRoot sourceRoots[] = project.getSourceRoots();
-					for (int i = 0; i < sourceRoots.length; i++) {
-						if (!sourceRoots[i].getPath().toOSString()
-								.equals(project.getProject().getName())) {
-							ProjectExplorerController explorerController = new ProjectExplorerController();
-							explorerController
-									.addResource(sourceRoots[i].getResource());
-
-							listFiles.addAll(explorerController.getListToString());
-						}
-					}
-					if (listFiles.isEmpty()) {
-//						throw new PlatformException(
-//								"Your project does not have a source folder (ex.: /src).");
-					}
-				} catch (CModelException e1) {
-//					throw new PlatformException(
-//							"Your project does not have a source folder (ex.: /src).");
-				}
-				// fim
-
 				fullFilePath = res.getLocation().toOSString();
 				fileList.add(fullFilePath);
-				preProcessorArgs = (LinkedList<String>) featureArgs.clone();
-				preProcessorArgs.add(fullFilePath);
-				preProcessorArgs.add("-o");
-				preProcessorArgs.add(buildFolder.getLocation().toOSString()
+				preProcessorInput = (LinkedList<String>) featureArgs.clone();
+				preProcessorInput.add(fullFilePath);
+				preProcessorOutput = buildFolder.getLocation().toOSString()
 						+ System.getProperty("file.separator") + name[0]
-						+ "_preprocessed." + res.getFileExtension());
+						+ "_preprocessed." + res.getFileExtension();
 
 				// CommandLine syntax:
 				// -DFEATURE1 -DFEATURE2 ... File1 outputDirectory/File1
-				cpp.runPreProcessor(preProcessorArgs);
+				cpp.runPreProcessor(preProcessorInput, preProcessorOutput);
 			}
 
 		}

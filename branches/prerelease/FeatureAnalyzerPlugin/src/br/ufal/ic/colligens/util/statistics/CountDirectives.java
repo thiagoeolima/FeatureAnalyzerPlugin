@@ -47,6 +47,8 @@ public class CountDirectives {
 		String strLine;
 
 		while ((strLine = br.readLine()) != null) {
+			
+			//FIXME if the line starts with * it assumes that is a comment
 			strLine = strLine.replaceAll(
 					"(?:(/)?\\*(?:[^*]|(?:\\*+[^*/]))*(\\*+/)*)|(?://.*)", "");
 			strLine = strLine.trim();
