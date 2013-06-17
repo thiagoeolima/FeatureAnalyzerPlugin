@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.Invalidconfigurations;
+package br.ufal.ic.colligens.controllers.invalidconfigurations;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 
-import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {

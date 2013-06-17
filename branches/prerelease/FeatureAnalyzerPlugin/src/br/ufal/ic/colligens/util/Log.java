@@ -19,6 +19,7 @@ import org.eclipse.jface.text.IDocument;
 import org.eclipse.jface.text.ITextSelection;
 
 import br.ufal.ic.colligens.activator.Colligens;
+import br.ufal.ic.colligens.models.FileProxy;
 
 /**
  * @author Thiago Emmanuel

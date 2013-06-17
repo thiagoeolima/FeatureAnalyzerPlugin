@@ -10,7 +10,6 @@ import org.jdom2.JDOMException;
 import org.jdom2.input.SAXBuilder;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 /**
@@ -68,10 +67,13 @@ public class XMLParserTypeChef {
 
 		for (int i = 0; i < list.size(); i++) {
 			Element node = list.get(i);
-			Log log = new Log(fileProxie, node.getChild("position")
-					.getChildText("line"), node.getChildText("featurestr"),
-					node.getChildText("severity"), node.getChildText("msg"));
-			fileProxie.getLogs().add(log);
+			String file = node.getChild("position").getChildText("file").trim();
+			if (file.contains(fileProxie.getFileToAnalyse())) {
+				Log log = new Log(fileProxie, node.getChild("position")
+						.getChildText("line"), node.getChildText("featurestr"),
+						node.getChildText("severity"), node.getChildText("msg"));
+				fileProxie.getLogs().add(log);
+			}
 		}
 
 	}

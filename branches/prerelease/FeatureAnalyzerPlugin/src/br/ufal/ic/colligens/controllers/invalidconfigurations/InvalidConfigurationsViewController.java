@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.Invalidconfigurations;
+package br.ufal.ic.colligens.controllers.invalidconfigurations;
 
 import java.awt.event.MouseEvent;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 
 import br.ufal.ic.colligens.controllers.ViewController;
-import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 

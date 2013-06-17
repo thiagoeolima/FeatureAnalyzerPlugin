@@ -36,6 +36,7 @@ import br.ufal.ic.colligens.controllers.ProjectExplorerController;
 import br.ufal.ic.colligens.exceptions.PlatformException;
 import br.ufal.ic.colligens.util.statistics.CountDirectives;
 
+@SuppressWarnings("restriction")
 public class PlatformHeader {
 	// It keeps the C types.
 	private List<String> types = new ArrayList<String>();
@@ -45,66 +46,58 @@ public class PlatformHeader {
 
 	private CountDirectives countDirectives;
 
-	List<String> listFilesCDT = new ArrayList<String>();
+	private List<String> listFilesCDT = new ArrayList<String>();
 
 	private ICProject project;
 
-	public void gerenate(String projectName) throws PlatformException {
+	private List<String> listFiles;
+
+	public void stubs(String projectName) throws PlatformException {
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			return;
+		}
+
+		this.listFilesCDT.clear();
+
+		if (listFiles == null) {
+			listFiles = filesAllProject();
+		}
+
+		addFiles(new File(ResourcesPlugin.getWorkspace().getRoot()
+				.getLocation().toString()
+				+ System.getProperty("file.separator") + projectName));
+
+		generateTypes(listFiles);
+	}
+
+	public void plarform(String projectName) throws PlatformException {
 
 		File platform = new File(Colligens.getDefault().getConfigDir()
 				.getAbsolutePath()
 				+ System.getProperty("file.separator")
 				+ "projects"
-				+ System.getProperty("file.separator") + projectName + ".h");
-
-		if (platform.exists())
-			return;
+				+ System.getProperty("file.separator")
+				+ projectName
+				+ "_platform.h");
 
 		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
 		if (project == null) {
-			throw new PlatformException("Not a valid project C");
+			throw new PlatformException("Not a valid file C in " + projectName);
 		}
 
-		List<String> listFiles = new ArrayList<String>();
+		if (platform.exists())
+			return;
 
-		try {
+		new File(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "projects").mkdirs();
 
-			ISourceRoot sourceRoots[] = project.getSourceRoots();
-			for (int i = 0; i < sourceRoots.length; i++) {
-				if (!sourceRoots[i].getPath().toOSString()
-						.equals(project.getProject().getName())) {
-					ProjectExplorerController explorerController = new ProjectExplorerController();
-					explorerController
-							.addResource(sourceRoots[i].getResource());
-
-					listFiles.addAll(explorerController.getListToString());
-				}
-			}
-			if (listFiles.isEmpty()) {
-				throw new PlatformException(
-						"Your project does not have a source folder (ex.: /src).");
-			}
-		} catch (CModelException e1) {
-			throw new PlatformException(
-					"Your project does not have a source folder (ex.: /src).");
+		if (listFiles == null) {
+			listFiles = filesAllProject();
 		}
 
 		List<String> list = new ArrayList<String>(listFiles);
-
-		countDirectives = new CountDirectives();
-
-		for (Iterator<String> iterator = listFiles.iterator(); iterator
-				.hasNext();) {
-			String file = (String) iterator.next();
-			try {
-				countDirectives.count(file);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-				throw new PlatformException("unexpected error!");
-			}
-		}
 
 		try {
 			IIncludeReference includes[] = project.getIncludeReferences();
@@ -116,14 +109,13 @@ public class PlatformHeader {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// list.add(0,
-		// "-I"
-		// + FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
-		if (!Colligens.getDefault().getPreferenceStore()
-				.getString("LIBS").contentEquals("")) {
-			list.add(0, Colligens.getDefault().getPreferenceStore()
-					.getString("LIBS"));
+
+		if (!Colligens.getDefault().getPreferenceStore().getString("LIBS")
+				.contentEquals("")) {
+			list.add(
+					0,
+					Colligens.getDefault().getPreferenceStore()
+							.getString("LIBS"));
 		}
 		list.add(0, "-std=gnu99");
 		list.add(0, "-E");
@@ -145,8 +137,8 @@ public class PlatformHeader {
 							"UTF-8")));
 			boolean x = true;
 
-			File platformTemp = new File(Colligens.getDefault()
-					.getConfigDir().getAbsolutePath()
+			File platformTemp = new File(Colligens.getDefault().getConfigDir()
+					.getAbsolutePath()
 					+ System.getProperty("file.separator")
 					+ "projects"
 					+ System.getProperty("file.separator") + "temp.h");
@@ -226,14 +218,48 @@ public class PlatformHeader {
 					}
 			}
 		}
-		
-		this.listFilesCDT.clear();
-		
-		addFiles(new File(ResourcesPlugin.getWorkspace().getRoot()
-				.getLocation().toString()
-				+ System.getProperty("file.separator") + projectName));
+	}
 
-		generateTypes(listFiles);
+	private List<String> filesAllProject() throws PlatformException {
+		listFiles = new ArrayList<String>();
+
+		try {
+
+			ISourceRoot sourceRoots[] = project.getSourceRoots();
+			for (int i = 0; i < sourceRoots.length; i++) {
+				if (!sourceRoots[i].getPath().toOSString()
+						.equals(project.getProject().getName())) {
+					ProjectExplorerController explorerController = new ProjectExplorerController();
+					explorerController
+							.addResource(sourceRoots[i].getResource());
+
+					listFiles.addAll(explorerController.getListToString());
+				}
+			}
+			if (listFiles.isEmpty()) {
+				throw new PlatformException(
+						"Your project does not have a source folder (ex.: /src).");
+			}
+		} catch (CModelException e1) {
+			throw new PlatformException(
+					"Your project does not have a source folder (ex.: /src).");
+		}
+
+		countDirectives = new CountDirectives();
+
+		for (Iterator<String> iterator = listFiles.iterator(); iterator
+				.hasNext();) {
+			String file = (String) iterator.next();
+			try {
+				countDirectives.count(file);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				throw new PlatformException("unexpected error!");
+			}
+		}
+
+		return listFiles;
 	}
 
 	public static IFile getFile(String fileName) {
@@ -280,7 +306,6 @@ public class PlatformHeader {
 	}
 
 	// It finds probable types in the node.
-	@SuppressWarnings("restriction")
 	private void setTypes(IASTNode node) {
 		IASTNode[] nodes = node.getChildren();
 		if (node.getClass()
@@ -308,16 +333,17 @@ public class PlatformHeader {
 				+ System.getProperty("file.separator")
 				+ "projects"
 				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "2.h");
+				+ project.getProject().getName() + "_stubs.h");
 
 		if (platform.exists())
 			return;
 
-		File platformTemp = new File(Colligens.getDefault()
-				.getConfigDir().getAbsolutePath()
+		File platformTemp = new File(Colligens.getDefault().getConfigDir()
+				.getAbsolutePath()
 				+ System.getProperty("file.separator")
 				+ "projects"
 				+ System.getProperty("file.separator") + "temp.h");
+
 		try {
 			FileWriter writer = new FileWriter(platformTemp);
 			for (Iterator<String> i = this.types.iterator(); i.hasNext();) {

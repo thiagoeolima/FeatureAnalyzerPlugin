@@ -12,8 +12,6 @@ public class LogSelection implements ITextSelection {
 		this.line = line;
 		this.column = column;
 		this.offset = offset;
-//		System.out.println(column);
-//		System.out.println(line);
 	}
 
 	@Override

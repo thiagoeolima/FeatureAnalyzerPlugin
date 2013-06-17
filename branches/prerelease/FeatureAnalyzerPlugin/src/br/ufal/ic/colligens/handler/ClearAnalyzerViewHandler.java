@@ -4,7 +4,7 @@ import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
 import org.eclipse.core.commands.ExecutionException;
 
-import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
 
 public class ClearAnalyzerViewHandler extends AbstractHandler {
 

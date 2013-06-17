@@ -30,9 +30,6 @@ public class ProjectExplorerController {
 		iResources = new HashSet<IResource>();
 	}
 
-	/**
-	 * @param window
-	 */
 	public void setWindow(IWorkbenchWindow window) {
 		//
 		this.selection = (IStructuredSelection) window.getSelectionService()
@@ -51,8 +48,8 @@ public class ProjectExplorerController {
 	public void addResource(IResource iResource) {
 		if (iResource instanceof IFile) {
 			// adds .c and .h files only
-			if (iResource.getFileExtension().equals("c")
-					|| iResource.getFileExtension().equals("h")) {
+			if (iResource.getLocation().toString().trim().endsWith(".c")
+					|| iResource.getLocation().toString().trim().endsWith(".h")) {
 				iResources.add(iResource);
 			}
 		} else if (iResource instanceof IFolder) {

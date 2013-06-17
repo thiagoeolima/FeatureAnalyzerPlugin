@@ -35,11 +35,11 @@ import org.prop4j.Not;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.ProjectExplorerController;
-import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
 import br.ufal.ic.colligens.controllers.invalidproduct.InvalidProductViewController;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.models.TypeChef;
-import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
 import br.ufal.ic.colligens.util.ProjectConfigurationErrorLogger;
 import de.ovgu.featureide.core.CorePlugin;

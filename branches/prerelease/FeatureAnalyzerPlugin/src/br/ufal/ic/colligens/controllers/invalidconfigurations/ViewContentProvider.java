@@ -1,11 +1,11 @@
-package br.ufal.ic.colligens.controllers.Invalidconfigurations;
+package br.ufal.ic.colligens.controllers.invalidconfigurations;
 
 import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.util.Log;
 
 class ViewContentProvider implements ITreeContentProvider {

@@ -9,7 +9,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.colligens.controllers.CoreController;
-import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
 import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
 public class ColligensPluginHandler extends AbstractHandler {

@@ -43,7 +43,7 @@ public class Colligens extends AbstractUIPlugin {
 		plugin = this;
 
 		Start inicialize = new Start();
-//		inicialize.SystemClear();
+		inicialize.SystemClear();
 	}
 
 	/*

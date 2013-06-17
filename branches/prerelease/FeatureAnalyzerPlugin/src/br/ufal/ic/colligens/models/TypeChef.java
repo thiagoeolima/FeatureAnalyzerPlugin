@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IIncludeReference;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.FileLocator;
@@ -27,7 +31,6 @@ import br.ufal.ic.colligens.controllers.CoreController;
 import br.ufal.ic.colligens.core.PlatformHeader;
 import br.ufal.ic.colligens.exceptions.PlatformException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
-import br.ufal.ic.colligens.util.FileProxy;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
@@ -120,43 +123,47 @@ public class TypeChef {
 
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
-		paramters.add(typeChefPreference);
-		paramters.add("-h");
-		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + ".h");
-		paramters.add("-h");
-		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "2.h");
 		paramters.add("--lexOutput");
 		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "lexOutput.c");
+		paramters.add(typeChefPreference);
 
-		// // Project C includes
-		// ICProject project = CoreModel
-		// .getDefault()
-		// .getCModel()
-		// .getCProject(
-		// PlatformHeader.getFile(fileProxy.getFileReal())
-		// .getProject().getName());
-		//
-		// try {
-		// IIncludeReference includes[] = project.getIncludeReferences();
-		// for (int i = 0; i < includes.length; i++) {
-		// paramters.add("-I");
-		// paramters.add(includes[i].getElementName());
-		// }
-		// } catch (CModelException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-		//
-		// paramters.add("--systemIncludes");
-		// paramters.add(FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
+		paramters.add("-h");
+		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "projects"
+				+ System.getProperty("file.separator")
+				+ project.getProject().getName() + "_platform.h");
+
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			// // Project C includes
+			ICProject project = CoreModel
+					.getDefault()
+					.getCModel()
+					.getCProject(
+							PlatformHeader.getFile(fileProxy.getFileReal())
+									.getProject().getName());
+
+			try {
+				IIncludeReference includes[] = project.getIncludeReferences();
+				for (int i = 0; i < includes.length; i++) {
+					paramters.add("-I");
+					paramters.add(includes[i].getElementName());
+				}
+			} catch (CModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else {
+			paramters.add("-h");
+			paramters.add(Colligens.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ System.getProperty("file.separator")
+					+ "projects"
+					+ System.getProperty("file.separator")
+					+ project.getProject().getName() + "_stubs.h");
+		}
 
 		paramters.add("-w");
 
@@ -174,7 +181,7 @@ public class TypeChef {
 		fo.parseOptions((String[]) paramters.toArray(new String[paramters
 				.size()]));
 
-		fo.getFiles().add(fileProxy.getFileTemp());
+		fo.getFiles().add(fileProxy.getFileToAnalyse());
 		fo.setPrintToStdOutput(false);
 
 	}
@@ -198,15 +205,23 @@ public class TypeChef {
 		PlatformHeader platformHeader = new PlatformHeader();
 		//
 		CoreController.monitorBeginTask("Analyzing selected files",
-				fileProxies.size());
+				fileProxies.size() + 1);
 		try {
-			if (!fileProxies.isEmpty()) {
-				// FilesProxies is not empty
-				platformHeader.gerenate(fileProxies.get(0).getFileIResource()
-						.getProject().getName());
-			} else {
+			if (fileProxies.isEmpty()) {
 				throw new TypeChefException("Not a valid file found C");
 			}
+
+			platformHeader.plarform(fileProxies.get(0).getFileIResource()
+					.getProject().getName());
+
+			if (!Colligens.getDefault().getPreferenceStore()
+					.getBoolean("GLOBAL_ANALYZE")) {
+				// Monitor Update
+				CoreController.monitorSubTask("generating stubs");
+				platformHeader.stubs(fileProxies.get(0).getFileIResource()
+						.getProject().getName());
+			}
+
 			boolean error = false;
 
 			for (FileProxy file : fileProxies) {
@@ -298,7 +313,7 @@ public class TypeChef {
 		}
 
 		ArrayList<String> args = new ArrayList<String>();
-		args.add(fileProxy.getFileTemp());
+		args.add(fileProxy.getFileToAnalyse());
 
 		String typeChefPreference = Colligens.getDefault().getPreferenceStore()
 				.getString("TypeChefPreference");
@@ -312,28 +327,46 @@ public class TypeChef {
 			Colligens.getDefault().logError(e);
 		}
 		Path pathToTypeChef = new Path(url.getFile());
-		// args.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
-		// args.add(0, "--systemIncludes");
-		// args.add(0,"");
-		// args.add(0,"--systemRoot");
+
 		if (Colligens.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
 			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
 					+ System.getProperty("file.separator") + "cnf.txt");
 			args.add(0, "--featureModelFExpr");
 		}
-		args.add(0,
-				Colligens.getDefault().getConfigDir().getAbsolutePath()
-						+ System.getProperty("file.separator") + "projects"
-						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + "2.h");
-		args.add(0, "-h");
-		args.add(0,
-				Colligens.getDefault().getConfigDir().getAbsolutePath()
-						+ System.getProperty("file.separator") + "projects"
-						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + ".h");
+
+		if (Colligens.getDefault().getPreferenceStore()
+				.getBoolean("GLOBAL_ANALYZE")) {
+			// // Project C includes
+			ICProject project = CoreModel
+					.getDefault()
+					.getCModel()
+					.getCProject(
+							PlatformHeader.getFile(fileProxy.getFileReal())
+									.getProject().getName());
+
+			try {
+				IIncludeReference includes[] = project.getIncludeReferences();
+				for (int i = 0; i < includes.length; i++) {
+					args.add(0, includes[i].getElementName());
+					args.add(0, "-I");
+				}
+			} catch (CModelException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
+					+ System.getProperty("file.separator") + "projects"
+					+ System.getProperty("file.separator")
+					+ project.getProject().getName() + "_stubs.h");
+			args.add(0, "-h");
+		}
+
+		args.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "projects"
+				+ System.getProperty("file.separator")
+				+ project.getProject().getName() + "_platform.h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath + ".xml");
@@ -344,9 +377,11 @@ public class TypeChef {
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
 		args.add(0, "java");
-		// for (String s : args) {
-		// System.err.print(s + " ");
-		// }
+		
+		 for (String s : args) {
+		 System.err.print(s + " ");
+		 }
+		 
 		ProcessBuilder processBuilder = new ProcessBuilder(args);
 
 		BufferedReader input = null;

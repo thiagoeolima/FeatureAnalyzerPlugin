@@ -6,8 +6,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
-import br.ufal.ic.colligens.util.FileProxy;
+import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.models.FileProxy;
 
 public class InvalidConfigurationsView extends ViewPart {
 

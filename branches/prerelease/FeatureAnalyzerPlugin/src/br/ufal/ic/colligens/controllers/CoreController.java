@@ -14,8 +14,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
+import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.models.TypeChef;
-import br.ufal.ic.colligens.util.FileProxy;
 import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
 
