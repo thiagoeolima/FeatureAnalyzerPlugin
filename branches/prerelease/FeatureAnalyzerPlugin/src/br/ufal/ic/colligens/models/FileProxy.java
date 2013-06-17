@@ -41,7 +41,6 @@ public class FileProxy {
 			try {
 				generate();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

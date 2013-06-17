@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.Invalidconfigurations;
+package br.ufal.ic.colligens.controllers.invalidconfigurations;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

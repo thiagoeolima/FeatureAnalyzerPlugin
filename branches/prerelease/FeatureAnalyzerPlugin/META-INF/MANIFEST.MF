@@ -28,7 +28,7 @@ Bundle-ClassPath: .,
 Bundle-Vendor: Ufal
 Export-Package: br.ufal.ic.colligens.activator;uses:="org.eclipse.jface.resource,de.ovgu.featureide.fm.ui,org.osgi.framework",
  br.ufal.ic.colligens.controllers;uses:="org.eclipse.ui,org.eclipse.core.resources",
- br.ufal.ic.colligens.controllers.Invalidconfigurations;
+ br.ufal.ic.colligens.controllers.invalidconfigurations;
   uses:="br.ufal.ic.featureanalyzer.controllers,
    org.eclipse.swt.graphics,
    org.eclipse.jface.viewers,

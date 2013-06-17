@@ -127,11 +127,12 @@ public class TypeChef {
 		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "lexOutput.c");
 		paramters.add(typeChefPreference);
+
 		paramters.add("-h");
 		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects"
 				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + ".h");
+				+ project.getProject().getName() + "_platform.h");
 
 		if (Colligens.getDefault().getPreferenceStore()
 				.getBoolean("GLOBAL_ANALYZE")) {
@@ -153,12 +154,16 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+
+		} else {
+			paramters.add("-h");
+			paramters.add(Colligens.getDefault().getConfigDir()
+					.getAbsolutePath()
+					+ System.getProperty("file.separator")
+					+ "projects"
+					+ System.getProperty("file.separator")
+					+ project.getProject().getName() + "_stubs.h");
 		}
-		paramters.add("-h");
-		paramters.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "_CDT.h");
 
 		paramters.add("-w");
 
@@ -200,15 +205,23 @@ public class TypeChef {
 		PlatformHeader platformHeader = new PlatformHeader();
 		//
 		CoreController.monitorBeginTask("Analyzing selected files",
-				fileProxies.size());
+				fileProxies.size() + 1);
 		try {
-			if (!fileProxies.isEmpty()) {
-				// FilesProxies is not empty
-				platformHeader.gerenate(fileProxies.get(0).getFileIResource()
-						.getProject().getName());
-			} else {
+			if (fileProxies.isEmpty()) {
 				throw new TypeChefException("Not a valid file found C");
 			}
+
+			platformHeader.plarform(fileProxies.get(0).getFileIResource()
+					.getProject().getName());
+
+			if (!Colligens.getDefault().getPreferenceStore()
+					.getBoolean("GLOBAL_ANALYZE")) {
+				// Monitor Update
+				CoreController.monitorSubTask("generating stubs");
+				platformHeader.stubs(fileProxies.get(0).getFileIResource()
+						.getProject().getName());
+			}
+
 			boolean error = false;
 
 			for (FileProxy file : fileProxies) {
@@ -314,11 +327,7 @@ public class TypeChef {
 			Colligens.getDefault().logError(e);
 		}
 		Path pathToTypeChef = new Path(url.getFile());
-		// args.add(0, FeatureAnalyzer.getDefault().getPreferenceStore()
-		// .getString("SystemIncludes"));
-		// args.add(0, "--systemIncludes");
-		// args.add(0,"");
-		// args.add(0,"--systemRoot");
+
 		if (Colligens.getDefault().getPreferenceStore()
 				.getBoolean("FEATURE_MODEL")) {
 			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
@@ -346,19 +355,18 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		} else {
+			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
+					+ System.getProperty("file.separator") + "projects"
+					+ System.getProperty("file.separator")
+					+ project.getProject().getName() + "_stubs.h");
+			args.add(0, "-h");
 		}
-		args.add(0,
-				Colligens.getDefault().getConfigDir().getAbsolutePath()
-						+ System.getProperty("file.separator") + "projects"
-						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + "_CDT.h");
-		args.add(0, "-h");
 
-		args.add(0,
-				Colligens.getDefault().getConfigDir().getAbsolutePath()
-						+ System.getProperty("file.separator") + "projects"
-						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + ".h");
+		args.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
+				+ System.getProperty("file.separator") + "projects"
+				+ System.getProperty("file.separator")
+				+ project.getProject().getName() + "_platform.h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath + ".xml");
@@ -369,9 +377,11 @@ public class TypeChef {
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
 		args.add(0, "java");
-		// for (String s : args) {
-		// System.err.print(s + " ");
-		// }
+		
+		 for (String s : args) {
+		 System.err.print(s + " ");
+		 }
+		 
 		ProcessBuilder processBuilder = new ProcessBuilder(args);
 
 		BufferedReader input = null;

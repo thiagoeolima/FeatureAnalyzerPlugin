@@ -35,7 +35,7 @@ import org.prop4j.Not;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.ProjectExplorerController;
-import br.ufal.ic.colligens.controllers.Invalidconfigurations.InvalidConfigurationsViewController;
+import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
 import br.ufal.ic.colligens.controllers.invalidproduct.InvalidProductViewController;
 import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.FileProxy;
