@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.invalidproduct;
+package br.ufal.ic.colligens.controllers.invalidproducts;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -8,7 +8,7 @@ import org.eclipse.ui.PlatformUI;
 
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
 
-class InvalidProductViewLabelProvider extends LabelProvider implements ITableLabelProvider{
+class ViewLabelProvider extends LabelProvider implements ITableLabelProvider{
 
 	@Override
 	public String getColumnText(Object obj, int index) {

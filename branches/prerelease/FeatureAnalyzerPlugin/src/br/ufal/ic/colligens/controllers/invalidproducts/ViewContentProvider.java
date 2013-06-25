@@ -1,9 +1,9 @@
-package br.ufal.ic.colligens.controllers.invalidproduct;
+package br.ufal.ic.colligens.controllers.invalidproducts;
 
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-class InvalidProductViewContentProvider implements IStructuredContentProvider {
+class ViewContentProvider implements IStructuredContentProvider {
 	private Object[] logs = new Object[] {};
 
 	@Override

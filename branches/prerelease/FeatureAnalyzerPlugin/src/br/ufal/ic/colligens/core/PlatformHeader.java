@@ -53,11 +53,22 @@ public class PlatformHeader {
 	private List<String> listFiles;
 
 	public void stubs(String projectName) throws PlatformException {
-		if (Colligens.getDefault().getPreferenceStore()
-				.getBoolean("GLOBAL_ANALYZE")) {
-			return;
-		}
+		// if (Colligens.getDefault().getPreferenceStore()
+		// .getBoolean("GLOBAL_ANALYZE")) {
+		// return;
+		// }
 
+		File stubs = new File(Colligens.getDefault().getConfigDir()
+				.getAbsolutePath()
+				+ System.getProperty("file.separator")
+				+ "projects"
+				+ System.getProperty("file.separator")
+				+ projectName
+				+ "_stubs.h");
+
+		if (stubs.exists())
+			return;
+		
 		this.listFilesCDT.clear();
 
 		if (listFiles == null) {
@@ -218,6 +229,7 @@ public class PlatformHeader {
 					}
 			}
 		}
+		this.stubs(projectName);
 	}
 
 	private List<String> filesAllProject() throws PlatformException {

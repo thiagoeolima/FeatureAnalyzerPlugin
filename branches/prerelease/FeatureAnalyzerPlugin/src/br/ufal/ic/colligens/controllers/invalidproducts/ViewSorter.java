@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.invalidproduct;
+package br.ufal.ic.colligens.controllers.invalidproducts;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
@@ -6,13 +6,13 @@ import org.eclipse.swt.SWT;
 
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
 
-class InvalidProductViewSorter extends ViewerSorter {
+class ViewSorter extends ViewerSorter {
 	
 	private int propertyIndex;
 	private static final int DESCENDING = 1;
 	private int direction = DESCENDING;
 
-	public InvalidProductViewSorter() {
+	public ViewSorter() {
 		this.propertyIndex = 0;
 		direction = DESCENDING;
 	}

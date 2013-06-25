@@ -66,7 +66,6 @@ public class TypeChef {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -154,8 +153,8 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-		} else {
+		}
+//		} else {
 			paramters.add("-h");
 			paramters.add(Colligens.getDefault().getConfigDir()
 					.getAbsolutePath()
@@ -163,7 +162,7 @@ public class TypeChef {
 					+ "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
-		}
+//		}
 
 		paramters.add("-w");
 
@@ -355,13 +354,13 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else {
+		} //else {
 			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
 					+ System.getProperty("file.separator") + "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
 			args.add(0, "-h");
-		}
+//		}
 
 		args.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects"
@@ -377,11 +376,11 @@ public class TypeChef {
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");
 		args.add(0, "java");
-		
-		 for (String s : args) {
-		 System.err.print(s + " ");
-		 }
-		 
+
+		for (String s : args) {
+			System.err.print(s + " ");
+		}
+
 		ProcessBuilder processBuilder = new ProcessBuilder(args);
 
 		BufferedReader input = null;

@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.invalidproduct;
+package br.ufal.ic.colligens.controllers.invalidproducts;
 
 import java.awt.event.MouseEvent;
 
@@ -20,22 +20,22 @@ import br.ufal.ic.colligens.controllers.ViewController;
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
 import br.ufal.ic.colligens.views.InvalidProductView;
 
-public class InvalidProductViewController extends ViewController {
+public class InvalidProductsViewController extends ViewController {
 
 	private TableViewer viewer;
 	private InvalidProductView view;
-	private InvalidProductViewContentProvider viewContentProvider = new InvalidProductViewContentProvider();
-	private InvalidProductViewSorter comparator;
+	private ViewContentProvider viewContentProvider = new ViewContentProvider();
+	private ViewSorter comparator;
 
-	private static InvalidProductViewController INSTANCE;
+	private static InvalidProductsViewController INSTANCE;
 
-	private InvalidProductViewController() {
+	private InvalidProductsViewController() {
 		super(InvalidProductView.ID);
 	}
 
-	public static InvalidProductViewController getInstance() {
+	public static InvalidProductsViewController getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new InvalidProductViewController();
+			INSTANCE = new InvalidProductsViewController();
 		}
 		return INSTANCE;
 	}
@@ -56,12 +56,12 @@ public class InvalidProductViewController extends ViewController {
 		this.view = view;
 	}
 
-	public InvalidProductViewContentProvider getViewContentProvider() {
+	public ViewContentProvider getViewContentProvider() {
 		return viewContentProvider;
 	}
 
 	public void setViewContentProvider(
-			InvalidProductViewContentProvider viewContentProvider) {
+			ViewContentProvider viewContentProvider) {
 		this.viewContentProvider = viewContentProvider;
 	}
 
@@ -102,12 +102,12 @@ public class InvalidProductViewController extends ViewController {
 
 		viewer.setContentProvider(this.viewContentProvider);
 		viewer.setInput(this.view.getViewSite());
-		viewer.setLabelProvider(new InvalidProductViewLabelProvider());
+		viewer.setLabelProvider(new ViewLabelProvider());
 		table.setHeaderVisible(true);
 		table.setLinesVisible(true);
 
 		// Set the sorter for the table
-		comparator = new InvalidProductViewSorter();
+		comparator = new ViewSorter();
 		viewer.setComparator(comparator);
 
 		PlatformUI.getWorkbench().getHelpSystem()

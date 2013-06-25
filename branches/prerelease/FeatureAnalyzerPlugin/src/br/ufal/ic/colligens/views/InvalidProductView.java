@@ -4,16 +4,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.part.ViewPart;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.controllers.invalidproduct.InvalidProductViewController;
+import br.ufal.ic.colligens.controllers.invalidproducts.InvalidProductsViewController;
 
 public class InvalidProductView extends ViewPart {
 
 	public static final String ID = Colligens.PLUGIN_ID
 			+ ".views.invalideproductview";
-	private InvalidProductViewController controller;
+	private InvalidProductsViewController controller;
 
 	public InvalidProductView() {
-		controller = InvalidProductViewController.getInstance();
+		controller = InvalidProductsViewController.getInstance();
 		controller.setView(this);
 	}
 

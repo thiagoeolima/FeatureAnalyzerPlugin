@@ -34,7 +34,7 @@ Export-Package: br.ufal.ic.colligens.activator;uses:="org.eclipse.jface.resource
    org.eclipse.jface.viewers,
    org.eclipse.swt.widgets,
    br.ufal.ic.featureanalyzer.views",
- br.ufal.ic.colligens.controllers.invalidproduct;
+ br.ufal.ic.colligens.controllers.invalidproducts;
   uses:="br.ufal.ic.featureanalyzer.controllers,
    org.eclipse.swt.graphics,
    org.eclipse.jface.viewers,

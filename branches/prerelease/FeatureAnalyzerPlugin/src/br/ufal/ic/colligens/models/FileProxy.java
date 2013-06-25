@@ -45,6 +45,8 @@ public class FileProxy {
 			}
 		}
 		this.logs = new LinkedList<Log>();
+
+		this.deleteMarkers();
 	}
 
 	public String getFileName() {
