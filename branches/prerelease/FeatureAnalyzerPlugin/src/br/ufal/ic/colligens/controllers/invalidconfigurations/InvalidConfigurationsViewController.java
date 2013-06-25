@@ -35,7 +35,6 @@ public class InvalidConfigurationsViewController extends ViewController {
 	private ViewSorter comparator;
 	private static InvalidConfigurationsViewController INSTANCE;
 
-
 	private InvalidConfigurationsViewController() {
 		super(InvalidConfigurationsView.ID);
 		this.viewContentProvider = new ViewContentProvider();
@@ -73,7 +72,7 @@ public class InvalidConfigurationsViewController extends ViewController {
 	 * @see org.eclipse.ui.part.WorkbenchPartn#createPartControl(Composite)
 	 */
 	public void createPartControl(Composite parent) {
-		
+
 		Tree tree = new Tree(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);
 		tree.setHeaderVisible(true);
@@ -147,12 +146,12 @@ public class InvalidConfigurationsViewController extends ViewController {
 		int[] bounds = { 300, 100, 100, 300, 100 };
 
 		for (int i = 0; i < bounds.length; i++) {
-			this.createTableViewerColumn(tree, titles[i], bounds[i], i);
+			this.createTreeViewerColumn(tree, titles[i], bounds[i], i);
 		}
 	}
 
-	private TreeColumn createTableViewerColumn(Tree tree, String title,
-			int bound, final int ColumnNumber) {
+	private void createTreeViewerColumn(Tree tree, String title, int bound,
+			final int ColumnNumber) {
 
 		int style = (ColumnNumber == 0) ? SWT.RIGHT : SWT.LEFT;
 
@@ -164,7 +163,6 @@ public class InvalidConfigurationsViewController extends ViewController {
 		treeColumn.setMoveable(false);
 		treeColumn.addSelectionListener(this.getSelectionAdapter(treeColumn,
 				ColumnNumber));
-		return treeColumn;
 	}
 
 	private SelectionAdapter getSelectionAdapter(final TreeColumn column,

@@ -1,6 +1,7 @@
 package br.ufal.ic.colligens.exceptions;
 
 
+
 public class PlatformException extends PluginException {
 
 	/**

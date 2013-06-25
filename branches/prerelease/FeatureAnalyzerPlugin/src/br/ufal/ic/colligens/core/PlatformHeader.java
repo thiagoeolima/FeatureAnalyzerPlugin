@@ -68,7 +68,7 @@ public class PlatformHeader {
 
 		if (stubs.exists())
 			return;
-		
+
 		this.listFilesCDT.clear();
 
 		if (listFiles == null) {
@@ -146,16 +146,19 @@ public class PlatformHeader {
 			error = new BufferedReader(new InputStreamReader(
 					process.getErrorStream(), Charset.availableCharsets().get(
 							"UTF-8")));
-			boolean x = true;
+			boolean execute = true;
 
 			File platformTemp = new File(Colligens.getDefault().getConfigDir()
 					.getAbsolutePath()
 					+ System.getProperty("file.separator")
 					+ "projects"
 					+ System.getProperty("file.separator") + "temp.h");
-			while (x) {
+
+			while (execute) {
+
 				try {
 					String line;
+					String errorLine = "";
 					try {
 
 						FileWriter fileW = new FileWriter(platformTemp);
@@ -176,9 +179,13 @@ public class PlatformHeader {
 								buffW.write(line + "\n");
 							}
 						}
-
+						errorLine = "";
 						while ((line = error.readLine()) != null) {
-							System.out.println(line);
+							if (line.contains("fatal error")) {
+								errorLine = line;
+								break;
+							}
+							System.err.println(line);
 						}
 						buffW.close();
 						fileW.close();
@@ -196,12 +203,15 @@ public class PlatformHeader {
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
 						platform.deleteOnExit();
-						throw new PlatformException(
-								"The process doesn't finish normally (exit="
-										+ exitValue + ")!");
+						
+						if (errorLine.equals("")) {
+							errorLine = "Was not possible to locate all the includes (exit="
+									+ exitValue + ")!";
+						}
+						throw new PlatformException(errorLine);
 					}
 
-					x = false;
+					execute = false;
 				} catch (IllegalThreadStateException e) {
 					System.out.println(e.toString());
 					Colligens.getDefault().logError(e);

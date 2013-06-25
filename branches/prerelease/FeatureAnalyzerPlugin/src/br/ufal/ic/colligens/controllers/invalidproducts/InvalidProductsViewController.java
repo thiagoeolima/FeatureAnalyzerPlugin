@@ -1,9 +1,9 @@
 package br.ufal.ic.colligens.controllers.invalidproducts;
 
 import java.awt.event.MouseEvent;
+import java.util.List;
 
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -11,10 +11,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
 import br.ufal.ic.colligens.controllers.ViewController;
 import br.ufal.ic.colligens.util.InvalidProductViewLog;
@@ -22,15 +21,15 @@ import br.ufal.ic.colligens.views.InvalidProductView;
 
 public class InvalidProductsViewController extends ViewController {
 
-	private TableViewer viewer;
-	private InvalidProductView view;
-	private ViewContentProvider viewContentProvider = new ViewContentProvider();
+	private TreeViewer treeViewer;
+	private ViewContentProvider viewContentProvider;
 	private ViewSorter comparator;
 
 	private static InvalidProductsViewController INSTANCE;
 
 	private InvalidProductsViewController() {
 		super(InvalidProductView.ID);
+		viewContentProvider = new ViewContentProvider();
 	}
 
 	public static InvalidProductsViewController getInstance() {
@@ -40,55 +39,36 @@ public class InvalidProductsViewController extends ViewController {
 		return INSTANCE;
 	}
 
-	public TableViewer getViewer() {
-		return viewer;
-	}
-
-	public void setViewer(TableViewer viewer) {
-		this.viewer = viewer;
-	}
-
-	public InvalidProductView getView() {
-		return view;
-	}
-
-	public void setView(InvalidProductView view) {
-		this.view = view;
-	}
-
-	public ViewContentProvider getViewContentProvider() {
-		return viewContentProvider;
-	}
-
-	public void setViewContentProvider(
-			ViewContentProvider viewContentProvider) {
-		this.viewContentProvider = viewContentProvider;
-	}
-
-	public void adaptTo(Object[] logs) {
-		this.viewContentProvider.setLogs(logs);
-		viewer.refresh();
+	public void setInput(List<InvalidProductViewLog> list) {
+		treeViewer.setInput(list);
+		treeViewer.refresh();
 	}
 
 	public void clear() {
-		this.viewContentProvider.setLogs(new Object[] {});
-		if (viewer == null)
-			return;
-		viewer.refresh();
+		treeViewer.setInput(null);
+		treeViewer.refresh();
 	}
 
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.H_SCROLL | SWT.V_SCROLL
+		Tree tree = new Tree(parent, SWT.H_SCROLL | SWT.V_SCROLL
 				| SWT.FULL_SELECTION | SWT.LEFT);
-		createColumns(parent);
-		final Table table = viewer.getTable();
+		tree.setHeaderVisible(true);
+		tree.setLinesVisible(true);
 
-		table.addListener(SWT.MouseDown, new Listener() {
+		treeViewer = new TreeViewer(tree);
+
+		this.createColumns(tree);
+
+		treeViewer.setContentProvider(this.viewContentProvider);
+		treeViewer.setInput(getView().getViewSite());
+		treeViewer.setLabelProvider(new ViewLabelProvider());
+
+		tree.addListener(SWT.MouseDown, new Listener() {
 
 			@Override
 			public void handleEvent(Event event) {
 				Point point = new Point(event.x, event.y);
-				TableItem clickedItem = viewer.getTable().getItem(point);
+				TreeItem clickedItem = treeViewer.getTree().getItem(point);
 				if (clickedItem != null) {
 					if (event.button == MouseEvent.BUTTON1 && event.count == 2) {
 						Object data = clickedItem.getData();
@@ -100,59 +80,55 @@ public class InvalidProductsViewController extends ViewController {
 			}
 		});
 
-		viewer.setContentProvider(this.viewContentProvider);
-		viewer.setInput(this.view.getViewSite());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		table.setHeaderVisible(true);
-		table.setLinesVisible(true);
-
 		// Set the sorter for the table
 		comparator = new ViewSorter();
-		viewer.setComparator(comparator);
+		treeViewer.setComparator(comparator);
 
-		PlatformUI.getWorkbench().getHelpSystem()
-				.setHelp(viewer.getControl(), "TableView.viewer");
+		// PlatformUI.getWorkbench().getHelpSystem()
+		// .setHelp(treeViewer.getControl(), "TableView.viewer");
 
 	}
 
-	public void createColumns(Composite parent) {
+	public void createColumns(Tree tree) {
 		String[] titles = { "Variant Name", "Path" };
-		int[] bounds = { 200, 400 };
+		int[] bounds = { 400, 400 };
 
 		for (int i = 0; i < bounds.length; i++) {
-			createTableViewerColumn(titles[i], bounds[i], i);
+			this.createTreeViewerColumn(tree, titles[i], bounds[i], i);
 		}
 	}
 
-	public TableViewerColumn createTableViewerColumn(String title, int bound,
-			final int colNumber) {
-		final TableViewerColumn viewerColumn = new TableViewerColumn(viewer,
-				SWT.LEFT);
-		final TableColumn column = viewerColumn.getColumn();
-		column.setText(title);
-		column.setWidth(bound);
-		column.setResizable(true);
-		column.setMoveable(true);
-		column.addSelectionListener(getSelectionAdapter(column, colNumber));
-		return viewerColumn;
+	private void createTreeViewerColumn(Tree tree, String title, int bound,
+			final int ColumnNumber) {
+
+		int style = (ColumnNumber == 0) ? SWT.RIGHT : SWT.LEFT;
+
+		final TreeColumn treeColumn = new TreeColumn(tree, style);
+
+		treeColumn.setText(title);
+		treeColumn.setWidth(bound);
+		treeColumn.setResizable(true);
+		treeColumn.setMoveable(false);
+		treeColumn.addSelectionListener(this.getSelectionAdapter(treeColumn,
+				ColumnNumber));
 	}
 
-	private SelectionAdapter getSelectionAdapter(final TableColumn column,
+	private SelectionAdapter getSelectionAdapter(final TreeColumn column,
 			final int index) {
 		SelectionAdapter selectionAdapter = new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				comparator.setColumn(index);
-				int dir = comparator.getDirection();
-				viewer.getTable().setSortDirection(dir);
-				viewer.getTable().setSortColumn(column);
-				viewer.refresh();
+				int direction = comparator.getDirection();
+				treeViewer.getTree().setSortDirection(direction);
+				treeViewer.getTree().setSortColumn(column);
+				treeViewer.refresh();
 			}
 		};
 		return selectionAdapter;
 	}
 
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		treeViewer.getControl().setFocus();
 	}
 }

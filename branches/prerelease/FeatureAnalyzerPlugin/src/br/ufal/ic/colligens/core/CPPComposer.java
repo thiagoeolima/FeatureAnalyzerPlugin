@@ -15,7 +15,6 @@ import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IIncludeReference;
-import org.eclipse.cdt.core.model.ISourceRoot;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
@@ -459,6 +458,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 */
 	private void runTypeChefAnalyzes(IFolder folder) {
 		ProjectExplorerController prjController = new ProjectExplorerController();
+		System.out.println(folder);
 		prjController.addResource(folder);
 
 		final TypeChef typeChef = new TypeChef();
@@ -516,8 +516,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 	 */
 	@SuppressWarnings("unchecked")
 	private void prepareFilesConfiguration(LinkedList<String> featureArgs,
-			List<String> fileList, IFolder sourceFolder,
-			IFolder buildFolder, CPPWrapper cpp) throws CoreException {
+			List<String> fileList, IFolder sourceFolder, IFolder buildFolder,
+			CPPWrapper cpp) throws CoreException {
 
 		String fullFilePath = null;
 		List<String> preProcessorInput;
@@ -647,8 +647,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 								.getInstance().getProjectsList()) {
 							logs.add(new InvalidProductViewLog(s));
 						}
-						invalidProductViewController.adaptTo(logs
-								.toArray(new InvalidProductViewLog[logs.size()]));
+						invalidProductViewController.setInput(logs);
 					} else {
 						// Clear view
 						invalidProductViewController.clear();
