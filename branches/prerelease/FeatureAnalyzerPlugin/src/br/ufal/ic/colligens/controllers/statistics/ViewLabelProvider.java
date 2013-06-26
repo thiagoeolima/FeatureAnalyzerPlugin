@@ -6,8 +6,7 @@ import org.eclipse.swt.graphics.Image;
 
 import br.ufal.ic.colligens.util.Statistics;
 
-
-public class StatisticsViewLabelProvider extends LabelProvider implements ITableLabelProvider{
+class ViewLabelProvider extends LabelProvider implements ITableLabelProvider {
 
 	@Override
 	public String getColumnText(Object obj, int index) {
@@ -33,8 +32,8 @@ public class StatisticsViewLabelProvider extends LabelProvider implements ITable
 		// return PlatformUI.getWorkbench().getSharedImages()
 		// .getImage(ISharedImages.IMG_ELCL_SYNCED);
 		// default:
-			return null;
-	//	}
+		return null;
+		// }
 
 	}
 }

@@ -135,7 +135,7 @@ public class TypeChef {
 
 		if (Colligens.getDefault().getPreferenceStore()
 				.getBoolean("GLOBAL_ANALYZE")) {
-			// // Project C includes
+			// Project C includes
 			ICProject project = CoreModel
 					.getDefault()
 					.getCModel()
@@ -153,8 +153,7 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
-//		} else {
+		} else {
 			paramters.add("-h");
 			paramters.add(Colligens.getDefault().getConfigDir()
 					.getAbsolutePath()
@@ -162,7 +161,7 @@ public class TypeChef {
 					+ "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
-//		}
+		}
 
 		paramters.add("-w");
 
@@ -354,13 +353,14 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} //else {
-			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
-					+ System.getProperty("file.separator") + "projects"
-					+ System.getProperty("file.separator")
-					+ project.getProject().getName() + "_stubs.h");
-			args.add(0, "-h");
-//		}
+		} // else {
+		args.add(0,
+				Colligens.getDefault().getConfigDir().getAbsolutePath()
+						+ System.getProperty("file.separator") + "projects"
+						+ System.getProperty("file.separator")
+						+ project.getProject().getName() + "_stubs.h");
+		args.add(0, "-h");
+		// }
 
 		args.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects"

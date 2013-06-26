@@ -1,11 +1,11 @@
 package br.ufal.ic.colligens.controllers.statistics;
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
-public class StatisticsViewContentProvider implements
-		IStructuredContentProvider {
-	private Object[] logs = new Object[] {};
+class ViewContentProvider implements IStructuredContentProvider {
 
 	@Override
 	public void inputChanged(Viewer v, Object oldInput, Object newInput) {
@@ -15,12 +15,10 @@ public class StatisticsViewContentProvider implements
 	public void dispose() {
 	}
 
-	public void setLogs(Object[] logs) {
-		this.logs = logs;
-	}
-
 	@Override
 	public Object[] getElements(Object parent) {
-		return logs;
+		if (parent instanceof List)
+			return ((List<?>) parent).toArray();
+		return new Object[0];
 	}
 }

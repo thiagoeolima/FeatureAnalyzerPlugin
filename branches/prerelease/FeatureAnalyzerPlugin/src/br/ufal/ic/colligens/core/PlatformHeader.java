@@ -53,10 +53,6 @@ public class PlatformHeader {
 	private List<String> listFiles;
 
 	public void stubs(String projectName) throws PlatformException {
-		// if (Colligens.getDefault().getPreferenceStore()
-		// .getBoolean("GLOBAL_ANALYZE")) {
-		// return;
-		// }
 
 		File stubs = new File(Colligens.getDefault().getConfigDir()
 				.getAbsolutePath()
@@ -203,7 +199,7 @@ public class PlatformHeader {
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
 						platform.deleteOnExit();
-						
+
 						if (errorLine.equals("")) {
 							errorLine = "Was not possible to locate all the includes (exit="
 									+ exitValue + ")!";
@@ -239,7 +235,7 @@ public class PlatformHeader {
 					}
 			}
 		}
-		this.stubs(projectName);
+
 	}
 
 	private List<String> filesAllProject() throws PlatformException {

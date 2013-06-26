@@ -9,7 +9,6 @@ import org.eclipse.ui.IWorkbenchWindow;
 import br.ufal.ic.colligens.controllers.statistics.StatisticsViewController;
 import br.ufal.ic.colligens.exceptions.ExplorerException;
 import br.ufal.ic.colligens.exceptions.StatisticsException;
-import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.util.Statistics;
 import br.ufal.ic.colligens.util.statistics.CountDirectives;
 
@@ -33,11 +32,10 @@ public class StatisticsController {
 
 			List<String> listFiles = pkgExplorerController.getListToString();
 
-			
 			if (listFiles.isEmpty()) {
 				throw new ExplorerException("Not a valid file found C");
 			}
-			
+
 			int numberFiles = 0;
 			int numberFilesWithDirec = 0;
 			int directivesPerFile = 0;
@@ -96,8 +94,8 @@ public class StatisticsController {
 			StatisticsViewController statisticsViewController = StatisticsViewController
 					.getInstance();
 
-			statisticsViewController.adaptTo(list.toArray(new Statistics[list
-					.size()]));
+			statisticsViewController.setInput(list);
+			
 		} catch (ExplorerException e) {
 			return;
 		}
