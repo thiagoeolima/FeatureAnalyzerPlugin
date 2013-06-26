@@ -28,6 +28,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.prop4j.And;
 import org.prop4j.Node;
 import org.prop4j.Not;
@@ -651,6 +652,9 @@ public class CPPComposer extends PPComposerExtensionClass {
 					} else {
 						// Clear view
 						invalidProductViewController.clear();
+						MessageDialog.openInformation(new Shell(),
+								Colligens.PLUGIN_NAME,
+								"The products generated successfully!");
 					}
 
 				}

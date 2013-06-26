@@ -24,9 +24,9 @@ public class PreferencePage extends FieldEditorPreferencePage implements
 		addField(new BooleanFieldEditor("FEATURE_MODEL", "&Feature Model",
 				getFieldEditorParent()));
 
-		addField(new BooleanFieldEditor("GLOBAL_ANALYZE", "G&lobal analysis (slower)",
-				getFieldEditorParent()));
-		
+		addField(new BooleanFieldEditor("GLOBAL_ANALYZE",
+				"U&se #includes (slower)", getFieldEditorParent()));
+
 		addField(new RadioGroupFieldEditor("TypeChefPreference",
 				"TypeChef Preference ", 1, new String[][] {
 						{ "&Typecheck", "--typecheck" },
