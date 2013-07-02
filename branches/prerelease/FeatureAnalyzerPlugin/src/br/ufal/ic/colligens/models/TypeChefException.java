@@ -1,4 +1,6 @@
-package br.ufal.ic.colligens.exceptions;
+package br.ufal.ic.colligens.models;
+
+import br.ufal.ic.colligens.core.PluginException;
 
 
 public class TypeChefException extends PluginException {

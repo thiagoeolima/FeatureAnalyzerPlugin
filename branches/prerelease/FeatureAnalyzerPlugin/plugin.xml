@@ -13,12 +13,14 @@
             name="Analyzer">
       </command>
       <command
+            categoryId="br.ufal.ic.colligens.commands.category"
             id="br.ufal.ic.colligens.commands.ColligensViewClear"
             name="Clear View">
       </command>
       <command
-            id="br.ufal.ic.colligens.commands.ColligensStatistics"
-            name="Statistics">
+            categoryId="br.ufal.ic.colligens.commands.category"
+            id="br.ufal.ic.colligens.commands.ColligensMetrics"
+            name="Metrics">
       </command>
    </extension>
    <extension
@@ -28,12 +30,12 @@
             commandId="br.ufal.ic.colligens.commands.ColligensCommand">
       </handler>
       <handler
-            class="br.ufal.ic.colligens.handler.ClearAnalyzerViewHandler"
+            class="br.ufal.ic.colligens.handler.ClearConfigurationsViewHandler"
             commandId="br.ufal.ic.colligens.commands.ColligensViewClear">
       </handler>
       <handler
-            class="br.ufal.ic.colligens.handler.StatisticsHandler"
-            commandId="br.ufal.ic.colligens.commands.ColligensStatistics">
+            class="br.ufal.ic.colligens.handler.MetricsHandler"
+            commandId="br.ufal.ic.colligens.commands.ColligensMetrics">
       </handler>
    </extension>
    <extension
@@ -41,7 +43,7 @@
       <menuContribution
             locationURI="toolbar:org.eclipse.ui.main.toolbar?after=additions">
          <toolbar
-               id="br.ufal.ic.typechefplugin.toolbars.sampleToolbar">
+               id="br.ufal.ic.colligens.toolbars.sampleToolbar">
             <command
                   commandId="br.ufal.ic.colligens.commands.ColligensCommand"
                   icon="icons/featured.png"
@@ -73,16 +75,16 @@
                visible="true">
          </separator>
          <command
-               commandId="br.ufal.ic.colligens.commands.ColligensStatistics"
+               commandId="br.ufal.ic.colligens.commands.ColligensMetrics"
                icon="icons/featured_chart.png"
                style="push">
          </command>
       </menuContribution>
       <menuContribution
             allPopups="false"
-            locationURI="toolbar:br.ufal.ic.colligens.views.StatisticsView">
+            locationURI="toolbar:br.ufal.ic.colligens.views.MetricsView">
                      <command
-               commandId="br.ufal.ic.colligens.commands.ColligensStatistics"
+               commandId="br.ufal.ic.colligens.commands.ColligensMetrics"
                icon="icons/featured_chart.png"
                style="push">
          </command>
@@ -111,10 +113,10 @@
       </view>
       <view
             category="br.ufal.ic.colligens"
-            class="br.ufal.ic.colligens.views.StatisticsView"
+            class="br.ufal.ic.colligens.views.MetricsView"
             icon="icons/featured_chart.png"
-            id="br.ufal.ic.colligens.views.StatisticsView"
-            name="Statistics">
+            id="br.ufal.ic.colligens.views.MetricsView"
+            name="Metrics">
       </view>
    </extension>
  

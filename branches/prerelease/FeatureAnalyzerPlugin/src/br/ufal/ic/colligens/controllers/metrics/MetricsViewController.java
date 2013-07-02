@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.statistics;
+package br.ufal.ic.colligens.controllers.metrics;
 
 import java.util.List;
 
@@ -12,24 +12,24 @@ import org.eclipse.ui.PlatformUI;
 
 import br.ufal.ic.colligens.controllers.ViewController;
 import br.ufal.ic.colligens.util.Statistics;
-import br.ufal.ic.colligens.views.StatisticsView;
+import br.ufal.ic.colligens.views.MetricsView;
 
-public class StatisticsViewController extends ViewController {
+public class MetricsViewController extends ViewController {
 
 	private TableViewer tableViewer;
-	private StatisticsView view;
+	private MetricsView view;
 	private ViewContentProvider viewContentProvider;
 
-	private static StatisticsViewController INSTANCE;
+	private static MetricsViewController INSTANCE;
 
-	private StatisticsViewController() {
-		super(StatisticsView.ID);
+	private MetricsViewController() {
+		super(MetricsView.ID);
 		viewContentProvider = new ViewContentProvider();
 	}
 
-	public static StatisticsViewController getInstance() {
+	public static MetricsViewController getInstance() {
 		if (INSTANCE == null) {
-			INSTANCE = new StatisticsViewController();
+			INSTANCE = new MetricsViewController();
 		}
 		return INSTANCE;
 	}
@@ -42,11 +42,11 @@ public class StatisticsViewController extends ViewController {
 		this.tableViewer = tableViewer;
 	}
 
-	public StatisticsView getView() {
+	public MetricsView getView() {
 		return view;
 	}
 
-	public void setView(StatisticsView view) {
+	public void setView(MetricsView view) {
 		this.view = view;
 	}
 
@@ -78,7 +78,7 @@ public class StatisticsViewController extends ViewController {
 	}
 
 	public void createColumns(Composite parent) {
-		String[] titles = { "Statistics", "Value" };
+		String[] titles = { "Metrics", "Value" };
 		int[] bounds = { 300, 400 };
 
 		for (int i = 0; i < bounds.length; i++) {

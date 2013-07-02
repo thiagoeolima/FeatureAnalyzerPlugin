@@ -16,7 +16,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.exceptions.ExplorerException;
 
 /**
  * @author Thiago Emmanuel
@@ -66,14 +65,14 @@ public class ProjectExplorerController {
 
 	/**
 	 * @return
-	 * @throws ExplorerException
+	 * @throws ProjectExplorerException
 	 */
-	public List<IResource> start() throws ExplorerException {
+	public List<IResource> start() throws ProjectExplorerException {
 		
 		iResources.clear();
 		
 		if (selection == null) {
-			throw new ExplorerException("Select a valid file or directory.");
+			throw new ProjectExplorerException("Select a valid file or directory.");
 		}
 
 		List<IResource> iResources = new LinkedList<IResource>();
@@ -96,16 +95,16 @@ public class ProjectExplorerController {
 		}
 
 		if (iResources.isEmpty()) {
-			throw new ExplorerException("Select a valid file or directory.");
+			throw new ProjectExplorerException("Select a valid file or directory.");
 		}
 
 		return iResources;
 	}
 
 	/**
-	 * @throws ExplorerException
+	 * @throws ProjectExplorerException
 	 */
-	public void run() throws ExplorerException {
+	public void run() throws ProjectExplorerException {
 		List<IResource> list = start();
 
 		for (IResource iResource : list) {

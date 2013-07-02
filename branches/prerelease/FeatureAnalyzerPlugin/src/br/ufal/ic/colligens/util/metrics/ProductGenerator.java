@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.util.statistics;
+package br.ufal.ic.colligens.util.metrics;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

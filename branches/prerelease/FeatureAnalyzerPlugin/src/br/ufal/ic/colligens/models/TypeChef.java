@@ -28,9 +28,8 @@ import org.prop4j.NodeWriter;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.CoreController;
+import br.ufal.ic.colligens.core.PlatformException;
 import br.ufal.ic.colligens.core.PlatformHeader;
-import br.ufal.ic.colligens.exceptions.PlatformException;
-import br.ufal.ic.colligens.exceptions.TypeChefException;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;

@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.statistics;
+package br.ufal.ic.colligens.controllers.metrics;
 
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;

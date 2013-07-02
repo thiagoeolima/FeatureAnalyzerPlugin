@@ -12,10 +12,9 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchWindow;
 
 import br.ufal.ic.colligens.activator.Colligens;
-import br.ufal.ic.colligens.exceptions.ExplorerException;
-import br.ufal.ic.colligens.exceptions.TypeChefException;
 import br.ufal.ic.colligens.models.FileProxy;
 import br.ufal.ic.colligens.models.TypeChef;
+import br.ufal.ic.colligens.models.TypeChefException;
 import br.ufal.ic.colligens.views.InvalidConfigurationsView;
 
 
@@ -74,7 +73,7 @@ public class CoreController {
 				} catch (TypeChefException e) {
 					e.printStackTrace();
 					return Status.CANCEL_STATUS;
-				} catch (ExplorerException e) {
+				} catch (ProjectExplorerException e) {
 					e.printStackTrace();
 					return Status.CANCEL_STATUS;
 				} finally {

@@ -9,10 +9,10 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.handlers.HandlerUtil;
 
 import br.ufal.ic.colligens.controllers.StatisticsController;
-import br.ufal.ic.colligens.exceptions.StatisticsException;
-import br.ufal.ic.colligens.views.StatisticsView;
+import br.ufal.ic.colligens.util.metrics.MetricsException;
+import br.ufal.ic.colligens.views.MetricsView;
 
-public class StatisticsHandler extends AbstractHandler {
+public class MetricsHandler extends AbstractHandler {
 	private IWorkbenchWindow window;
 	private StatisticsController controller;
 
@@ -29,7 +29,7 @@ public class StatisticsHandler extends AbstractHandler {
 		// Open and active the Analyzer view
 		IWorkbenchPage page = window.getActivePage();
 		try {
-			page.showView(StatisticsView.ID);
+			page.showView(MetricsView.ID);
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -37,7 +37,7 @@ public class StatisticsHandler extends AbstractHandler {
 
 		try {
 			controller.run();
-		} catch (StatisticsException e) {
+		} catch (MetricsException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

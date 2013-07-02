@@ -21,9 +21,10 @@ import br.ufal.ic.colligens.util.ProjectConfigurationErrorLogger;
 
 /**
  * provisional class until we change to the CDT internal builder
+ * 
  * @author Francisco Dalton
  * @author Thiago Emmanuel
- *
+ * 
  */
 public class CPPWrapper {
 	private final static String GCC_PATH = Colligens.getDefault()
@@ -74,22 +75,20 @@ public class CPPWrapper {
 				try {
 					String line;
 					if ((line = error.readLine()) != null) {
-							ProjectConfigurationErrorLogger prjConfi = ProjectConfigurationErrorLogger
-									.getInstance();
-							// the string that comes here, have
-							// /variant00x/variant00x/
-							// that will be used by the compiler to generate the
-							// executable
-							String s = packageArgs.get(packageArgs.size() - 1);
-							// let's "clean" it...
-							int lastFileSeparator = s.lastIndexOf(System
-									.getProperty("file.separator"));
-							String variantPath = s.substring(0,
-									lastFileSeparator);
-							prjConfi.addConfigurationWithError(variantPath);
-							consoleOut.println("Variant Name: "
-									+ s.substring(lastFileSeparator));
-
+						ProjectConfigurationErrorLogger prjConfi = ProjectConfigurationErrorLogger
+								.getInstance();
+						// the string that comes here, have
+						// /variant00x/variant00x/
+						// that will be used by the compiler to generate the
+						// executable
+						String s = packageArgs.get(packageArgs.size() - 1);
+						// let's "clean" it...
+						int lastFileSeparator = s.lastIndexOf(System
+								.getProperty("file.separator"));
+						String variantPath = s.substring(0, lastFileSeparator);
+						prjConfi.addConfigurationWithError(variantPath);
+						consoleOut.println("Variant Name: "
+								+ s.substring(lastFileSeparator));
 
 						do {
 							// use pattern to avoid errors in Windows OS
@@ -142,21 +141,21 @@ public class CPPWrapper {
 		}
 	}
 
-
-	public void runPreProcessor(List<String> packageArgs, String preProcessorOutput) {
+	public void runPreProcessor(List<String> packageArgs,
+			String preProcessorOutput) {
 		packageArgs.add(0, "-C"); // do not discard comments
 		packageArgs.add(0, "-P"); // do not generate linemarkers
 		packageArgs.add(0, "-w"); // Suppress all warning
 		packageArgs.add(0, "-no-integrated-cpp");
 		packageArgs.add(0, "-nostdinc");
-		packageArgs.add(0, "-E"); 
+		packageArgs.add(0, "-E");
 		packageArgs.add(0, GCC_PATH);
 		ProcessBuilder processBuilder = new ProcessBuilder(packageArgs);
 
 		BufferedReader input = null;
 		BufferedReader error = null;
 		String errorLog = "";
-		
+
 		try {
 			Process process = processBuilder.start();
 			input = new BufferedReader(new InputStreamReader(
@@ -198,7 +197,8 @@ public class CPPWrapper {
 					}
 					int exitValue = process.exitValue();
 					if (exitValue != 0) {
-						if(!errorLog.contains("error: no include path in which to search for")){
+						if (!errorLog
+								.contains("error: no include path in which to search for")) {
 							outputFile.deleteOnExit();
 							throw new IOException(
 									"The process doesn't finish normally (exit="
@@ -232,7 +232,6 @@ public class CPPWrapper {
 					}
 			}
 		}
-		
+
 	}
 }
-

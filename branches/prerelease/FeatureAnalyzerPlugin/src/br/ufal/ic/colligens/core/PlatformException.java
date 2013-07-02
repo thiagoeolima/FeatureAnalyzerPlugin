@@ -1,4 +1,5 @@
-package br.ufal.ic.colligens.exceptions;
+package br.ufal.ic.colligens.core;
+
 
 
 

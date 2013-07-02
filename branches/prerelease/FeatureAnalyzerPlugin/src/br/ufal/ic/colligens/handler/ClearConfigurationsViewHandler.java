@@ -6,7 +6,7 @@ import org.eclipse.core.commands.ExecutionException;
 
 import br.ufal.ic.colligens.controllers.invalidconfigurations.InvalidConfigurationsViewController;
 
-public class ClearAnalyzerViewHandler extends AbstractHandler {
+public class ClearConfigurationsViewHandler extends AbstractHandler {
 
 	@Override
 	public Object execute(ExecutionEvent event) throws ExecutionException {

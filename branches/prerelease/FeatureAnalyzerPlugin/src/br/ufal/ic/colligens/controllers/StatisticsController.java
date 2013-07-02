@@ -6,11 +6,10 @@ import java.util.List;
 
 import org.eclipse.ui.IWorkbenchWindow;
 
-import br.ufal.ic.colligens.controllers.statistics.StatisticsViewController;
-import br.ufal.ic.colligens.exceptions.ExplorerException;
-import br.ufal.ic.colligens.exceptions.StatisticsException;
+import br.ufal.ic.colligens.controllers.metrics.MetricsViewController;
 import br.ufal.ic.colligens.util.Statistics;
-import br.ufal.ic.colligens.util.statistics.CountDirectives;
+import br.ufal.ic.colligens.util.metrics.CountDirectives;
+import br.ufal.ic.colligens.util.metrics.MetricsException;
 
 public class StatisticsController {
 	private ProjectExplorerController pkgExplorerController;
@@ -24,16 +23,16 @@ public class StatisticsController {
 	}
 
 	/**
-	 * @throws StatisticsException
+	 * @throws MetricsException
 	 */
-	public void run() throws StatisticsException {
+	public void run() throws MetricsException {
 		try {
 			pkgExplorerController.run();
 
 			List<String> listFiles = pkgExplorerController.getListToString();
 
 			if (listFiles.isEmpty()) {
-				throw new ExplorerException("Not a valid file found C");
+				throw new ProjectExplorerException("Not a valid file found C");
 			}
 
 			int numberFiles = 0;
@@ -64,7 +63,7 @@ public class StatisticsController {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
-					throw new StatisticsException("unexpected error!");
+					throw new MetricsException("unexpected error!");
 				}
 			}
 
@@ -91,12 +90,12 @@ public class StatisticsController {
 			statistics = new Statistics("LOC", "" + LOC);
 			list.add(statistics);
 
-			StatisticsViewController statisticsViewController = StatisticsViewController
+			MetricsViewController statisticsViewController = MetricsViewController
 					.getInstance();
 
 			statisticsViewController.setInput(list);
 			
-		} catch (ExplorerException e) {
+		} catch (ProjectExplorerException e) {
 			return;
 		}
 	}

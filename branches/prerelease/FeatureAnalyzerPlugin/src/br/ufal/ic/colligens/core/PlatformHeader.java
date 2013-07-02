@@ -33,8 +33,7 @@ import org.eclipse.core.runtime.Path;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.ProjectExplorerController;
-import br.ufal.ic.colligens.exceptions.PlatformException;
-import br.ufal.ic.colligens.util.statistics.CountDirectives;
+import br.ufal.ic.colligens.util.metrics.CountDirectives;
 
 @SuppressWarnings("restriction")
 public class PlatformHeader {

@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.controllers.statistics;
+package br.ufal.ic.colligens.controllers.metrics;
 
 import java.util.List;
 
