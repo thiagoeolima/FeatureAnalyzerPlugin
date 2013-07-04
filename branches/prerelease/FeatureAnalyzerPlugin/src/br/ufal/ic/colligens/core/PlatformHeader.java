@@ -64,6 +64,12 @@ public class PlatformHeader {
 		if (stubs.exists())
 			return;
 
+		project = CoreModel.getDefault().getCModel().getCProject(projectName);
+
+		if (project == null) {
+			throw new PlatformException("Not a valid file C in " + projectName);
+		}
+
 		this.listFilesCDT.clear();
 
 		if (listFiles == null) {
@@ -87,14 +93,14 @@ public class PlatformHeader {
 				+ projectName
 				+ "_platform.h");
 
+		if (platform.exists())
+			return;
+
 		project = CoreModel.getDefault().getCModel().getCProject(projectName);
 
 		if (project == null) {
 			throw new PlatformException("Not a valid file C in " + projectName);
 		}
-
-		if (platform.exists())
-			return;
 
 		new File(Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "projects").mkdirs();
@@ -170,7 +176,7 @@ public class PlatformHeader {
 									buffW.write(line + "\n");
 								}
 							} else {
-								// System.out.println(line);
+								System.out.println(line);
 								buffW.write(line + "\n");
 							}
 						}

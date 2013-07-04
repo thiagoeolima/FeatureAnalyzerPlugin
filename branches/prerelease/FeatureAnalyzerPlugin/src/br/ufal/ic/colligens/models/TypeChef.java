@@ -211,17 +211,17 @@ public class TypeChef {
 			platformHeader.plarform(fileProxies.get(0).getFileIResource()
 					.getProject().getName());
 
-			if (!Colligens.getDefault().getPreferenceStore()
-					.getBoolean("GLOBAL_ANALYZE")) {
-				// Monitor Update
-				CoreController.monitorSubTask("generating stubs");
-				platformHeader.stubs(fileProxies.get(0).getFileIResource()
-						.getProject().getName());
-			}
-
 			boolean error = false;
 
 			for (FileProxy file : fileProxies) {
+				if (!Colligens.getDefault().getPreferenceStore()
+						.getBoolean("GLOBAL_ANALYZE")) {
+					// Monitor Update
+					CoreController.monitorSubTask("generating stubs");
+					platformHeader.stubs(fileProxies.get(0).getFileIResource()
+							.getProject().getName());
+				}
+
 				// Monitor Update
 				CoreController.monitorWorked(1);
 				CoreController.monitorSubTask(file.getFullPath());
@@ -352,19 +352,19 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} // else {
+		} else {
+			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
+					+ System.getProperty("file.separator") + "projects"
+					+ System.getProperty("file.separator")
+					+ project.getProject().getName() + "_stubs.h");
+			args.add(0, "-h");
+		}
+
 		args.add(0,
 				Colligens.getDefault().getConfigDir().getAbsolutePath()
 						+ System.getProperty("file.separator") + "projects"
 						+ System.getProperty("file.separator")
-						+ project.getProject().getName() + "_stubs.h");
-		args.add(0, "-h");
-		// }
-
-		args.add(Colligens.getDefault().getConfigDir().getAbsolutePath()
-				+ System.getProperty("file.separator") + "projects"
-				+ System.getProperty("file.separator")
-				+ project.getProject().getName() + "_platform.h");
+						+ project.getProject().getName() + "_platform.h");
 		args.add(0, "-h");
 		args.add(0, typeChefPreference);
 		args.add(0, "--errorXML=" + outputFilePath + ".xml");
@@ -437,5 +437,4 @@ public class TypeChef {
 			}
 		}
 	}
-
 }
