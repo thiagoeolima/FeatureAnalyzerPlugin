@@ -133,7 +133,7 @@ public class TypeChef {
 				+ project.getProject().getName() + "_platform.h");
 
 		if (Colligens.getDefault().getPreferenceStore()
-				.getBoolean("GLOBAL_ANALYZE")) {
+				.getBoolean("USE_INCLUDES")) {
 			// Project C includes
 			ICProject project = CoreModel
 					.getDefault()
@@ -215,7 +215,7 @@ public class TypeChef {
 
 			for (FileProxy file : fileProxies) {
 				if (!Colligens.getDefault().getPreferenceStore()
-						.getBoolean("GLOBAL_ANALYZE")) {
+						.getBoolean("USE_INCLUDES")) {
 					// Monitor Update
 					CoreController.monitorSubTask("generating stubs");
 					platformHeader.stubs(fileProxies.get(0).getFileIResource()
@@ -333,7 +333,7 @@ public class TypeChef {
 		}
 
 		if (Colligens.getDefault().getPreferenceStore()
-				.getBoolean("GLOBAL_ANALYZE")) {
+				.getBoolean("USE_INCLUDES")) {
 			// // Project C includes
 			ICProject project = CoreModel
 					.getDefault()
