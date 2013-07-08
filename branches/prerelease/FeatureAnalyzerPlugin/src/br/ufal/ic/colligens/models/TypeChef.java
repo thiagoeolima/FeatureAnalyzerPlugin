@@ -118,7 +118,6 @@ public class TypeChef {
 				.getString("TypeChefPreference");
 
 		ArrayList<String> paramters = new ArrayList<String>();
-
 		paramters.add("--errorXML");
 		paramters.add(outputFilePath);
 		paramters.add("--lexOutput");
@@ -152,7 +151,7 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else {
+		}// else {
 			paramters.add("-h");
 			paramters.add(Colligens.getDefault().getConfigDir()
 					.getAbsolutePath()
@@ -160,7 +159,7 @@ public class TypeChef {
 					+ "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
-		}
+	//	}
 
 		paramters.add("-w");
 
@@ -211,16 +210,16 @@ public class TypeChef {
 			platformHeader.plarform(fileProxies.get(0).getFileIResource()
 					.getProject().getName());
 
-			boolean error = false;
+
 
 			for (FileProxy file : fileProxies) {
-				if (!Colligens.getDefault().getPreferenceStore()
-						.getBoolean("USE_INCLUDES")) {
+//				if (!Colligens.getDefault().getPreferenceStore()
+//						.getBoolean("USE_INCLUDES")) {
 					// Monitor Update
-					CoreController.monitorSubTask("generating stubs");
+					CoreController.monitorSubTask("Generating stubs...");
 					platformHeader.stubs(fileProxies.get(0).getFileIResource()
 							.getProject().getName());
-				}
+//				}
 
 				// Monitor Update
 				CoreController.monitorWorked(1);
@@ -242,14 +241,11 @@ public class TypeChef {
 					//
 					this.isFinish = true;
 				} catch (Exception e) {
-					error = true;
-				}
-
-				if (error) {
+					// If the analysis is not performed correctly,
+					// and the analysis made ​​from the command line
 					startCommandLineMode(file);
 					xmlParser.setFile(file);
 					xmlParser.processFile();
-					error = false;
 					this.isFinish = true;
 				}
 
@@ -352,13 +348,13 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} else {
+		} //else {
 			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
 					+ System.getProperty("file.separator") + "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
 			args.add(0, "-h");
-		}
+//		}
 
 		args.add(0,
 				Colligens.getDefault().getConfigDir().getAbsolutePath()
@@ -371,6 +367,7 @@ public class TypeChef {
 		args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
 				+ System.getProperty("file.separator") + "lexOutput.c");
 		args.add(0, "--lexOutput");
+		args.add(0, "--lexNoStdout");
 		args.add(0, "-w");
 		args.add(0, pathToTypeChef.toOSString());
 		args.add(0, "-jar");

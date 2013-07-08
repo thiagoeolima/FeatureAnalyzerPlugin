@@ -8,11 +8,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.dom.ast.IASTDeclaration;
 import org.eclipse.cdt.core.dom.ast.IASTNode;
 import org.eclipse.cdt.core.dom.ast.IASTPreprocessorMacroDefinition;
 import org.eclipse.cdt.core.dom.ast.IASTTranslationUnit;
@@ -38,14 +40,14 @@ import br.ufal.ic.colligens.util.metrics.CountDirectives;
 @SuppressWarnings("restriction")
 public class PlatformHeader {
 	// It keeps the C types.
-	private List<String> types = new ArrayList<String>();
+	private HashSet<String> types = new HashSet<String>();
 
 	// It keeps the macros defined.
-	private List<String> macros = new ArrayList<String>();
+	private HashSet<String> macros = new HashSet<String>();
 
 	private CountDirectives countDirectives;
 
-	private List<String> listFilesCDT = new ArrayList<String>();
+	private HashSet<String> listFilesCDT = new HashSet<String>();
 
 	private ICProject project;
 
@@ -303,7 +305,7 @@ public class PlatformHeader {
 				// The AST is ready for use..
 				ast = tu.getAST(index, ITranslationUnit.AST_PARSE_INACTIVE_CODE);
 
-				this.setTypes(ast);
+//				this.setTypes(ast);
 				this.setMacros(ast);
 			} catch (CoreException e1) {
 				// TODO Auto-generated catch block
@@ -336,7 +338,6 @@ public class PlatformHeader {
 				.equals("org.eclipse.cdt.internal.core.dom.parser.c.CASTTypedefNameSpecifier")) {
 
 			CASTTypedefNameSpecifier s = (CASTTypedefNameSpecifier) node;
-
 			String type = s.getRawSignature().replace("extern", "")
 					.replace("static", "").replace("const", "").trim();
 

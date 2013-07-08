@@ -130,7 +130,7 @@ public class FileProxy {
 
 		in.close();
 		out.close();
-
+		
 		File tempFile = new File(getFileToAnalyse());
 
 		tempFile.deleteOnExit();
