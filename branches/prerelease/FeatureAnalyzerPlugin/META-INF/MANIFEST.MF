@@ -28,6 +28,13 @@ Bundle-ClassPath: .,
 Bundle-Vendor: Ufal
 Export-Package: br.ufal.ic.colligens.activator;uses:="org.eclipse.jface.resource,de.ovgu.featureide.fm.ui,org.osgi.framework",
  br.ufal.ic.colligens.controllers;uses:="org.eclipse.ui,org.eclipse.core.resources",
+ br.ufal.ic.colligens.controllers.core;
+  uses:="de.ovgu.featureide.fm.core.configuration,
+   de.ovgu.featureide.core,
+   org.eclipse.core.resources,
+   de.ovgu.featureide.core.fstmodel.preprocessor,
+   de.ovgu.featureide.core.builder.preprocessor,
+   de.ovgu.featureide.fm.core",
  br.ufal.ic.colligens.controllers.invalidconfigurations;
   uses:="de.ovgu.featureide.fm.core.configuration,
    de.ovgu.featureide.core,
@@ -36,13 +43,6 @@ Export-Package: br.ufal.ic.colligens.activator;uses:="org.eclipse.jface.resource
    de.ovgu.featureide.core.builder.preprocessor,
    de.ovgu.featureide.fm.core",
  br.ufal.ic.colligens.controllers.invalidproducts;
-  uses:="de.ovgu.featureide.fm.core.configuration,
-   de.ovgu.featureide.core,
-   org.eclipse.core.resources,
-   de.ovgu.featureide.core.fstmodel.preprocessor,
-   de.ovgu.featureide.core.builder.preprocessor,
-   de.ovgu.featureide.fm.core",
- br.ufal.ic.colligens.core;
   uses:="de.ovgu.featureide.fm.core.configuration,
    de.ovgu.featureide.core,
    org.eclipse.core.resources,

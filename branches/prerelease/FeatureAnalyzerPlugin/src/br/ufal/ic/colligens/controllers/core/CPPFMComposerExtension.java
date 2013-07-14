@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.core;
+package br.ufal.ic.colligens.controllers.core;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.core;
+package br.ufal.ic.colligens.controllers.core;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -216,6 +216,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void annotationChecking(IFolder folder) {
 		try {
 			for (final IResource res : folder.members()) {
+				
 				if (res instanceof IFolder) {
 					annotationChecking((IFolder) res);
 				} else if (res instanceof IFile) {

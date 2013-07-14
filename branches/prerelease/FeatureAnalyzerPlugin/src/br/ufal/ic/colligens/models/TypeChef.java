@@ -28,8 +28,8 @@ import org.prop4j.NodeWriter;
 
 import br.ufal.ic.colligens.activator.Colligens;
 import br.ufal.ic.colligens.controllers.CoreController;
-import br.ufal.ic.colligens.core.PlatformException;
-import br.ufal.ic.colligens.core.PlatformHeader;
+import br.ufal.ic.colligens.controllers.core.PlatformException;
+import br.ufal.ic.colligens.controllers.core.PlatformHeader;
 import de.fosd.typechef.Frontend;
 import de.fosd.typechef.FrontendOptions;
 import de.fosd.typechef.FrontendOptionsWithConfigFiles;
@@ -151,7 +151,7 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}// else {
+		} else {
 			paramters.add("-h");
 			paramters.add(Colligens.getDefault().getConfigDir()
 					.getAbsolutePath()
@@ -159,7 +159,7 @@ public class TypeChef {
 					+ "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
-	//	}
+		}
 
 		paramters.add("-w");
 
@@ -210,16 +210,14 @@ public class TypeChef {
 			platformHeader.plarform(fileProxies.get(0).getFileIResource()
 					.getProject().getName());
 
-
-
 			for (FileProxy file : fileProxies) {
-//				if (!Colligens.getDefault().getPreferenceStore()
-//						.getBoolean("USE_INCLUDES")) {
+				if (!Colligens.getDefault().getPreferenceStore()
+						.getBoolean("USE_INCLUDES")) {
 					// Monitor Update
 					CoreController.monitorSubTask("Generating stubs...");
 					platformHeader.stubs(fileProxies.get(0).getFileIResource()
 							.getProject().getName());
-//				}
+				}
 
 				// Monitor Update
 				CoreController.monitorWorked(1);
@@ -348,13 +346,13 @@ public class TypeChef {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		} //else {
+		} else {
 			args.add(0, Colligens.getDefault().getConfigDir().getAbsolutePath()
 					+ System.getProperty("file.separator") + "projects"
 					+ System.getProperty("file.separator")
 					+ project.getProject().getName() + "_stubs.h");
 			args.add(0, "-h");
-//		}
+		}
 
 		args.add(0,
 				Colligens.getDefault().getConfigDir().getAbsolutePath()

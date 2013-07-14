@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.core;
+package br.ufal.ic.colligens.controllers.core;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -305,7 +305,7 @@ public class PlatformHeader {
 				// The AST is ready for use..
 				ast = tu.getAST(index, ITranslationUnit.AST_PARSE_INACTIVE_CODE);
 
-//				this.setTypes(ast);
+				this.setTypes(ast);
 				this.setMacros(ast);
 			} catch (CoreException e1) {
 				// TODO Auto-generated catch block

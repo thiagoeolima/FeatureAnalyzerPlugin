@@ -1,4 +1,4 @@
-package br.ufal.ic.colligens.core;
+package br.ufal.ic.colligens.controllers.core;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
