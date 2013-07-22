@@ -18,6 +18,7 @@ import org.eclipse.ui.ide.IDE;
 
 public abstract class PluginActions implements IWorkbenchWindowActionDelegate {
 	protected IWorkbenchWindow window;
+	protected IStructuredSelection selection;
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -26,7 +27,7 @@ public abstract class PluginActions implements IWorkbenchWindowActionDelegate {
 		try {
 			if (selection instanceof IStructuredSelection) {
 				IStructuredSelection extended = (IStructuredSelection) selection;
-
+				this.selection = extended;
 				Object object = extended.getFirstElement();
 				if (object instanceof SourceRoot) {
 					action.setEnabled(true);

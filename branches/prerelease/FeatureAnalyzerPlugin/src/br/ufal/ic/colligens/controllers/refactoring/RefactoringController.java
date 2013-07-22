@@ -6,14 +6,22 @@ import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ltk.core.refactoring.Change;
 import org.eclipse.ltk.core.refactoring.CompositeChange;
 import org.eclipse.ltk.core.refactoring.Refactoring;
 import org.eclipse.ltk.core.refactoring.RefactoringStatus;
 
-public class RefactoringController extends Refactoring {
+import br.ufal.ic.colligens.controllers.ProjectExplorerController;
+import br.ufal.ic.colligens.controllers.ProjectExplorerException;
 
+public class RefactoringController extends Refactoring {
+	private ProjectExplorerController projectExplorerController;
 	protected List<Change> changes = new ArrayList<Change>();
+
+	public RefactoringController() {
+		projectExplorerController = new ProjectExplorerController();
+	}
 
 	@Override
 	public String getName() {
@@ -21,15 +29,19 @@ public class RefactoringController extends Refactoring {
 	}
 
 	@Override
-	public RefactoringStatus checkInitialConditions(IProgressMonitor pm)
+	public RefactoringStatus checkInitialConditions(IProgressMonitor monitor)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
 		try {
-			pm.beginTask("Checking preconditions...", 1);
-			// Check the name
+			monitor.beginTask("Checking preconditions...", 1);
+			
+			projectExplorerController.run();
 
+		} catch (ProjectExplorerException e) {
+			// TODO Auto-generated catch block
+			status.addFatalError(e.getMessage());
 		} finally {
-			pm.done();
+			monitor.done();
 		}
 		return status;
 	}
@@ -59,6 +71,10 @@ public class RefactoringController extends Refactoring {
 		} finally {
 			pm.done();
 		}
+	}
+
+	public void setSelection(IStructuredSelection selection) {
+		projectExplorerController.setSelection(selection);
 	}
 
 }
