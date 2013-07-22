@@ -62,6 +62,20 @@ public class InvalidConfigurationsViewController extends ViewController {
 		treeViewer.refresh();
 	}
 
+	public boolean isEmpty() {
+		if (treeViewer == null) {
+			return true;
+		}
+		if (treeViewer.getInput() == null) {
+			return true;
+		} else {
+			if (treeViewer.getInput() instanceof List) {
+				return ((List) treeViewer.getInput()).isEmpty();
+			}
+		}
+		return true;
+	}
+
 	public void setFocus() {
 		treeViewer.getControl().setFocus();
 	}
