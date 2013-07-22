@@ -194,7 +194,6 @@ point="org.eclipse.core.resources.markers">
          <action
                class="br.ufal.ic.colligens.actions.RefactoringAction"
                definitionId="br.ufal.ic.colligens.commands.ColligensRefactoring"
-               icon="icons/featured.png"
                id="br.ufal.ic.colligens.action1"
                label="Refactoring">
          </action>
@@ -203,7 +202,7 @@ point="org.eclipse.core.resources.markers">
    <extension
          point="org.eclipse.ltk.core.refactoring.refactoringContributions">
       <contribution
-            class="br.ufal.ic.colligens.controllers.refactoring.RefactoringController"
+            class="br.ufal.ic.colligens.controllers.refactoring.RefactoringCon"
             id="br.ufal.ic.colligens.RefactoringController">
       </contribution>
    </extension>

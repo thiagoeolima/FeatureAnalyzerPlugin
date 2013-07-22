@@ -1,6 +1,6 @@
 package br.ufal.ic.colligens.controllers.refactoring;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.eclipse.core.runtime.CoreException;
@@ -17,7 +17,7 @@ import br.ufal.ic.colligens.controllers.ProjectExplorerException;
 
 public class RefactoringController extends Refactoring {
 	private ProjectExplorerController projectExplorerController;
-	protected List<Change> changes = new ArrayList<Change>();
+	protected List<Change> changes = new LinkedList<Change>();
 
 	public RefactoringController() {
 		projectExplorerController = new ProjectExplorerController();
@@ -34,7 +34,7 @@ public class RefactoringController extends Refactoring {
 		RefactoringStatus status = new RefactoringStatus();
 		try {
 			monitor.beginTask("Checking preconditions...", 1);
-			
+
 			projectExplorerController.run();
 
 		} catch (ProjectExplorerException e) {
@@ -47,14 +47,15 @@ public class RefactoringController extends Refactoring {
 	}
 
 	@Override
-	public RefactoringStatus checkFinalConditions(IProgressMonitor pm)
+	public RefactoringStatus checkFinalConditions(IProgressMonitor monitor)
 			throws CoreException, OperationCanceledException {
 		RefactoringStatus status = new RefactoringStatus();
 
-		pm.beginTask("Checking checkFinalConditions...", 2);
-		// Processor processor=new Processor();
-		// processor.setCompilationUnit(getCompilationUnit());
-		// changes=processor.process(monitor);
+		monitor.beginTask("Checking checkFinalConditions...", 2);
+		RefactoringProcessor processor = new RefactoringProcessor();
+		processor.setiResources(projectExplorerController.getList());
+		
+		changes = processor.process(monitor);
 
 		return status;
 	}
