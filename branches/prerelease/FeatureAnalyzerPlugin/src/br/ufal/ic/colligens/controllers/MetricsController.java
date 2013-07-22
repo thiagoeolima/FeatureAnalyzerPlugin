@@ -11,10 +11,10 @@ import br.ufal.ic.colligens.util.Statistics;
 import br.ufal.ic.colligens.util.metrics.CountDirectives;
 import br.ufal.ic.colligens.util.metrics.MetricsException;
 
-public class StatisticsController {
+public class MetricsController {
 	private ProjectExplorerController pkgExplorerController;
 
-	public StatisticsController() {
+	public MetricsController() {
 		pkgExplorerController = new ProjectExplorerController();
 	}
 

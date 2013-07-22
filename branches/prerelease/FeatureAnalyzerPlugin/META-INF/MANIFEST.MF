@@ -16,7 +16,8 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.8.0",
  de.ovgu.featureide.ui;bundle-version="2.6.4",
  de.ovgu.featureide.fm.ui;bundle-version="2.6.4",
  org.eclipse.ui.console,
- org.eclipse.cdt.core
+ org.eclipse.cdt.core,
+ org.eclipse.ltk.core.refactoring;bundle-version="3.6.0"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: org.eclipse.cdt.core.model,
@@ -50,8 +51,11 @@ Export-Package: br.ufal.ic.colligens.actions;uses:="org.eclipse.core.commands",
    de.ovgu.featureide.core.fstmodel.preprocessor,
    de.ovgu.featureide.core.builder.preprocessor,
    de.ovgu.featureide.fm.core",
+ br.ufal.ic.colligens.controllers.metrics,
+ br.ufal.ic.colligens.controllers.refactoring,
  br.ufal.ic.colligens.models,
  br.ufal.ic.colligens.preferences;uses:="org.eclipse.jface.preference,org.eclipse.ui,org.eclipse.core.runtime.preferences",
  br.ufal.ic.colligens.util;uses:="org.eclipse.jface.text,org.eclipse.core.resources",
+ br.ufal.ic.colligens.util.metrics,
  br.ufal.ic.colligens.views;uses:="org.eclipse.ui.part,org.eclipse.swt.widgets",
  de.fosd.typechef

@@ -24,6 +24,11 @@
             id="br.ufal.ic.colligens.commands.ColligensMetrics"
             name="Metrics">
       </command>
+      <command
+            categoryId="br.ufal.ic.colligens.commands.category"
+            id="br.ufal.ic.colligens.commands.ColligensRefactoring"
+            name="Refactoring">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.menus">
@@ -52,6 +57,11 @@
          <command
                commandId="br.ufal.ic.colligens.commands.ColligensMetrics"
                icon="icons/featured_chart.png"
+               style="push">
+         </command>
+         <command
+               commandId="br.ufal.ic.colligens.commands.ColligensRefactoring"
+               icon="icons/featured.png"
                style="push">
          </command>
       </menuContribution>
@@ -94,13 +104,7 @@
             name="Metrics">
       </view>
    </extension>
- 
-    <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="contexts.xml">
-      </contexts>
-   </extension>
+
    <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -187,6 +191,20 @@ point="org.eclipse.core.resources.markers">
                id="br.ufal.ic.colligens.ClearViewAction"
                label="Clear Configurations View">
          </action>
+         <action
+               class="br.ufal.ic.colligens.actions.RefactoringAction"
+               icon="icons/featured.png"
+               id="br.ufal.ic.colligens.action1"
+               label="Refactoring"
+               style="push">
+         </action>
       </actionSet>
+   </extension>
+   <extension
+         point="org.eclipse.ltk.core.refactoring.refactoringContributions">
+      <contribution
+            class="br.ufal.ic.colligens.controllers.refactoring.RefactoringController"
+            id="br.ufal.ic.colligens.RefactoringController">
+      </contribution>
    </extension>
 </plugin>

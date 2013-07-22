@@ -12,10 +12,12 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.ide.IDE;
 
 public abstract class PluginActions implements IWorkbenchWindowActionDelegate {
+	protected IWorkbenchWindow window;
 
 	@Override
 	public void selectionChanged(IAction action, ISelection selection) {
@@ -38,10 +40,20 @@ public abstract class PluginActions implements IWorkbenchWindowActionDelegate {
 					action.setEnabled(false);
 				}
 			}
-			// action.setEnabled();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
+	}
+
+	@Override
+	public void dispose() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void init(IWorkbenchWindow window) {
+		this.window = window;
 	}
 
 	private boolean isResource(IResource iResource) {
