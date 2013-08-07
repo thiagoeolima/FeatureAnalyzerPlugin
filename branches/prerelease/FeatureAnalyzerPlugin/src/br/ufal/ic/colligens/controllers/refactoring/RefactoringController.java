@@ -25,7 +25,7 @@ public class RefactoringController extends Refactoring {
 
 	@Override
 	public String getName() {
-		return "RefactoringService";
+		return "Colligens Refactoring";
 	}
 
 	@Override

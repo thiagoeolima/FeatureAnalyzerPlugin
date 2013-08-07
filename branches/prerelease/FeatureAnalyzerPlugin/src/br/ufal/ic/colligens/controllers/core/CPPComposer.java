@@ -3,6 +3,7 @@ package br.ufal.ic.colligens.controllers.core;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -465,6 +466,10 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		final TypeChef typeChef = new TypeChef();
 		try {
+			for (Iterator<IResource> iterator = prjController.getList().iterator(); iterator.hasNext();) {
+				IResource type = (IResource) iterator.next();
+				System.out.println(type.getLocation().toOSString());
+			}
 			typeChef.run(prjController.getList());
 
 			final Display display = Display.getDefault();

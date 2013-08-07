@@ -13,7 +13,6 @@ public class RefactoringDataInputPage extends UserInputWizardPage {
 	@Override
 	public void createControl(Composite parent) {
 		Composite result = new Composite(parent, SWT.NONE);
-		
 		setControl(result);
 	}
 
