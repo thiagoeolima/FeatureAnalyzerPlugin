@@ -34,7 +34,6 @@ public class RefactoringController extends Refactoring {
 		RefactoringStatus status = new RefactoringStatus();
 		try {
 			monitor.beginTask("Checking preconditions...", 1);
-
 			projectExplorerController.run();
 
 		} catch (ProjectExplorerException e) {
@@ -65,6 +64,7 @@ public class RefactoringController extends Refactoring {
 			OperationCanceledException {
 		try {
 			pm.beginTask("Creating change...", 1);
+			
 			//
 			Change[] changeArray = changes.toArray(new Change[] {});
 			//

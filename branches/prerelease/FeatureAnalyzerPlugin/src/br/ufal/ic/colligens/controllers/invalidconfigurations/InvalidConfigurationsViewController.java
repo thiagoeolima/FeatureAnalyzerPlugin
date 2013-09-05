@@ -46,7 +46,6 @@ public class InvalidConfigurationsViewController extends ViewController {
 		}
 		return INSTANCE;
 	}
-
 	/**
 	 * Update view
 	 * 
@@ -58,6 +57,9 @@ public class InvalidConfigurationsViewController extends ViewController {
 	}
 
 	public void clear() {
+		if (treeViewer == null) {
+			return;
+		}
 		treeViewer.setInput(null);
 		treeViewer.refresh();
 	}
@@ -70,7 +72,7 @@ public class InvalidConfigurationsViewController extends ViewController {
 			return true;
 		} else {
 			if (treeViewer.getInput() instanceof List) {
-				return ((List) treeViewer.getInput()).isEmpty();
+				return ((List<?>) treeViewer.getInput()).isEmpty();
 			}
 		}
 		return true;

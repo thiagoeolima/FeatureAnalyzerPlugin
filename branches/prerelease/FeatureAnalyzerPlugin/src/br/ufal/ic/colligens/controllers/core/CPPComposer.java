@@ -217,7 +217,7 @@ public class CPPComposer extends PPComposerExtensionClass {
 	private void annotationChecking(IFolder folder) {
 		try {
 			for (final IResource res : folder.members()) {
-				
+
 				if (res instanceof IFolder) {
 					annotationChecking((IFolder) res);
 				} else if (res instanceof IFile) {
@@ -466,7 +466,8 @@ public class CPPComposer extends PPComposerExtensionClass {
 
 		final TypeChef typeChef = new TypeChef();
 		try {
-			for (Iterator<IResource> iterator = prjController.getList().iterator(); iterator.hasNext();) {
+			for (Iterator<IResource> iterator = prjController.getList()
+					.iterator(); iterator.hasNext();) {
 				IResource type = (IResource) iterator.next();
 				System.out.println(type.getLocation().toOSString());
 			}
@@ -482,16 +483,16 @@ public class CPPComposer extends PPComposerExtensionClass {
 					InvalidConfigurationsViewController viewController = InvalidConfigurationsViewController
 							.getInstance();
 					if (typeChef.isFinish()) {
-						viewController.showView();
-						// Object[] logs = typeChef.getLogs();
-						// viewController.adaptTo(logs);
+
 						List<FileProxy> logs = typeChef.getFilesLog();
-						viewController.setInput(logs);
+
 						if (!logs.isEmpty()) {
 							continueCompilationFlag = MessageDialog.openQuestion(
 									display.getActiveShell(),
 									"Error!",
 									"This project contains errors in some feature combinations.\nDo you want to continue the compilation?");
+							viewController.showView();
+							viewController.setInput(logs);
 						}
 					} else {
 						viewController.clear();

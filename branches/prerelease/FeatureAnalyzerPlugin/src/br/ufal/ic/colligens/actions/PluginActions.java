@@ -67,8 +67,10 @@ public abstract class PluginActions implements IWorkbenchWindowActionDelegate {
 		} else if (iResource instanceof IFolder) {
 			try {
 				for (IResource res : ((IFolder) iResource).members()) {
+					if (isResource(res)) {
+						return true;
+					}
 
-					return isResource(res);
 				}
 			} catch (CoreException e) {
 
